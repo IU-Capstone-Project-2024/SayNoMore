@@ -50,7 +50,7 @@ class DestinationRetriever:
         A: Destination: "None"
 
         Q: "Я в Тольятти. Мне срочно надо достать билеты в Кисловодск"
-        A: Departure: Paris, France; Destination: Australia or New Zealand
+        A: Destination: "Кисловодск"
 
         Q: "USER_REQUEST"
         A: Departure: "'''
