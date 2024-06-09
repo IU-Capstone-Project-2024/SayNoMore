@@ -1,4 +1,5 @@
-from vllm import LLM, SamplingParams
+from vllm import LLM
+from typing import Dict
 
 from request_analyzer.retreivers.arrival_retriever import ArrivalRetriever
 from request_analyzer.retreivers.return_retriever import ReturnRetriever
@@ -9,7 +10,28 @@ from request_analyzer.retreivers.abstract_retriever import BaseRetriever
 
 
 class InformationRetriever:
+    """
+    A class to manage and utilize different retrievers 
+    for extracting specific pieces of information from 
+    user requests.
+
+    Attributes:
+        retrievers (Dict[str, BaseRetriever]): A dictionary 
+            mapping field names to their corresponding 
+            retriever instances.
+        llm (LLM): An instance of a VLLM used by retrievers
+            for generating text based on prompts.
+    """
+
     def __init__(self, llm: LLM) -> None:
+        """
+        Initializes the InformationRetriever with a given 
+        VLLM instance and registers default retrievers.
+
+        Args:
+            llm (LLM): The VLLM instance to be used by 
+                retrievers for text generation.
+        """
         self.retrievers = {}
         self.llm = llm
         
@@ -29,12 +51,27 @@ class InformationRetriever:
         Registers a retriever for a specific field.
 
         Args:
-            field_name (str): The name of the field the retriever is responsible for.
-            retriever (BaseRetriever): The retriever instance.
+            field_name (str): The name of the field the 
+                retriever is responsible for.
+            retriever (BaseRetriever): The retriever 
+                instance.
         """
         self.retrievers[field_name] = retriever
 
-    def retrieve(self, request: str) -> dict:
+    def retrieve(self, request: str) -> Dict[str, str]:
+        """
+        Retrieves information from a user request using
+        registered retrievers.
+
+        Args:
+            request (str): The user's request as a 
+                string.
+
+        Returns:
+            Dict[str, str]: A dictionary mapping 
+                field names to the retrieved 
+                information.
+        """
         result_map = {}
 
         for field, retriever in self.retrievers.items():
