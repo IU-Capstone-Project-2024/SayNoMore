@@ -139,3 +139,63 @@ class AirTicketsApi:
         # Send a GET request to fetch grouped tickets
         response = requests.get(self.fetch_grouped_tickets_url, params=params)
         return response.json()
+
+    def fetch_period_tickets(self, currency='rub', origin='MOW', destination=None, beginning_of_period=None,
+                             period_type=None, group_by='dates', one_way=True, page=1, market='ru', limit=30,
+                             sorting='price', trip_duration=None, trip_class=0):
+        """
+        Fetch air ticket prices for a specified period.
+
+        :param currency: Currency of the ticket prices. Default is 'rub'.
+        :param origin: Departure point (IATA code of country, city, or airport). Default is 'MOW'.
+        :param destination: Destination point (IATA code of country, city, or airport).
+        :param beginning_of_period: Start of the period for departure date.
+        :param period_type: Period type (year, month, or day). If not specified, defaults to tickets for the current month.
+        :param group_by: Grouping parameter (dates or directions). Default is 'dates'.
+        :param one_way: One way ticket. Default is True.
+        :param page: Page number for pagination. Default is 1.
+        :param market: Data source market. Default is 'ru'.
+        :param limit: Number of records per page. Default is 30.
+        :param sorting: Sorting of prices (price, route, or distance_unit_price). Default is 'price'.
+        :param trip_duration: Duration of the trip in days.
+        :param trip_class: Class of service (0 for economy, 1 for business, 2 for first class). Default is 0.
+        :return: JSON response with the structure:
+            {
+                "success": bool,  # Indicates the success of the request
+                "data": [
+                    {
+                        "origin": str,  # Departure point
+                        "destination": str,  # Destination point
+                        "depart_date": str,  # Departure date
+                        "distance": int,  # Flight distance in kilometers
+                        "duration": int,  # Flight duration in minutes
+                        "return_date": str,  # Return date
+                        "number_of_changes": int,  # Number of changes (layovers)
+                        "value": float,  # Flight cost in the specified currency
+                        "found_at": str,  # Time and date when the ticket was found
+                        "trip_class": int  # Class of service (0 for economy, 1 for business, 2 for first class)
+                    },
+                    ...
+                ]
+            }
+        """
+        params = {
+            'currency': currency,
+            'origin': origin,
+            'destination': destination,
+            'beginning_of_period': beginning_of_period,
+            'period_type': period_type,
+            'group_by': group_by,
+            'one_way': one_way,
+            'page': page,
+            'market': market,
+            'limit': limit,
+            'sorting': sorting,
+            'trip_duration': trip_duration,
+            'trip_class': trip_class,
+            'token': self.api_token
+        }
+
+        # Send a GET request to fetch period tickets
+        response = requests.get(self.fetch_period_tickets_url, params=params)
+        return response.json()
