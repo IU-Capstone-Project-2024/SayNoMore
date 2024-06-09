@@ -1,6 +1,7 @@
 from vllm import LLM, SamplingParams
+from request_analyzer.retreivers.abstract_retriever import BaseRetriever
 
-class BudgetRetriever:
+class BudgetRetriever(BaseRetriever):
     """
     A class designed to retrieve the user's available
     budget from their travel requests using a VLLM.

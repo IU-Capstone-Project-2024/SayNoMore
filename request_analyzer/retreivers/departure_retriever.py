@@ -1,6 +1,7 @@
 from vllm import LLM, SamplingParams
+from request_analyzer.retreivers.abstract_retriever import BaseRetriever
 
-class DepartureRetriever:
+class DepartureRetriever(BaseRetriever):
     """
     A class designed to retrieve departure
     cities from user travel requests using a 
