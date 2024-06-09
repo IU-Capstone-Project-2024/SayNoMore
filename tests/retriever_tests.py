@@ -1,8 +1,8 @@
 import os
 import unittest
 from vllm import LLM
-from SayNoMore.request_analyzer.retreivers.destination_retriever import DestinationRetriever
-from SayNoMore.request_analyzer.retreivers.departure_retriever import DepartureRetriever
+from request_analyzer.retreivers.destination_retriever import DestinationRetriever
+from request_analyzer.retreivers.departure_retriever import DepartureRetriever
 
 class TestRetrievers(unittest.TestCase):
 
