@@ -56,12 +56,10 @@ jobs:
         echo "color=$color" # Output the color for debugging
 
     - name: Generate Pylint badge
-      uses: juliangruber/badge-action@v1
-      with:
-        label: pylint
-        message: ${{ env.score }}/10
-        color: ${{ env.color }}
-        output: pylint-badge.svg
+      run: |
+        score=${{ env.score }}
+        color=${{ env.color }}
+        curl -o pylint-badge.svg "https://img.shields.io/badge/pylint-${score}/10-${color}"
 
     - name: Move and Commit Badge
       run: |
@@ -73,4 +71,4 @@ jobs:
         git commit -m "Update Pylint badge"
         git push
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Use the default GitHub token
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
