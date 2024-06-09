@@ -3,6 +3,9 @@ import unittest
 from vllm import LLM
 from request_analyzer.retreivers.destination_retriever import DestinationRetriever
 from request_analyzer.retreivers.departure_retriever import DepartureRetriever
+from request_analyzer.retreivers.arrival_retriever import ArrivalRetriever
+from request_analyzer.retreivers.return_retriever import ReturnRetriever
+from request_analyzer.retreivers.budget_retriever import BudgetRetriever
 
 class TestRetrievers(unittest.TestCase):
 
@@ -35,6 +38,9 @@ class TestRetrievers(unittest.TestCase):
 
         cls.departure_retr = DepartureRetriever(cls.llm)
         cls.destination_retr = DestinationRetriever(cls.llm)
+        cls.arrival_retr = ArrivalRetriever()
+        cls.return_retr = ReturnRetriever()
+        cls.budget_retr = BudgetRetriever(cls.llm)
 
     def test_departure_retriever(self):
         test_cases = [
@@ -63,6 +69,21 @@ class TestRetrievers(unittest.TestCase):
             expected_destination = case["expected_destination"]
             retrieved_destination = self.destination_retr.retrieve(request).strip()
             self.assertEqual(retrieved_destination.lower(), expected_destination.lower(), f"Failed for request: {request}")
+
+    def test_budget_retriever(self):
+        test_cases = [
+            {'request': 'Есть 20000 тысяч. Хочу на два дня отдохнуть в Курске', 'expected_budget': '20000"'},
+            {'request': 'Хочу в Калининград', 'expected_budget': 'None"'},
+            {'request': 'По планам съездить в Нижний Новгород, бюджет 31 тысяча', 'expected_budget': '31000"'},
+            {'request': 'Я бы съездил в Иваново в тридцатых числах. На руках 40000', 'expected_budget': '40000"'},
+            {'request': 'По планам съездить в Нижний Новгород', 'expected_budget': 'None"'}
+        ]
+
+        for case in test_cases:
+            request = case["request"]
+            expected_budget = case["expected_budget"]
+            retrieved_budget = self.budget_retr.retrieve(request).strip()
+            self.assertEqual(retrieved_budget.lower(), expected_budget.lower())
 
 if __name__ == '__main__':
     unittest.main()
