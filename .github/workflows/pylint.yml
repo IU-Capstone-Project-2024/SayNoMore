@@ -21,9 +21,9 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-$(date +%Y%m%d)
         restore-keys: |
-          ${{ runner.os }}-pip-
+          ${{ runner.os }}-pip-${{ matrix.python-version }}-
 
     - name: Install dependencies
       run: |
@@ -37,14 +37,14 @@ jobs:
     - name: Parse Pylint score
       id: pylint-score
       run: |
-        score=$(tail -n 1 pylint-report.txt | grep -oP '(?<=rated at )[0-9\.]+')
+        score=$(grep -oP '(?<=rated at )[0-9\.]+' pylint-report.txt | tail -1)
         echo "score=${score}" >> $GITHUB_ENV
         echo "score=${score}" # Output the score for debugging
 
     - name: Determine badge color
       id: determine-color
       run: |
-        score=$(echo ${{ env.score }})
+        score=${{ env.score }}
         if (( $(echo "$score > 8" | bc -l) )); then
           color="brightgreen"
         elif (( $(echo "$score > 6" | bc -l) )); then
@@ -54,7 +54,15 @@ jobs:
         fi
         echo "color=$color" >> $GITHUB_ENV
         echo "color=$color" # Output the color for debugging
-        
+
+    - name: Generate Pylint badge
+      uses: juliangruber/badge-action@v1
+      with:
+        label: pylint
+        message: ${{ env.score }}/10
+        color: ${{ env.color }}
+        output: pylint-badge.svg
+
     - name: Move and Commit Badge
       run: |
         mkdir -p badges
@@ -65,4 +73,4 @@ jobs:
         git commit -m "Update Pylint badge"
         git push
       env:
-        GITHUB_TOKEN: ${{ secrets.ACTIONS_COMMIT_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Use the default GitHub token
