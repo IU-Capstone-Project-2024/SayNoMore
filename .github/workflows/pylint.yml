@@ -41,14 +41,20 @@ jobs:
         echo "score=${score}" >> $GITHUB_ENV
         echo "score=${score}" # Output the score for debugging
 
-    - name: Generate Pylint badge
-      uses: juliangruber/badge-action@v1
-      with:
-        label: pylint
-        message: ${{ env.score }}/10
-        color: ${{ env.score | int > 8 && 'brightgreen' || env.score | int > 6 && 'yellow' || 'red' }}
-        output: pylint-badge.svg
-
+    - name: Determine badge color
+      id: determine-color
+      run: |
+        score=$(echo ${{ env.score }})
+        if (( $(echo "$score > 8" | bc -l) )); then
+          color="brightgreen"
+        elif (( $(echo "$score > 6" | bc -l) )); then
+          color="yellow"
+        else
+          color="red"
+        fi
+        echo "color=$color" >> $GITHUB_ENV
+        echo "color=$color" # Output the color for debugging
+        
     - name: Move and Commit Badge
       run: |
         mkdir -p badges
