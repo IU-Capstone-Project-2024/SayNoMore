@@ -53,9 +53,9 @@ class DestinationRetriever:
         A: Destination: "Кисловодск"
 
         Q: "USER_REQUEST"
-        A: Departure: "'''
+        A: Destination: "'''
 
-    def retreive(self, request: str) -> str:
+    def retrieve(self, request: str) -> str:
         """
         Generates a response from the VLLM based 
         on the user's travel request, aiming to 
