@@ -42,7 +42,7 @@ class ArrivalRetriever(BaseRetriever):
             Q: "Я в Москву в с 1ое по 5ое мая"
             A: Arrival Time: "01/05/2025"
 
-            Today is {self.cur_day.strftime('%B %d %Y. %A'). } Your task is to extract the arrival time to the destination city from the user's request.
+            Today is {self.cur_day.strftime('%B %d, %Y. %A.'). } Your task is to extract the arrival time to the destination city from the user's request.
 
             Q: "USER_REQUEST"
             A: Arrival Time: "'''
