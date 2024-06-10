@@ -16,8 +16,7 @@ class ReturnRetriever(BaseRetriever):
             
             Q: "Я хочу в Бийск, но нужно вернуться в середине августа."
             A: Return date: "15/08/2024"
-            
-            
+              
             Q: "Я хочу поехать в отпуск и вернуться 22 октября"
             A: Return date: "22/10/2024"
             
@@ -37,7 +36,7 @@ class ReturnRetriever(BaseRetriever):
             A: Return date: "None"
 
             Q: "Я в Москву в среду"
-            A: Return date: "12/06/2024"
+            A: Return date: "None"
 
             Q: "Я в Москву в с 1ое по 5ое мая"
             A: Return date: "05/05/2025"
@@ -45,7 +44,7 @@ class ReturnRetriever(BaseRetriever):
             Today is {self.cur_day.strftime('%B %d, %Y. %A.') } Your task is to extract the return time from the destination city from the user's request.
 
             Q: "USER_REQUEST"
-            A: Arrival Time: "'''
+            A: Return date: "'''
 
     def retrieve(self, request: str) -> str:
         """

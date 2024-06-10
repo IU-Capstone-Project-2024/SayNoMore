@@ -88,7 +88,7 @@ class TestRetrievers(unittest.TestCase):
     def test_arrival_time_retriever(self):
         # TODO: Should be changed with time, when the date in request becomes obsolete
         test_cases = [
-            {'request': 'Есть 20000 тысяч. Хочу c 1ое по 20 августа дня отдохнуть в Курске', 'expected_arrival': '1/08/2024"'},
+            {'request': 'Есть 20000 тысяч. Хочу c 1ое по 20 августа дня отдохнуть в Курске', 'expected_arrival': '01/08/2024"'},
             {'request': 'Хочу в Калининград', 'expected_arrival': 'None"'},
             {'request': 'Поеду в Нижний Новгород второго сентября', 'expected_arrival': '02/09/2024"'}
         ]
