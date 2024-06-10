@@ -19,9 +19,9 @@ class AirTicketsApi:
         self.fetch_popular_routes_from_city_url = air_api_data.fetch_popular_routes_from_city_url
         self.fetch_airline_logos_url = air_api_data.fetch_airline_logos_url
 
-    def fetch_cheapest_tickets(self, origin, destination=None, currency='rub', departure_at=None, return_at=None,
-                               one_way=True, direct=False, market='ru', limit=30, page=1, sorting='price',
-                               unique=False):
+    def fetch_cheapest_tickets(self, origin=None, destination=None, currency='rub', departure_at=None, return_at=None,
+                               one_way='true', direct='false', market='ru', limit=30, page=1, sorting='price',
+                               unique='false'):
         """
                Fetch the cheapest air tickets for specific dates.
 
@@ -84,7 +84,7 @@ class AirTicketsApi:
         return response.json()
 
     def fetch_grouped_tickets(self, currency='rub', origin=None, destination=None, group_by='departure_at',
-                              departure_at=None, return_at=None, market='ru', direct=False, trip_duration=None):
+                              departure_at=None, return_at=None, market='ru', direct='false', trip_duration=None):
         """
         Fetch grouped cheap air tickets.
 
@@ -141,7 +141,7 @@ class AirTicketsApi:
         return response.json()
 
     def fetch_period_tickets(self, currency='rub', origin='MOW', destination=None, beginning_of_period=None,
-                             period_type=None, group_by='dates', one_way=True, page=1, market='ru', limit=30,
+                             period_type=None, group_by='dates', one_way='true', page=1, market='ru', limit=30,
                              sorting='price', trip_duration=None, trip_class=0):
         """
         Fetch air ticket prices for a specified period.
