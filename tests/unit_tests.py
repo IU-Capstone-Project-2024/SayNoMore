@@ -25,13 +25,25 @@ class TestAirTicketsApi(TestCase):
         today = datetime.today()
         two_weeks_later = today + timedelta(weeks=2)
         departure_date = two_weeks_later.strftime('%Y-%m-%d')
-        print(departure_date)
 
         response = self.api.fetch_grouped_tickets(origin='MOW', destination='DXB', departure_at=departure_date)
-        print(response)
         self.assertTrue(response['success'])
         self.assertEqual(response['data'][departure_date]['origin'], expected_data['origin'])
         self.assertEqual(response['data'][departure_date]['destination'], expected_data['destination'])
+
+    def test_fetch_period_tickets(self):
+        expected_data = {
+            'origin': "MOW",
+            'destination': "DXB"
+        }
+        today = datetime.today()
+        two_weeks_later = today + timedelta(weeks=2)
+        beginning_of_period = two_weeks_later.strftime('%Y-%m-%d')
+
+        response = self.api.fetch_period_tickets(origin='MOW', destination='DXB', beginning_of_period=beginning_of_period)
+        self.assertTrue(response['success'])
+        self.assertEqual(response['data'][0]['origin'], expected_data['origin'])
+        self.assertEqual(response['data'][0]['destination'], expected_data['destination'])
 
 if __name__ == '__main__':
     main()
