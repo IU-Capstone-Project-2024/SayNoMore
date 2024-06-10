@@ -36,8 +36,8 @@ class InformationRetriever:
         self.llm = llm
         
         # Register retrievers
-        self.register_retriever("Arrival", ArrivalRetriever())
-        self.register_retriever("Return", ReturnRetriever())
+        self.register_retriever("Arrival", ArrivalRetriever(llm))
+        self.register_retriever("Return", ReturnRetriever(llm))
         self.register_retriever("Departure", DepartureRetriever(llm))
         self.register_retriever("Destination", DestinationRetriever(llm))
         self.register_retriever("Budget", BudgetRetriever(llm))
