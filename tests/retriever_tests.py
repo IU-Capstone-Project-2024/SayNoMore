@@ -38,8 +38,8 @@ class TestRetrievers(unittest.TestCase):
 
         cls.departure_retr = DepartureRetriever(cls.llm)
         cls.destination_retr = DestinationRetriever(cls.llm)
-        cls.arrival_retr = ArrivalRetriever()
-        cls.return_retr = ReturnRetriever()
+        cls.arrival_retr = ArrivalRetriever(cls.llm)
+        cls.return_retr = ReturnRetriever(cls.llm)
         cls.budget_retr = BudgetRetriever(cls.llm)
 
     def test_departure_retriever(self):
@@ -84,6 +84,35 @@ class TestRetrievers(unittest.TestCase):
             expected_budget = case["expected_budget"]
             retrieved_budget = self.budget_retr.retrieve(request).strip()
             self.assertEqual(retrieved_budget.lower(), expected_budget.lower())
+    
+    def test_arrival_time_retriever(self):
+        # TODO: Should be changed with time, when the date in request becomes obsolete
+        test_cases = [
+            {'request': 'Есть 20000 тысяч. Хочу c 1ое по 20 августа дня отдохнуть в Курске', 'expected_arrival': '1/08/2024"'},
+            {'request': 'Хочу в Калининград', 'expected_arrival': 'None"'},
+            {'request': 'Поеду в Нижний Новгород второго сентября', 'expected_arrival': '02/09/2024"'}
+        ]
+
+        for case in test_cases:
+            request = case["request"]
+            expected_arrival = case["expected_arrival"]
+            retrieved_arrival = self.arrival_retr.retrieve(request).strip()
+            self.assertEqual(retrieved_arrival.lower(), expected_arrival.lower())
+    
+    def test_return_time_retriever(self):
+        # TODO: Should be changed with time, when the date in request becomes obsolete
+        test_cases = [
+            {'request': 'Есть 20000 тысяч. Хочу c 1ое по 20 августа дня отдохнуть в Курске', 'expected_return': '20/08/2024"'},
+            {'request': 'Хочу в Калининград', 'expected_return': 'None"'},
+            {'request': 'Поеду в Нижний Новгород второго сентября. Обратно поеду 10го', 'expected_return': '10/09/2024"'}
+        ]
+
+        for case in test_cases:
+            request = case["request"]
+            expected_return = case["expected_return"]
+            retrieved_return = self.return_retr.retrieve(request).strip()
+            self.assertEqual(retrieved_return.lower(), expected_return.lower())
+
 
 if __name__ == '__main__':
     unittest.main()
