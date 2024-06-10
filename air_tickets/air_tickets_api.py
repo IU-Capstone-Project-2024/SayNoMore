@@ -1,5 +1,5 @@
 import requests
-import air_api_data
+from air_tickets import air_api_data
 
 
 class AirTicketsApi:
