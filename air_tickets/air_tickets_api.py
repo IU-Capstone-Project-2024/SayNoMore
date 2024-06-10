@@ -79,9 +79,19 @@ class AirTicketsApi:
             'token': self.api_token
         }
 
-        # Send a GET request to fetch the cheapest tickets
-        response = requests.get(self.fetch_cheapest_tickets_url, params=params)
-        return response.json()
+        try:
+            # Send a GET request to fetch the cheapest tickets
+            response = requests.get(self.fetch_cheapest_tickets_url, params=params)
+            # Check if the request was successful
+            if response.status_code != 200:
+                # Raise an exception if the response status code indicates failure
+                raise Exception(f"Failed to fetch cheapest tickets. Status code: {response.status_code}")
+            # Return the JSON content of the response
+            return response.json()
+
+        except requests.exceptions.RequestException as e:
+            # Catch any request-related exceptions (e.g., timeouts, connection errors)
+            raise Exception("There was an error making the request.") from e
 
     def fetch_grouped_tickets(self, currency='rub', origin=None, destination=None, group_by='departure_at',
                               departure_at=None, return_at=None, market='ru', direct='false', trip_duration=None):
@@ -136,9 +146,19 @@ class AirTicketsApi:
             'token': self.api_token
         }
 
-        # Send a GET request to fetch grouped tickets
-        response = requests.get(self.fetch_grouped_tickets_url, params=params)
-        return response.json()
+        try:
+            # Send a GET request to fetch grouped tickets
+            response = requests.get(self.fetch_grouped_tickets_url, params=params)
+            # Check if the request was successful
+            if response.status_code != 200:
+                # Raise an exception if the response status code indicates failure
+                raise Exception(f"Failed to fetch cheapest tickets. Status code: {response.status_code}")
+            # Return the JSON content of the response
+            return response.json()
+
+        except requests.exceptions.RequestException as e:
+            # Catch any request-related exceptions (e.g., timeouts, connection errors)
+            raise Exception("There was an error making the request.") from e
 
     def fetch_period_tickets(self, currency='rub', origin='MOW', destination=None, beginning_of_period=None,
                              period_type=None, group_by='dates', one_way='true', page=1, market='ru', limit=30,
@@ -196,6 +216,16 @@ class AirTicketsApi:
             'token': self.api_token
         }
 
-        # Send a GET request to fetch period tickets
-        response = requests.get(self.fetch_period_tickets_url, params=params)
-        return response.json()
+        try:
+            # Send a GET request to fetch period tickets
+            response = requests.get(self.fetch_period_tickets_url, params=params)
+            # Check if the request was successful
+            if response.status_code != 200:
+                # Raise an exception if the response status code indicates failure
+                raise Exception(f"Failed to fetch cheapest tickets. Status code: {response.status_code}")
+            # Return the JSON content of the response
+            return response.json()
+
+        except requests.exceptions.RequestException as e:
+            # Catch any request-related exceptions (e.g., timeouts, connection errors)
+            raise Exception("There was an error making the request.") from e
