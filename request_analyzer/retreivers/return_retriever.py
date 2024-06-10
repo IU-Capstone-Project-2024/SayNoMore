@@ -1,17 +1,16 @@
 from vllm import LLM, SamplingParams
 from datetime import datetime
 from request_analyzer.retreivers.abstract_retriever import BaseRetriever
-
+# retreive the date of the return from the destination city
 class ReturnRetriever(BaseRetriever):
     def __init__(self, llm: LLM) -> None:
         self.llm = llm
         # Setting up sampling parameters for deterministic output
         self.sampling_params = SamplingParams(temperature=0, stop="\n")
-        # Defining a prompt template to guide the model towards
-        # extracting return date
+        # Defining a prompt template to guide the model extract return date
         self.cur_day = datetime.now()
         self.prefix_prompt = \
-            '''Your task is to extract the return date from the destination city from the user's request. Examples:
+            '''Today is June 9, 2024. Sunday. Your task is to extract the return time from the destination city from the user's request. Examples:
             Q: "Планирую сгонять в Хабаровск через три недели."
             A: Return date: "None"
             
@@ -43,7 +42,7 @@ class ReturnRetriever(BaseRetriever):
             Q: "Я в Москву в с 1ое по 5ое мая"
             A: Return date: "05/05/2025"
 
-            Today is {self.cur_day.strftime('%B %d %Y')}. Your task is to extract the return date from the destination city from the user's request.
+            Today is {self.cur_day.strftime('%B %d, %Y. %A.') } Your task is to extract the return time from the destination city from the user's request.
 
             Q: "USER_REQUEST"
             A: Arrival Time: "'''
@@ -52,7 +51,7 @@ class ReturnRetriever(BaseRetriever):
         """
         Generates a response from the VLLM based
         on the user's travel request, aiming to
-        extract the arrival city.
+        extract the return date from the destination city.
 
         Args:
             request (str): The user's travel
@@ -72,5 +71,5 @@ class ReturnRetriever(BaseRetriever):
         vllm_output = self.llm.generate(prompt,
                                         self.sampling_params)
         # Extract and return the generated text as
-        # the destination city
+        # the return time from the destination city
         return vllm_output[0].outputs[0].text
