@@ -294,3 +294,51 @@ class AirTicketsApi:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
 
+    def fetch_popular_routes_from_city(self, origin=None, currency='rub'):
+        """
+        Fetch popular routes from a city based on the given parameters.
+
+        :param origin: Origin point (IATA code of the city).
+        :param currency: Currency of the ticket prices. Default is 'rub'.
+        :return: JSON response with the following structure:
+            {
+                "success": bool,  # Indicates the result of the request
+                "data": {
+                    "AER": {  # Example key for a destination; actual keys depend on available routes
+                        "origin": str,  # The origin point (IATA code of the city)
+                        "destination": str,  # The destination point (IATA code of the city)
+                        "departure_at": str,  # The departure date and time in 'YYYY-MM-DDTHH:MM:SSZ' format
+                        "return_at": str,  # The return date and time in 'YYYY-MM-DDTHH:MM:SSZ' format
+                        "number_of_changes": int,  # The number of layovers or changes in the itinerary
+                        "price": float,  # The cost of the flight in the specified currency
+                        "found_at": str,  # The time and date when the ticket was found
+                        "transfers": int,  # The number of layovers
+                        "airline": str,  # The IATA code of the airline
+                        "flight_number": int,  # The flight number
+                        "currency": str  # The currency used for pricing information
+                    },
+                  ...  # Additional routes may be included depending on the query results
+                },
+                "error": null,  # Any error messages returned by the API
+                "currency": str  # The currency used for pricing information
+            }
+        """
+        params = {
+            'origin': origin,
+            'currency': currency,
+            'token': self.api_token
+        }
+
+        try:
+            # Send a GET request to fetch popular routes from the city
+            response = requests.get(self.fetch_popular_routes_from_city_url, params=params)
+            # Check if the request was successful
+            if response.status_code != 200:
+                # Raise an exception if the response status code indicates failure
+                raise Exception(f"Failed to fetch cheapest tickets. Status code: {response.status_code}")
+            # Return the JSON content of the response
+            return response.json()
+
+        except requests.exceptions.RequestException as e:
+            # Catch any request-related exceptions (e.g., timeouts, connection errors)
+            raise Exception("There was an error making the request.") from e
