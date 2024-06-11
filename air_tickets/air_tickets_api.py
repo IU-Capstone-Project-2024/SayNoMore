@@ -229,3 +229,68 @@ class AirTicketsApi:
         except requests.exceptions.RequestException as e:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
+
+    def fetch_alternative_route_tickets(self, currency='rub', origin=None, destination=None, show_to_affiliates='false',
+                                        depart_date=None, return_date=None, distance=None, market='ru', limit=1,
+                                        flexibility=0):
+        """
+        Fetch alternative route tickets based on the given parameters.
+
+        :param currency: Currency of the ticket prices. Default is 'rub'.
+        :param origin: Origin point (IATA code or country code). Length should be between 2 and 3 characters.
+        :param destination: Destination point (IATA code or country code). Length should be between 2 and 3 characters.
+        :param show_to_affiliates: Show prices found with partner markers. Default is False.
+        :param depart_date: Departure date in 'YYYY-MM-DD' format.
+        :param return_date: Return date in 'YYYY-MM-DD' format.
+        :param distance: Distance in kilometers from origin and destination points where they search for nearby cities.
+        :param market: Data source market. Default is 'ru'.
+        :param limit: Number of output options from 1 to 20. Default is 1.
+        :param flexibility: Range extension around the specified dates. Value can be from 0 to 7.
+        :return: JSON response with the following structure:
+            {
+                "success": bool,  # Indicates whether the request was successful
+                "data": [
+                    {
+                        "origin": str,  # The origin point (city or country code)
+                        "destination": str,  # The destination point (city or country code)
+                        "depart_date": str,  # The departure date in 'YYYY-MM-DD' format
+                        "distance": int,  # The total flight distance in kilometers
+                        "duration": int,  # The total flight duration in minutes, including layovers
+                        "return_date": str,  # The return date in 'YYYY-MM-DD' format
+                        "number_of_changes": int,  # The number of layovers or changes in the itinerary
+                        "value": float,  # The cost of the flight in the specified currency
+                        "found_at": str,  # The time and date when the ticket was found
+                        "trip_class": int  # The class of service for the flight (0 for economy, 1 for business, 2 for first class)
+                    },
+                   ...
+                ]
+            }
+        """
+        params = {
+            'currency': currency,
+            'origin': origin,
+            'destination': destination,
+            'show_to_affiliates': show_to_affiliates,
+            'depart_date': depart_date,
+            'return_date': return_date,
+            'distance': distance,
+            'market': market,
+            'limit': limit,
+            'flexibility': flexibility,
+            'token': self.api_token
+        }
+
+        try:
+            # Send a GET request to fetch alternative route tickets
+            response = requests.get(self.fetch_alternative_route_tickets_url, params=params)
+            # Check if the request was successful
+            if response.status_code != 200:
+                # Raise an exception if the response status code indicates failure
+                raise Exception(f"Failed to fetch cheapest tickets. Status code: {response.status_code}")
+            # Return the JSON content of the response
+            return response.json()
+
+        except requests.exceptions.RequestException as e:
+            # Catch any request-related exceptions (e.g., timeouts, connection errors)
+            raise Exception("There was an error making the request.") from e
+
