@@ -1,5 +1,5 @@
 from vllm import LLM
-from typing import Dict
+from typing import Dict, Tuple
 
 from request_analyzer.retreivers.arrival_retriever import ArrivalRetriever
 from request_analyzer.retreivers.return_retriever import ReturnRetriever
@@ -7,7 +7,7 @@ from request_analyzer.retreivers.departure_retriever import DepartureRetriever
 from request_analyzer.retreivers.destination_retriever import DestinationRetriever
 from request_analyzer.retreivers.budget_retriever import BudgetRetriever
 from request_analyzer.retreivers.abstract_retriever import BaseRetriever
-
+from request_analyzer.request_verification import RequestVerification
 
 class InformationRetriever:
     """
@@ -34,6 +34,8 @@ class InformationRetriever:
         """
         self.retrievers = {}
         self.llm = llm
+
+        self.verifier = RequestVerification()
         
         # Register retrievers
         self.register_retriever("Arrival", ArrivalRetriever(llm))
@@ -42,8 +44,6 @@ class InformationRetriever:
         self.register_retriever("Destination", DestinationRetriever(llm))
         self.register_retriever("Budget", BudgetRetriever(llm))
         
-        # TODO: Verification classes initialization
-
     def register_retriever(self, 
                            field_name: str,
                            retriever: BaseRetriever) -> None:
@@ -58,7 +58,7 @@ class InformationRetriever:
         """
         self.retrievers[field_name] = retriever
 
-    def retrieve(self, request: str) -> Dict[str, str]:
+    def retrieve(self, request: str) -> Tuple[Dict[str, str], bool]:
         """
         Retrieves information from a user request using
         registered retrievers.
@@ -68,15 +68,25 @@ class InformationRetriever:
                 string.
 
         Returns:
-            Dict[str, str]: A dictionary mapping 
+            Tuple[Dict[str, str], bool]: 
+                Dict: A dictionary mapping 
                 field names to the retrieved 
                 information.
+                bool: True if all required
+                    fields are retrieved and
+                    retrieved correctly.
         """
         result_map = {}
-
+        is_all_fields_correct = True
         for field, retriever in self.retrievers.items():
             retrieved_data = retriever.retrieve(request)
-            # TODO: add verification of retrieved data
-            result_map[field] = retrieved_data
-        
-        return result_map
+            verification_result, status = self.verifier.verify(field,
+                                                       retrieved_data)
+            result_map[field] = f"{field} data retrieved from user's " + \
+                                f"request: {retrieved_data}. " + \
+                                verification_result
+            
+            if field != "Budget" and status != "OK":
+                is_all_fields_correct = False
+
+        return result_map, is_all_fields_correct

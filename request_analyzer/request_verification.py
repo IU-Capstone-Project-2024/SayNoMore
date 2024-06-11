@@ -1,56 +1,82 @@
-from typing import Dict
-
+from typing import Tuple
 from request_analyzer.verifiers.abstract_verif import BaseVerifier, ValueStages
 from request_analyzer.verifiers.departure_verif import DepartureVerif
 from request_analyzer.verifiers.destination_verif import DestinationVerif
 
 class RequestVerification:
+    """
+    A class to manage and utilize different
+    verifiers for validating specific pieces
+    of information extracted from user requests.
+
+    Attributes:
+        verifiers (Dict[str, BaseVerifier]): A 
+            dictionary mapping field names to 
+            their corresponding verifier instances.
+    """
+
     def __init__(self) -> None:
+        """
+        Initializes the RequestVerification 
+        instance and registers default verifiers.
+
+        Note:
+            Additional verifiers can be registered 
+            dynamically using the register_verifier method.
+        """
         self.verifiers = {}
 
         # Register verifiers
+        # Example commented-out registrations for future expansion
         # self.register_verifier("Arrival", ArrivalVerif())
         # self.register_verifier("Return", ReturnVerif())
         self.register_verifier("Departure", DepartureVerif())
         self.register_verifier("Destination", DestinationVerif())
         # self.register_verifier("Budget", BudgetVerif())
         
-        # TODO: Verification classes initialization
+        # Placeholder for future implementation of verification classes initialization
 
-    
-    def register_verifier(self, 
-                          field_name: str,
-                          verifier: BaseVerifier) -> None:
+    def register_verifier(self, field_name: str, verifier: BaseVerifier) -> None:
         """
         Registers a verifier for a specific field.
 
         Args:
-            field_name (str): The name of the field the 
-                verifier is responsible for.
+            field_name (str): The name of the 
+                field the verifier is responsible
+                for.
             verifier (BaseVerifier): The verifier 
                 instance.
         """
         self.verifiers[field_name] = verifier
 
-    def verify(self, request: str) -> Dict[str, str]:
+    def verify(self, field: str, retrieved_data: str) -> Tuple[str, str]:
         """
-        Retrieves information from a user request using
-        registered retrievers.
+        Performs verification on a specific field 
+        of a user request using the registered verifier.
 
         Args:
-            request (str): The user's request as a 
-                string.
+            field (str): The name of the field to verify.
+            request (str): Retrieved data as a string
+                           from user's request.
 
         Returns:
-            Dict[str, str]: A dictionary mapping 
-                field names to the retrieved 
-                information.
+            Tuple[str, str]: 
+                str: A formatted string containing 
+                the verification status and description.
+                str repr. of ValueStages: The status of the verification
+                on that specific filed (eg. ValueStages.OK.name, which is "OK")
         """
-        result_map = {}
+        # Retrieve the verifier associated with the
+        # specified field
+        verifier = self.verifiers.get(field)
+        if not verifier:
+            raise ValueError(f"No verifier registered for field '{field}'")
 
-        for field, verif in self.verifiers.items():
-            status, str_description = verif.verify(request)
-            result_map[field] = f"Verification status: {status.name};" + \
-                                f"Description: {str_description}"
-    
-        return result_map
+        # Perform verification using 
+        # the selected verifier
+        status, str_description = verifier.verify(retrieved_data)
+
+        # Format and return the 
+        # verification result
+        return (f"Verification status: {status.name}; Description: {str_description}",
+                status.name)
