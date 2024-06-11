@@ -89,5 +89,5 @@ class DestinationRetriever(BaseRetriever):
         extracted_city = vllm_output[0].outputs[0].text
         if not extracted_city == 'None':
             found_russian_city = self.searcher.search_city(extracted_city)
-            return found_russian_city
+            return found_russian_city[0][0]
         return extracted_city
