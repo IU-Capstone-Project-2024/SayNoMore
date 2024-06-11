@@ -14,7 +14,7 @@ class ArrivalRetriever(BaseRetriever):
         self.llm = llm
         # Setting up sampling parameters for deterministic output
         self.sampling_params = SamplingParams(temperature=0, stop='"')
-        # Defining a prompt template to guide the model extract arrival cities from the user input
+        # Defining a prompt template to guide the model extract arrival time from the user input
         self.cur_day = datetime.now()
         self.prefix_prompt = \
             '''Today is June 9, 2024. Sunday. Your task is to extract the arrival time to the destination city from the user's request. Examples:
@@ -71,5 +71,5 @@ class ArrivalRetriever(BaseRetriever):
         vllm_output = self.llm.generate(prompt,
                                         self.sampling_params)
         # Extract and return the generated text as
-        # the arrival city
+        # the arrival time
         return vllm_output[0].outputs[0].text
