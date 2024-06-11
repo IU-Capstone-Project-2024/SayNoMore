@@ -5,4 +5,4 @@ fetch_grouped_tickets_url = "https://api.travelpayouts.com/aviasales/v3/grouped_
 fetch_period_tickets_url = "http://api.travelpayouts.com/aviasales/v3/get_latest_prices"
 fetch_alternative_route_tickets_url = "http://api.travelpayouts.com/v2/prices/nearest-places-matrix"
 fetch_popular_routes_from_city_url = "http://api.travelpayouts.com/v1/city-directions"
-fetch_airline_logos_url = "http://pics.avs.io/width/height/iata.png"
+fetch_airline_logos_url_base = "http://pics.avs.io/"
