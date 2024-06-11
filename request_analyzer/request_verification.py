@@ -1,4 +1,5 @@
 from typing import Tuple
+from request_analyzer.request_fields_enum import RequestField
 from request_analyzer.verifiers.abstract_verif import BaseVerifier, ValueStages
 from request_analyzer.verifiers.departure_verif import DepartureVerif
 from request_analyzer.verifiers.destination_verif import DestinationVerif
@@ -28,34 +29,33 @@ class RequestVerification:
 
         # Register verifiers
         # Example commented-out registrations for future expansion
-        # self.register_verifier("Arrival", ArrivalVerif())
-        # self.register_verifier("Return", ReturnVerif())
-        self.register_verifier("Departure", DepartureVerif())
-        self.register_verifier("Destination", DestinationVerif())
-        # self.register_verifier("Budget", BudgetVerif())
+        # self.register_verifier(RequestField.Arrival, ArrivalVerif())
+        # self.register_verifier(RequestField.Return, ReturnVerif())
+        self.register_verifier(RequestField.Departure, DepartureVerif())
+        self.register_verifier(RequestField.Destination, DestinationVerif())
+        # self.register_verifier(RequestField.Budget, BudgetVerif())
         
         # Placeholder for future implementation of verification classes initialization
 
-    def register_verifier(self, field_name: str, verifier: BaseVerifier) -> None:
+    def register_verifier(self, field: RequestField, verifier: BaseVerifier) -> None:
         """
         Registers a verifier for a specific field.
 
         Args:
-            field_name (str): The name of the 
-                field the verifier is responsible
-                for.
+            field (RequestField): The enum of field the
+                verifier is responsible for.
             verifier (BaseVerifier): The verifier 
                 instance.
         """
-        self.verifiers[field_name] = verifier
+        self.verifiers[field] = verifier
 
-    def verify(self, field: str, retrieved_data: str) -> Tuple[str, str]:
+    def verify(self, field: RequestField, retrieved_data: str) -> Tuple[str, str]:
         """
         Performs verification on a specific field 
         of a user request using the registered verifier.
 
         Args:
-            field (str): The name of the field to verify.
+            field (RequestField): The enum of the field to verify.
             request (str): Retrieved data as a string
                            from user's request.
 
@@ -70,7 +70,7 @@ class RequestVerification:
         # specified field
         verifier = self.verifiers.get(field)
         if not verifier:
-            raise ValueError(f"No verifier registered for field '{field}'")
+            raise ValueError(f"No verifier registered for field '{field.name}'")
 
         # Perform verification using 
         # the selected verifier

@@ -1,6 +1,7 @@
 from vllm import LLM
 from typing import Dict, Tuple
 
+from request_analyzer.request_fields_enum import RequestField
 from request_analyzer.retreivers.arrival_retriever import ArrivalRetriever
 from request_analyzer.retreivers.return_retriever import ReturnRetriever
 from request_analyzer.retreivers.departure_retriever import DepartureRetriever
@@ -38,11 +39,11 @@ class InformationRetriever:
         self.verifier = RequestVerification()
         
         # Register retrievers
-        self.register_retriever("Arrival", ArrivalRetriever(llm))
-        self.register_retriever("Return", ReturnRetriever(llm))
-        self.register_retriever("Departure", DepartureRetriever(llm))
-        self.register_retriever("Destination", DestinationRetriever(llm))
-        self.register_retriever("Budget", BudgetRetriever(llm))
+        self.register_retriever(RequestField.Arrival, ArrivalRetriever(llm))
+        self.register_retriever(RequestField.Return, ReturnRetriever(llm))
+        self.register_retriever(RequestField.Departure, DepartureRetriever(llm))
+        self.register_retriever(RequestField.Destination, DestinationRetriever(llm))
+        self.register_retriever(RequestField.Budget, BudgetRetriever(llm))
         
     def register_retriever(self, 
                            field_name: str,
@@ -86,7 +87,7 @@ class InformationRetriever:
                                 f"request: {retrieved_data}. " + \
                                 verification_result
             
-            if field != "Budget" and status != "OK":
+            if field.is_required and status != "OK":
                 is_all_fields_correct = False
 
         return result_map, is_all_fields_correct
