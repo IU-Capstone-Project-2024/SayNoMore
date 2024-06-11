@@ -74,5 +74,11 @@ class TestAirTicketsApi(TestCase):
         assert 'prices' in response, "'prices' key not found in the response."
         assert len(response['prices']) > 0, "No prices found in the response."
 
+    def test_fetch_popular_routes_from_city(self):
+        response = self.api.fetch_popular_routes_from_city(origin='MOW')
+        # Assert that the response indicates success
+        self.assertTrue(response['success'])
+
+
 if __name__ == '__main__':
     main()
