@@ -1,5 +1,6 @@
 import requests
 from air_tickets import air_api_data
+import os
 
 
 class AirTicketsApi:
@@ -17,7 +18,7 @@ class AirTicketsApi:
         self.fetch_period_tickets_url = air_api_data.fetch_period_tickets_url
         self.fetch_alternative_route_tickets_url = air_api_data.fetch_alternative_route_tickets_url
         self.fetch_popular_routes_from_city_url = air_api_data.fetch_popular_routes_from_city_url
-        self.fetch_airline_logos_url = air_api_data.fetch_airline_logos_url
+        self.fetch_airline_logos_url_base = air_api_data.fetch_airline_logos_url_base
 
     def fetch_cheapest_tickets(self, origin=None, destination=None, currency='rub', departure_at=None, return_at=None,
                                one_way='true', direct='false', market='ru', limit=30, page=1, sorting='price',
@@ -342,3 +343,33 @@ class AirTicketsApi:
         except requests.exceptions.RequestException as e:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
+
+    def fetch_airline_logo(self, iata_code, height=100, width=100):
+        """
+        Fetches the logo for a single airline based on its IATA code and saves it as a.png file.
+
+        :param iata_code: IATA code of the airline whose logo needs to be fetched.
+        :param height: Desired height of the logo in pixels.
+        :param width: Desired width of the logo in pixels.
+        :return: None
+        """
+
+        logo_directory = "airline_logos"
+        os.makedirs(logo_directory, exist_ok=True)  # Ensure the directory exists
+
+        # Construct the URL for the airline logo using the base URL, IATA code, and dimensions
+        logo_url = f"{self.fetch_airline_logos_url_base}{width}/{height}/{iata_code}.png"
+        # Define the local path for saving the logo
+        logo_path = os.path.join(logo_directory, f"{iata_code}.png")
+
+        # Attempt to fetch the logo
+        try:
+            response = requests.get(logo_url)
+            # If the request is successful, save the logo to the local directory
+            if response.status_code == 200:
+                with open(logo_path, 'wb') as file:
+                    file.write(response.content)
+            else:
+                raise Exception(f"Failed to fetch cheapest tickets. Status code: {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Failed to fetch logo for {iata_code}: {str(e)}")
