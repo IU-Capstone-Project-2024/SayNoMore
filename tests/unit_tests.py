@@ -68,6 +68,11 @@ class TestAirTicketsApi(TestCase):
         self.assertEqual(response['data'][0]['origin'], expected_data['origin'])
         self.assertEqual(response['data'][0]['destination'], expected_data['destination'])
 
+    def test_fetch_alternative_route_tickets(self):
+        response = self.api.fetch_alternative_route_tickets(origin='OVB', destination='LED')
+        # Check if 'prices' key exists in the response and contains at least one item
+        assert 'prices' in response, "'prices' key not found in the response."
+        assert len(response['prices']) > 0, "No prices found in the response."
 
 if __name__ == '__main__':
     main()
