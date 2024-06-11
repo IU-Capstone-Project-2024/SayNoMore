@@ -32,7 +32,7 @@ class BudgetRetriever(BaseRetriever):
         # Setting up sampling parameters for deterministic
         #  output
         self.sampling_params = SamplingParams(temperature=0,
-                                              stop="\n")
+                                              stop='"')
         # Defining a prompt template to guide the model towards
         #  extracting the user's budget
         self.prefix_prompt = \

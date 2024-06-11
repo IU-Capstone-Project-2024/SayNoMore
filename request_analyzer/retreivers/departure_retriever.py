@@ -1,5 +1,6 @@
 from vllm import LLM, SamplingParams
 from request_analyzer.retreivers.abstract_retriever import BaseRetriever
+from request_analyzer.utils.embedding_city_search import EmbeddingCitySearch
 
 class DepartureRetriever(BaseRetriever):
     """
@@ -19,21 +20,25 @@ class DepartureRetriever(BaseRetriever):
                    departure cities from user requests.
     """
 
-    def __init__(self, llm: LLM) -> None:
+    def __init__(self, llm: LLM, searcher: EmbeddingCitySearch) -> None:
         """
-        Initializes the DepartureRetriever with a given VLLM
-        instance and sets up default sampling parameters and 
-        a prompt template.
+        Initializes the DepartureRetriever with
+        a given VLLM instance and sets up default 
+        sampling parameters and a prompt template.
 
         Args:
-            llm (LLM): The VLLM instance to be used for text
-                       generation.
+            llm (LLM): The VLLM instance to be used
+                       for text generation.
+            searcher (EmbeddingCitySearch): Class, to
+                       search for all Russian cities 
+                       to ignore grammatical errors 
+                       entered by the user
         """
         self.llm = llm
         # Setting up sampling parameters for deterministic 
         # output
         self.sampling_params = SamplingParams(temperature=0,
-                                              stop="\n")
+                                              stop='"')
         # Defining a prompt template to guide the model towards
         # extracting departure cities
         self.prefix_prompt = \
@@ -58,6 +63,8 @@ class DepartureRetriever(BaseRetriever):
 
         Q: "USER_REQUEST"
         A: Departure: "'''
+
+        self.searcher = searcher
 
     def retrieve(self, request: str) -> str:
         """
@@ -84,4 +91,8 @@ class DepartureRetriever(BaseRetriever):
                                         self.sampling_params)
         # Extract and return the generated text as 
         # the departure city
-        return vllm_output[0].outputs[0].text
+        extracted_city = vllm_output[0].outputs[0].text
+        if not extracted_city == "None":
+            found_russian_city = self.searcher.search_city(extracted_city)
+            return found_russian_city
+        return extracted_city
