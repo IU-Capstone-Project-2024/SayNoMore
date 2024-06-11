@@ -1,6 +1,7 @@
 from unittest import TestCase, main
 from air_tickets.air_tickets_api import AirTicketsApi
 from datetime import datetime, timedelta
+import os
 
 
 # Define a class that inherits from TestCase to create unit tests for the AirTicketsApi
@@ -79,6 +80,18 @@ class TestAirTicketsApi(TestCase):
         # Assert that the response indicates success
         self.assertTrue(response['success'])
 
+    def test_fetch_airline_logo(self):
+        iata_code = 'UN'
+        file_path = f'airline_logos/{iata_code}.png'
+        # Check if the file exists
+        if os.path.exists(file_path):
+            # Delete the file
+            os.remove(file_path)
+        self.assertFalse(os.path.exists(file_path))
+        # check api
+        self.api.fetch_airline_logo(f'{iata_code}')
+        # check for logo existence
+        self.assertTrue(os.path.exists(file_path))
 
 if __name__ == '__main__':
     main()
