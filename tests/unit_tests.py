@@ -115,6 +115,17 @@ class TestAirTicketsApi(TestCase):
         response = self.hotel_api.fetch_hotel_prices(location=location, checkIn=check_In, checkOut=check_Out)
         self.assertTrue(response[0]['locationId'])
 
+    def test_fetch_hotel_collections(self):
+        id = 12209
+        today = datetime.today()
+        two_weeks_later = today + timedelta(weeks=2)
+        three_weeks_later = today + timedelta(weeks=3)
+        # Format the departure date as a string in YYYY-MM-DD format
+        check_in = two_weeks_later.strftime('%Y-%m-%d')
+        check_out = three_weeks_later.strftime('%Y-%m-%d')
+        response = self.hotel_api.fetch_hotel_collections(id=id, check_in=check_in, check_out=check_out)
+        self.assertTrue(response['popularity'])
+
 
 if __name__ == '__main__':
     main()
