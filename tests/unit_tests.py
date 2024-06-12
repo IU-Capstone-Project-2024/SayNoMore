@@ -103,5 +103,18 @@ class TestAirTicketsApi(TestCase):
         response = self.hotel_api.search_hotel_or_location(query=query)
         self.assertEqual(response['status'], expected_data['status'])
 
+    def test_fetch_hotel_prices(self):
+        location='moscow'
+        # Get today's date and calculate the date two weeks later
+        today = datetime.today()
+        two_weeks_later = today + timedelta(weeks=2)
+        three_weeks_later = today + timedelta(weeks=3)
+        # Format the departure date as a string in YYYY-MM-DD format
+        check_In = two_weeks_later.strftime('%Y-%m-%d')
+        check_Out = three_weeks_later.strftime('%Y-%m-%d')
+        response = self.hotel_api.fetch_hotel_prices(location=location, checkIn=check_In, checkOut=check_Out)
+        self.assertTrue(response[0]['locationId'])
+
+
 if __name__ == '__main__':
     main()
