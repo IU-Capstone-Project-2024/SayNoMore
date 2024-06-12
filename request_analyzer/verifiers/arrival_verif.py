@@ -46,7 +46,7 @@ class Arrivalverif(BaseVerifier):
 
     def verify(self, retrieved_value: str) -> Tuple[ValueStages, str]:
         """
-        Verifies the retrieved destination value
+        Verifies the retrieved arrival time
         against predefined criteria.
 
         Args:
@@ -57,14 +57,14 @@ class Arrivalverif(BaseVerifier):
             Tuple[ValueStages, str]: A tuple containing
                 the verification status and a descriptive
                 message.
-                        - The first element indicates whether
-                        the verification passed (ValueStages.OK)
-                        or failed (ValueStages.FIELD_NOT_FOUND)
-                        or incorrect data entered (ValueStages.INCORRECT_VALUE).
+                    - The first element indicates whether
+                    the verification passed (ValueStages.OK)
+                    or failed (ValueStages.FIELD_NOT_FOUND)
+                    or incorrect data entered (ValueStages.INCORRECT_VALUE).
 
-                        - The second element is a human-readable
-                        message describing the outcome of the
-                        verification. Will be used by LLM.
+                    - The second element is a human-readable
+                    message describing the outcome of the
+                    verification. Will be used by LLM.
         """
         # Check if the retrieved value indicates that the
         # arrival field was not provided
