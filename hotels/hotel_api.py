@@ -31,19 +31,23 @@ class HotelApi:
         Returns:
             A dictionary containing the search results. The structure includes:
             - 'locations': A list of location objects. Each object contains:
+                - 'cityName': Name of the city.
+                - 'fullName': Full name of the city and its country.
+                - 'countryCode': Country code.
+                - 'countryName': Name of the country.
+                - 'iata': IATA airport codes for airports in the city, may include multiple codes.
                 - 'id': ID of the location in the database.
-                - 'type': Type of the location (e.g., City, Island).
-                - 'countryIso': ISO code of the country.
-                - 'name': Name of the location.
-                - 'state': State code, if applicable.
-                - 'fullname': Full name of the location including the country name.
-                - 'geo': Geographical coordinates of the location.
+                - 'hotelsCount': Number of hotels in the location.
+                - 'location': Geographical coordinates of the location.
                     - 'lat': Latitude.
                     - 'lon': Longitude.
+                - '_score': Internal parameter used for sorting.
             - 'hotels': A list of hotel objects. Each object contains:
-                - 'id': ID of the hotel in the database.
-                - 'name': Name of the hotel.
+                - 'label': Name of the hotel.
+                - 'locationName': Location of the hotel.
                 - 'locationId': ID of the location where the hotel is located.
+                - 'id': ID of the hotel in the database.
+                - 'fullName': Full name of the hotel with its location.
                 - 'location': Geographical coordinates of the hotel.
                     - 'lat': Latitude.
                     - 'lon': Longitude.
@@ -71,3 +75,67 @@ class HotelApi:
         except requests.exceptions.RequestException as e:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
+
+    def fetch_hotel_prices(self, location, checkIn, checkOut, locationId=None, hotelId=None, hotel=None,
+                           adults=2, limit=4, customerIp=None, currency='USD'):
+        """
+        Fetches hotel prices based on the provided parameters.
+
+        Parameters:
+        - location: Name of the location (can use IATA code).
+        - checkIn: Check-in date.
+        - checkOut: Check-out date.
+        - locationId: ID of the location (can be used instead of location).
+        - hotelId: ID of the hotel.
+        - hotel: Name of the hotel (must specify location or locationId when using this).
+        - adults: Number of guests (default is 2).
+        - limit: Number of hotels to return. Default is 4.
+        - customerIp: IP address of the user for non-direct requests through server proxy.
+        - currency: Currency of the response.
+        - token: Your partner token.
+
+        Returns:
+            A dictionary containing the hotel price information. The structure includes:
+            - 'stars': Number of stars.
+            - 'locationId': ID of the location of the hotel.
+            - 'priceFrom': Minimum price for staying at the hotel room during the specified period.
+            - 'priceAvg': Average price for staying at the hotel room during the specified period.
+            - 'pricePercentile': Price distribution by percentages.
+            - 'hotelName': Name of the hotel.
+            - 'location': Information about the hotel location.
+                - 'geo': Coordinates of the location (city).
+                - 'name': Name of the location (city).
+                - 'state': State where the city is located.
+                - 'country': Country of the hotel.
+            - 'hotelId': ID of the hotel.
+        """
+        # Constructing the query string
+        params = {
+            'location': location,
+            'checkIn': checkIn,
+            'checkOut': checkOut,
+            'locationId': locationId,
+            'hotelId': hotelId,
+            'hotel': hotel,
+            'adults': adults,
+            'limit': limit,
+            'customerIp': customerIp,
+            'currency': currency,
+            'token': self.api_token
+        }
+
+        try:
+            # Making the GET request
+            response = requests.get(self.fetch_hotel_prices_url, params=params)
+            # Check if the request was successful
+            if response.status_code != 200:
+                # Raise an exception if the response status code indicates failure
+                raise Exception(f"Failed to fetch hotel prices. Status code: {response.status_code}")
+            # Return the JSON content of the response
+            return response.json()
+
+        except requests.exceptions.RequestException as e:
+            # Catch any request-related exceptions (e.g., timeouts, connection errors)
+            raise Exception("There was an error making the request.") from e
+
+
