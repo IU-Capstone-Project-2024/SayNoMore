@@ -26,7 +26,7 @@ def is_valid_date(retrieved_value: str):
         return False
 
 
-class Arrivalverif(BaseVerifier):
+class ArrivalVerif(BaseVerifier):
     '''
     A verifier class specifically designed
     to validate the retrieved arrival time
