@@ -2,10 +2,12 @@ import requests
 from hotels import hotel_api_data
 import os
 
+
 class HotelApi:
     """
     This class with all hotel requests
     """
+
     def __init__(self):
         self.api_token = hotel_api_data.api_token
 
@@ -59,7 +61,7 @@ class HotelApi:
             'lookFor': lookFor,
             'limit': limit,
             'convertCase': convertCase,
-            'token' : self.api_token
+            'token': self.api_token
         }
 
         try:
@@ -138,4 +140,65 @@ class HotelApi:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
 
+    def fetch_hotel_collections(self, check_in, check_out, id, currency='rub', language='en', limit=10, type='popularity'):
+        """
+        Fetches collections of hotels based on the provided parameters.
 
+        Parameters:
+        - check_in: Check-in date.
+        - check_out: Check-out date.
+        - currency: Currency of the response.
+        - language: Language of the response.
+        - limit: Limit on the number of hotels to return.
+        - type: Types of hotels (refer to /tp/public/available_selections.json for options).
+        - id: ID of the city (from the Cities request).
+
+        Returns:
+            A dictionary containing the hotel collection information. The structure includes:
+            - 'hotel_id': Unique ID of the hotel.
+            - 'distance': Distance from the hotel to the city center.
+            - 'name': Name of the hotel.
+            - 'stars': Number of stars.
+            - 'rating': Rating of the hotel among visitors.
+            - 'property_type': Type of the hotel (e.g., apartment, hotel, hostel).
+            - 'hotel_type': Description of the hotel type.
+            - 'last_price_info': Information about the last found price of the hotel (may not exist).
+            - 'price': Cost of stay for the entire period with discount.
+            - 'old_price': Cost of stay found before the discount.
+            - 'discount': Discount size.
+            - 'insertion_time': Time when the collection was found.
+            - 'nights': Number of nights.
+            - 'search_params': Search parameters:
+                - 'adults': Number of adults.
+                - 'children': Number of children.
+                - 'checkIn': Check-in date.
+                - 'checkOut': Check-out date.
+                - 'price_pn': Cost per night in the hotel with discount.
+                - 'old_price_pn': Cost per night in the hotel before the discount.
+                - 'has_wifi': Availability of Wi-Fi in the hotel.
+        """
+        # Constructing the query string
+        params = {
+            'check_in': check_in,
+            'check_out': check_out,
+            'currency': currency,
+            'language': language,
+            'limit': limit,
+            'type': type,
+            'id': id,
+            'token': self.api_token
+        }
+
+        try:
+            # Making the GET request
+            response = requests.get(self.fetch_hotel_collections_url, params=params)
+            # Check if the request was successful
+            if response.status_code != 200:
+                # Raise an exception if the response status code indicates failure
+                raise Exception(f"Failed to fetch hotel collections. Status code: {response.status_code}")
+            # Return the JSON content of the response
+            return response.json()
+
+        except requests.exceptions.RequestException as e:
+            # Catch any request-related exceptions (e.g., timeouts, connection errors)
+            raise Exception("There was an error making the request.") from e
