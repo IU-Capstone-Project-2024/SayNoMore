@@ -140,7 +140,8 @@ class HotelApi:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
 
-    def fetch_hotel_collections(self, check_in, check_out, id, currency='rub', language='en', limit=10, type='popularity'):
+    def fetch_hotel_collections(self, check_in, check_out, id, currency='rub', language='en', limit=10,
+                                type='popularity'):
         """
         Fetches collections of hotels based on the provided parameters.
 
@@ -196,6 +197,51 @@ class HotelApi:
             if response.status_code != 200:
                 # Raise an exception if the response status code indicates failure
                 raise Exception(f"Failed to fetch hotel collections. Status code: {response.status_code}")
+            # Return the JSON content of the response
+            return response.json()
+
+        except requests.exceptions.RequestException as e:
+            # Catch any request-related exceptions (e.g., timeouts, connection errors)
+            raise Exception("There was an error making the request.") from e
+
+    def fetch_hotel_collection_types(self, city_id):
+        """
+        The request recovers the list of all available separate collections.
+        This type is used to search for hotels with a discount.
+
+        Parameters:
+        - city_id: ID of the city.
+
+        Returns:
+            A dictionary containing the hotel collection types information. The structure includes:
+            - 'center': Hotels located in the center of a city.
+            - 'tophotels': Best hotels.
+            - 'highprice': Most expensive hotels.
+            - '3-stars', '4-stars', '5-stars': Automatic searching of hotels with 3, 4, or 5 stars.
+            - 'restaurant': Availability of the hotel's own restaurant.
+            - 'pets': Opportunity to live with pets.
+            - 'pool': Availability of the hotel's own pool.
+            - 'cheaphotel': Cheapest hotels.
+            - 'luxury': Luxury hotels.
+            - 'price': Manually formed collections by price.
+            - 'rating': Hotels with the highest rating.
+            - 'distance': Distance from an airport.
+            - 'popularity': Popularity of a hotel.
+            - '2stars', '3stars', '4stars', '5stars': Manually formed collections with the corresponding number of stars.
+        """
+        # Constructing the query string
+        params = {
+            'id': city_id,
+            'token': self.api_token
+        }
+
+        try:
+            # Making the GET request
+            response = requests.get(self.fetch_hotel_collection_types_url, params=params)
+            # Check if the request was successful
+            if response.status_code != 200:
+                # Raise an exception if the response status code indicates failure
+                raise Exception(f"Failed to fetch hotel collection types. Status code: {response.status_code}")
             # Return the JSON content of the response
             return response.json()
 
