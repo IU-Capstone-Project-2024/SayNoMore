@@ -1,33 +1,39 @@
-# import required libraries
 from typing import Tuple
-from SayNoMore.request_analyzer.verifiers.abstract_verifier import ValueStages, BaseVerifier
+from request_analyzer.verifiers.abstract_verif import ValueStages, BaseVerifier
 from datetime import datetime
+import re
 
 
-# function to check validity of the data
+# Check is date follows expected format or not
+def check_date(retreived_value: str):
+    # create regexp for expected format
+    right_data_format = '^\d\d/\d\d/\d\d\d\d'
+    # check if parsed date follows required format
+    if re.match(right_data_format, retreived_value):
+        return True
+    else:
+        return "Wrong date format."
+
+
 def is_valid_date(retrieved_value: str):
     # Attempt to parse the string according
     # to the format specified in the
     # arrival_retriever
-    try:
-        # parse retrieved string
-        # to the datetime information
-        arr_time = datetime.strptime(retrieved_value, '%d/%m/%Y')
-        # check current date
-        present_time = datetime.now()
-        # If the user time is not outdated
-        # then it is valid
-        # else it is outdated
-        if arr_time >= present_time:
-            return True
-        else:
-            return False
-    # if we cannot parse the data
-    except ValueError:
-        return False
+    # parse retrieved string
+    # to the datetime
+    arr_time = datetime.strptime(retrieved_value, '%d/%m/%Y')
+    # check current date
+    present_time = datetime.now()
+    # If the user time is not outdated
+    # then it is valid
+    # else it is outdated
+    if arr_time >= present_time:
+        return True
+    else:
+        return "Date is outdated."
 
 
-class ArrivalVerifier(BaseVerifier):
+class ArrivalVerif(BaseVerifier):
     '''
     A verifier class specifically designed
     to validate the retrieved arrival time
@@ -47,7 +53,7 @@ class ArrivalVerifier(BaseVerifier):
 
     def verify(self, retrieved_value: str) -> Tuple[ValueStages, str]:
         """
-        Verifies the retrieved arrival time
+        Verifies the retrieved arrival date
         against predefined criteria.
 
         Args:
@@ -71,11 +77,17 @@ class ArrivalVerifier(BaseVerifier):
         # arrival field was not provided
         if retrieved_value == 'None':
             return (ValueStages.FIELD_NOT_FOUND,
-                    "The user has not entered this field")
+                    "The user has not entered this field.")
         # check if something wrong with the time
-        # (outdated or worng format)
-        if not is_valid_date(retrieved_value):
+        # (outdated or wrong format)
+
+        if check_date(retrieved_value) == "Wrong date format.":
             return (ValueStages.INCORRECT_VALUE,
-                    "The user entered wrong arrival time")
+                    "The user entered wrong date format.")
+
+        if is_valid_date(retrieved_value) == "Date is outdated.":
+            return (ValueStages.INCORRECT_VALUE,
+                    "The user entered outdated date.")
         # Return ok if everything is fine
-        return (ValueStages.OK, "Everything is good")
+        return (ValueStages.OK,
+                "Everething is good.")
