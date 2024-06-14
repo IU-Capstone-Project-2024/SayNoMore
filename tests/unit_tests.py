@@ -141,7 +141,7 @@ class TestAirTicketsApi(TestCase):
 
     def test_fetch_hotel_photos(self):
         id = '4'
-        file_path = f'hotelPhotos/4'
+        file_path = f'hotelPhotos/4/photo1.avif'
         # Check if the file exists
         if os.path.exists(file_path):
             # Delete the file
@@ -149,7 +149,19 @@ class TestAirTicketsApi(TestCase):
         self.assertFalse(os.path.exists(file_path))
         # check api
         self.hotel_api.fetch_hotel_photos(id)
-        file_path += '/photo1.avif'
+        # check for logo existence
+        self.assertTrue(os.path.exists(file_path))
+
+    def test_fetch_city_photo(self):
+        iata_code = 'MOW'
+        file_path = f'cityPhotos/{iata_code}.png'
+        # Check if the file exists
+        if os.path.exists(file_path):
+            # Delete the file
+            os.remove(file_path)
+        self.assertFalse(os.path.exists(file_path))
+        # check api
+        self.hotel_api.fetch_city_photo(iata_code)
         # check for logo existence
         self.assertTrue(os.path.exists(file_path))
 
