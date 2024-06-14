@@ -78,4 +78,4 @@ class ArrivalVerif(BaseVerifier):
                     "The user entered wrong arrival time")
         # Return ok if everything is fine
         return  (ValueStages.OK,
-                 "Everething is good")
+                 "Everything is good")
