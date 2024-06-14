@@ -1,4 +1,3 @@
-from request_analyzer.verifiers.abstract_verifier import BaseVerifier
 from request_analyzer.request_fields_enum import RequestField
 from request_analyzer.verifiers.abstract_verifier import ValueStages
 from datetime import datetime
