@@ -18,6 +18,8 @@ class HotelApi:
         self.fetch_room_types_url = hotel_api_data.fetch_room_types_url
         self.fetch_hotel_types_url = hotel_api_data.fetch_hotel_types_url
         self.fetch_hotel_photos_base_url = hotel_api_data.fetch_hotel_photos_base_url
+        self.fetch_city_photos_base_url = hotel_api_data.fetch_city_hotel_base_url
+        self.photos_dir = "hotelPhotos"
 
     def search_hotel_or_location(self, query, lang='en', lookFor='both', limit=10, convertCase=1):
         """
@@ -310,3 +312,46 @@ class HotelApi:
         except requests.exceptions.RequestException as e:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
+
+    def fetch_and_save_photo(self, url, hotel_id, photo_index):
+        """Fetches and saves a photo given its URL."""
+        response = requests.get(url)
+        if response.status_code == 200:
+            dir_path = os.path.join(self.photos_dir, str(hotel_id))
+            file_path = os.path.join(dir_path, f"photo{photo_index}.avif")
+            if not os.path.exists(dir_path):
+                os.makedirs(dir_path, exist_ok=True)
+            with open(file_path, 'wb') as file:
+                file.write(response.content)
+        else:
+            print(f"Failed to fetch photo from {url} for hotel {hotel_id}.")
+
+    def fetch_hotel_photos(self, hotel_ids, width=800, height=520):
+        """
+        Fetches photos for specified hotels and saves them locally.
+
+        Parameters:
+        - hotel_ids: Comma-separated string of hotel IDs.
+
+        Returns:
+        None
+        """
+        # Splitting hotel_ids into a list
+        hotel_id_list = hotel_ids.split(',')
+
+        params = {
+            'id' : hotel_ids,
+            'token' : self.api_token
+        }
+        # First, fetching photo IDs for each hotel
+        photo_ids_response = requests.get(self.fetch_hotel_photos_base_url, params=params)
+        if photo_ids_response.status_code == 200:
+            photo_ids_data = photo_ids_response.json()
+            for hotel_id, photo_ids in photo_ids_data.items():
+                for i, photo_id in enumerate(photo_ids, start=1):
+                    # Constructing the photo URL
+                    photo_url = f"https://photo.hotellook.com/image_v2/limit/{photo_id}/{width}/{height}.auto"
+                    # Saving the photo
+                    self.fetch_and_save_photo(photo_url, int(hotel_id), i)
+        else:
+            raise Exception(f"Failed to fetch photo IDs. Status code: {photo_ids_response.status_code}")
