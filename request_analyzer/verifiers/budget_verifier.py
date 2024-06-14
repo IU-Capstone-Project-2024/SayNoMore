@@ -1,8 +1,8 @@
 from typing import Tuple
-from SayNoMore.request_analyzer.verifiers.abstract_verifier import BaseVerifier, ValueStages
+from request_analyzer.verifiers.abstract_verif import BaseVerifier, ValueStages
 
 
-class BudgetVerifier(BaseVerifier):
+class BudgetVerif(BaseVerifier):
     '''
     A verifier class specifically designed
     to validate the retrieved budget information
@@ -44,11 +44,14 @@ class BudgetVerifier(BaseVerifier):
                     "The user has not entered this field")
         # Check if the budget is invalid
         # (not a digit or < 0)
-        # isdigit() set False to strings like -5, -4, etc, so 2nd check
-        # is not necessary
-        retrieved_budget = retrieved_value.replace(" ", "")
-        if not retrieved_budget.isdigit():
+        try:
+            budget = int(retrieved_value)
+            if budget < 0:
+                return (ValueStages.INCORRECT_VALUE,
+                        "Negative amount of budget is not available.")
+        except ValueError:
             return (ValueStages.INCORRECT_VALUE,
-                    "The user has entered wrong budget")
+                    "Can not parse the budget")
         # everything is fine
-        return (ValueStages.OK, "Everything is good")
+        return (ValueStages.OK,
+                "Everything is good")
