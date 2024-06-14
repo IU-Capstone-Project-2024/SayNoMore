@@ -6,4 +6,5 @@ fetch_hotel_collections_url = "https://yasen.hotellook.com/tp/public/widget_loca
 fetch_hotel_collection_types_url = "https://yasen.hotellook.com/tp/public/available_selections.json"
 fetch_room_types_url = "https://engine.hotellook.com/api/v2/static/roomTypes.json"
 fetch_hotel_types_url = "https://engine.hotellook.com/api/v2/static/hotelTypes.json"
-fetch_hotel_photos_base_url = " https://yasen.hotellook.com/photos/hotel_photos"
+fetch_hotel_photos_base_url = "https://yasen.hotellook.com/photos/hotel_photos"
+fetch_city_hotel_base_url = "https://photo.hotellook.com/static/cities/"
