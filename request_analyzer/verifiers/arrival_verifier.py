@@ -21,16 +21,19 @@ def is_valid_date(retrieved_value: str):
     # arrival_retriever
     # parse retrieved string
     # to the datetime
-    arr_time = datetime.strptime(retrieved_value, '%d/%m/%Y')
-    # check current date
-    present_time = datetime.now()
-    # If the user time is not outdated
-    # then it is valid
-    # else it is outdated
-    if arr_time >= present_time:
-        return True
-    else:
-        return "Date is outdated."
+    try:
+        arr_time = datetime.strptime(retrieved_value, '%d/%m/%Y')
+        # check current date
+        present_time = datetime.now()
+        # If the user time is not outdated
+        # then it is valid
+        # else it is outdated
+        if arr_time >= present_time:
+            return True
+        else:
+            return "Date is outdated."
+    except ValueError:
+        return "Wrong date format."
 
 
 class ArrivalVerif(BaseVerifier):
