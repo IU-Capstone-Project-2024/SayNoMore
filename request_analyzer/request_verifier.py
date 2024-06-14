@@ -1,8 +1,11 @@
 from typing import Tuple
 from request_analyzer.request_fields_enum import RequestField
-from SayNoMore.request_analyzer.verifiers.abstract_verifier import BaseVerifier, ValueStages
-from SayNoMore.request_analyzer.verifiers.departure_verifier import DepartureVerifier
-from SayNoMore.request_analyzer.verifiers.destination_verifier import DestinationVerifier
+from request_analyzer.verifiers.abstract_verifier import BaseVerifier, ValueStages
+from request_analyzer.verifiers.departure_verifier import DepartureVerifier
+from request_analyzer.verifiers.destination_verifier import DestinationVerifier
+from request_analyzer.verifiers.arrival_verifier import ArrivalVerifier
+from request_analyzer.verifiers.return_verifier import ReturnVerifier
+from request_analyzer.verifiers.budget_verifier import BudgetVerifier
 
 
 class RequestVerifier:
@@ -30,11 +33,11 @@ class RequestVerifier:
 
         # Register verifiers
         # Example commented-out registrations for future expansion
-        # self.register_verifier(RequestField.Arrival, ArrivalVerif())
-        # self.register_verifier(RequestField.Return, ReturnVerif())
-        self.register_verifier(RequestField.Departure, DepartureVerif())
-        self.register_verifier(RequestField.Destination, DestinationVerif())
-        # self.register_verifier(RequestField.Budget, BudgetVerif())
+        self.register_verifier(RequestField.Arrival, ArrivalVerifier())
+        self.register_verifier(RequestField.Return, ReturnVerifier())
+        self.register_verifier(RequestField.Departure, DepartureVerifier())
+        self.register_verifier(RequestField.Destination, DestinationVerifier())
+        self.register_verifier(RequestField.Budget, BudgetVerifier())
 
         # Placeholder for future implementation of verification classes initialization
 
