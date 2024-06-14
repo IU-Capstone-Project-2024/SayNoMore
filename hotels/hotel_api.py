@@ -248,3 +248,35 @@ class HotelApi:
         except requests.exceptions.RequestException as e:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
+
+    def fetch_room_types(self, language='en'):
+        """
+        Fetches room types
+
+        Parameters:
+        - language: Language of the response (e.g., pt, en, fr, de, id, it, pl, es, th, ru). Defaults to English ('en').
+
+        Returns:
+            A dictionary containing the room types information for the specified hotel. The structure includes:
+            Room type IDs as keys and room type names as values.
+        """
+        # Constructing the query string
+        params = {
+            'language': language,
+            'token': self.api_token  # Assuming the token is stored as an instance variable
+        }
+
+        try:
+            # Making the GET request
+            response = requests.get(self.fetch_room_types_url, params=params)
+            # Check if the request was successful
+            if response.status_code != 200:
+                # Raise an exception if the response status code indicates failure
+                raise Exception(f"Failed to fetch room types. Status code: {response.status_code}")
+            # Return the JSON content of the response
+            return response.json()
+
+        except requests.exceptions.RequestException as e:
+            # Catch any request-related exceptions (e.g., timeouts, connection errors)
+            raise Exception("There was an error making the request.") from e
+
