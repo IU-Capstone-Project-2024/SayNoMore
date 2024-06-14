@@ -1,9 +1,9 @@
 from typing import Tuple
-from request_analyzer.verifiers.arrival_verif import ArrivalVerif
-from request_analyzer.verifiers.abstract_verif import ValueStages
+from SayNoMore.request_analyzer.verifiers.arrival_verifier import ArrivalVerifier
+from SayNoMore.request_analyzer.verifiers.abstract_verifier import ValueStages
 
 
-class ReturnVerif(ArrivalVerif):
+class ReturnVerifier(ArrivalVerifier):
     """
     A verifier class specifically designed
     to validate the retrieved return date

@@ -1,11 +1,11 @@
 from typing import Tuple
 from request_analyzer.request_fields_enum import RequestField
-from request_analyzer.verifiers.abstract_verif import BaseVerifier, ValueStages
-from request_analyzer.verifiers.departure_verif import DepartureVerif
-from request_analyzer.verifiers.destination_verif import DestinationVerif
+from SayNoMore.request_analyzer.verifiers.abstract_verifier import BaseVerifier, ValueStages
+from SayNoMore.request_analyzer.verifiers.departure_verifier import DepartureVerifier
+from SayNoMore.request_analyzer.verifiers.destination_verifier import DestinationVerifier
 
 
-class RequestVerification:
+class RequestVerifier:
     """
     A class to manage and utilize different
     verifiers for validating specific pieces

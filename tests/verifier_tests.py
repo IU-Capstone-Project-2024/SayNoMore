@@ -1,10 +1,10 @@
 import unittest
-from request_analyzer.verifiers.abstract_verif import ValueStages
-from request_analyzer.verifiers.departure_verif import DepartureVerif
-from request_analyzer.verifiers.destination_verif import DestinationVerif
-from request_analyzer.verifiers.arrival_verif import ArrivalVerif
-from request_analyzer.verifiers.return_verif import ReturnVerif
-from request_analyzer.verifiers.budget_verif import BudgetVerif
+from SayNoMore.request_analyzer.verifiers.abstract_verifier import ValueStages
+from SayNoMore.request_analyzer.verifiers.departure_verifier import DepartureVerifier
+from SayNoMore.request_analyzer.verifiers.destination_verifier import DestinationVerifier
+from SayNoMore.request_analyzer.verifiers.arrival_verifier import ArrivalVerifier
+from SayNoMore.request_analyzer.verifiers.return_verifier import ReturnVerifier
+from SayNoMore.request_analyzer.verifiers.budget_verifier import BudgetVerifier
 
 
 class TestRetrievers(unittest.TestCase):
@@ -12,11 +12,11 @@ class TestRetrievers(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
 
-        cls.departure_verif = DepartureVerif()
-        cls.destination_verif = DestinationVerif()
-        cls.arrival_verif = ArrivalVerif()
-        cls.return_verif = ReturnVerif()
-        cls.budget_verif = BudgetVerif()
+        cls.departure_verif = DepartureVerifier()
+        cls.destination_verif = DestinationVerifier()
+        cls.arrival_verif = ArrivalVerifier()
+        cls.return_verif = ReturnVerifier()
+        cls.budget_verif = BudgetVerifier()
 
     def test_departure_verif(self):
         test_cases = [{

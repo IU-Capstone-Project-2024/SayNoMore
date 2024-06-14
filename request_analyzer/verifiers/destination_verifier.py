@@ -1,8 +1,8 @@
 from typing import Tuple
-from request_analyzer.verifiers.abstract_verif import BaseVerifier, ValueStages
+from SayNoMore.request_analyzer.verifiers.abstract_verifier import BaseVerifier, ValueStages
 
 
-class DestinationVerif(BaseVerifier):
+class DestinationVerifier(BaseVerifier):
     """
     A verifier class specifically designed
     to validate the retrieved destination 

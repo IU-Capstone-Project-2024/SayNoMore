@@ -1,9 +1,9 @@
 from typing import Tuple
-from request_analyzer.verifiers.destination_verif import DestinationVerif
-from request_analyzer.verifiers.abstract_verif import ValueStages
+from SayNoMore.request_analyzer.verifiers.destination_verifier import DestinationVerifier
+from SayNoMore.request_analyzer.verifiers.abstract_verifier import ValueStages
 
 
-class DepartureVerif(DestinationVerif):
+class DepartureVerifier(DestinationVerifier):
     """
     A verifier class specifically designed
     to validate the retrieved departure 

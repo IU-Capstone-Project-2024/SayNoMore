@@ -1,6 +1,6 @@
 # import required libraries
 from typing import Tuple
-from request_analyzer.verifiers.abstract_verif import ValueStages, BaseVerifier
+from SayNoMore.request_analyzer.verifiers.abstract_verifier import ValueStages, BaseVerifier
 from datetime import datetime
 
 
@@ -27,7 +27,7 @@ def is_valid_date(retrieved_value: str):
         return False
 
 
-class ArrivalVerif(BaseVerifier):
+class ArrivalVerifier(BaseVerifier):
     '''
     A verifier class specifically designed
     to validate the retrieved arrival time
