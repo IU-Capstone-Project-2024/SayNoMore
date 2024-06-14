@@ -55,7 +55,7 @@ class RequestVerifier:
         self.verifiers[field] = verifier
 
     def verify(self, field: RequestField,
-               retrieved_data: str) -> Tuple[str, str]:
+               retrieved_data: str) -> Tuple[str, ValueStages]:
         """
         Performs verification on a specific field 
         of a user request using the registered verifier.
@@ -87,4 +87,4 @@ class RequestVerifier:
         # verification result
         return (
             f"Verification status: {status.name}; Description: {str_description}",
-            status.name)
+            status)

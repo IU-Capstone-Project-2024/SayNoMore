@@ -8,7 +8,9 @@ from request_analyzer.retreivers.departure_retriever import DepartureRetriever
 from request_analyzer.retreivers.destination_retriever import DestinationRetriever
 from request_analyzer.retreivers.budget_retriever import BudgetRetriever
 from request_analyzer.retreivers.abstract_retriever import BaseRetriever
-from SayNoMore.request_analyzer.request_verifier import RequestVerification
+from request_analyzer.verifiers.abstract_verifier import ValueStages
+from request_analyzer.request_verifier import RequestVerifier
+from request_analyzer.verifiers.post_verifier import PostVerifier
 
 
 class InformationRetriever:
@@ -37,7 +39,7 @@ class InformationRetriever:
         self.retrievers = {}
         self.llm = llm
 
-        self.verifier = RequestVerification()
+        self.verifier = RequestVerifier()
 
         # Register retrievers
         self.register_retriever(RequestField.Arrival, ArrivalRetriever(llm))
@@ -81,15 +83,24 @@ class InformationRetriever:
         """
         result_map = {}
         is_all_fields_correct = True
+        map_for_post_verification = {}
         for field, retriever in self.retrievers.items():
             retrieved_data = retriever.retrieve(request)
             verification_result, status = self.verifier.verify(
                 field, retrieved_data)
+
+            map_for_post_verification[field] = (status, retrieved_data)
+
             result_map[field] = f"{field} data retrieved from user's " + \
                                 f"request: {retrieved_data}. " + \
                                 verification_result
 
-            if field.is_required and status != "OK":
+            if field.is_required and status != ValueStages.OK:
                 is_all_fields_correct = False
 
-        return result_map, is_all_fields_correct
+        if is_all_fields_correct:
+            post_verif_res = PostVerifier.verify_all_fields(
+                map_for_post_verification)
+            is_all_fields_correct = post_verif_res == []
+
+        return result_map, is_all_fields_correct, post_verif_res
