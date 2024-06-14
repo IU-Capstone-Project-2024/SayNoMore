@@ -131,6 +131,15 @@ class TestAirTicketsApi(TestCase):
         response = self.hotel_api.fetch_hotel_collection_types(city_id=id)
         self.assertTrue(len(response) > 0)
 
+    def test_fetch_room_types(self):
+        response = self.hotel_api.fetch_hotel_types()
+        self.assertTrue(response['1'])
+
+    def test_fetch_hotel_types(self):
+        response = self.hotel_api.fetch_hotel_types()
+        self.assertTrue(response['1'])
+
+
 
 if __name__ == '__main__':
     main()
