@@ -2,6 +2,7 @@ from typing import Tuple
 from request_analyzer.verifiers.destination_verif import DestinationVerif
 from request_analyzer.verifiers.abstract_verif import ValueStages
 
+
 class DepartureVerif(DestinationVerif):
     """
     A verifier class specifically designed
@@ -58,6 +59,6 @@ class DepartureVerif(DestinationVerif):
             the verify method of the parent 
             class (DestinationVerif).
         """
-        # Delegate the verification process to 
+        # Delegate the verification process to
         # the parent class
         return super().verify(retrieved_value)

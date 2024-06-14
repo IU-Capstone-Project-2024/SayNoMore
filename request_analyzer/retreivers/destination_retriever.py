@@ -2,6 +2,7 @@ from vllm import LLM, SamplingParams
 from request_analyzer.retreivers.abstract_retriever import BaseRetriever
 from request_analyzer.utils.embedding_city_search import EmbeddingCitySearch
 
+
 class DestinationRetriever(BaseRetriever):
     """
     A class designed to retrieve destination cities 
@@ -78,14 +79,12 @@ class DestinationRetriever(BaseRetriever):
                  as a string, or a message indicating 
                  no destination was found.
         """
-        # Replace the placeholder in the prompt 
+        # Replace the placeholder in the prompt
         # template with the actual user request
-        prompt = self.prefix_prompt.replace("USER_REQUEST",
-                                            request)
-        # Generate a response from the VLLM using 
+        prompt = self.prefix_prompt.replace("USER_REQUEST", request)
+        # Generate a response from the VLLM using
         # the customized prompt and sampling parameters
-        vllm_output = self.llm.generate(prompt, 
-                                        self.sampling_params)
+        vllm_output = self.llm.generate(prompt, self.sampling_params)
         extracted_city = vllm_output[0].outputs[0].text
         if not extracted_city == 'None':
             found_russian_city = self.searcher.search_city(extracted_city)

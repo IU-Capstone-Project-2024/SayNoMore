@@ -64,14 +64,14 @@ class ArrivalRetriever(BaseRetriever):
         """
         # Put actual information about the date in the prompt
         cur_day = datetime.now()
-        prompt = self.prefix_prompt.replace("INSERT_DATE", cur_day.strftime('%B %d, %Y. %A.'))
+        prompt = self.prefix_prompt.replace("INSERT_DATE",
+                                            cur_day.strftime('%B %d, %Y. %A.'))
         # Replace the placeholder in the prompt
         # template with the actual user request
         prompt = prompt.replace("USER_REQUEST", request)
         # Generate a response from the VLLM using
         # the customized prompt and sampling parameters
-        vllm_output = self.llm.generate(prompt,
-                                        self.sampling_params)
+        vllm_output = self.llm.generate(prompt, self.sampling_params)
         # Extract and return the generated text as
         # the destination city
         return vllm_output[0].outputs[0].text

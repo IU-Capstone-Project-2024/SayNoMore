@@ -13,7 +13,7 @@ class BaseVerifier(ABC):
     """
     Abstract base class for verifiers.
     """
-    
+
     @abstractmethod
     def verify(self, retrieved_value: str) -> Tuple[ValueStages, str]:
         pass

@@ -4,6 +4,7 @@ from request_analyzer.verifiers.abstract_verif import BaseVerifier, ValueStages
 from request_analyzer.verifiers.departure_verif import DepartureVerif
 from request_analyzer.verifiers.destination_verif import DestinationVerif
 
+
 class RequestVerification:
     """
     A class to manage and utilize different
@@ -34,10 +35,11 @@ class RequestVerification:
         self.register_verifier(RequestField.Departure, DepartureVerif())
         self.register_verifier(RequestField.Destination, DestinationVerif())
         # self.register_verifier(RequestField.Budget, BudgetVerif())
-        
+
         # Placeholder for future implementation of verification classes initialization
 
-    def register_verifier(self, field: RequestField, verifier: BaseVerifier) -> None:
+    def register_verifier(self, field: RequestField,
+                          verifier: BaseVerifier) -> None:
         """
         Registers a verifier for a specific field.
 
@@ -49,7 +51,8 @@ class RequestVerification:
         """
         self.verifiers[field] = verifier
 
-    def verify(self, field: RequestField, retrieved_data: str) -> Tuple[str, str]:
+    def verify(self, field: RequestField,
+               retrieved_data: str) -> Tuple[str, str]:
         """
         Performs verification on a specific field 
         of a user request using the registered verifier.
@@ -70,13 +73,15 @@ class RequestVerification:
         # specified field
         verifier = self.verifiers.get(field)
         if not verifier:
-            raise ValueError(f"No verifier registered for field '{field.name}'")
+            raise ValueError(
+                f"No verifier registered for field '{field.name}'")
 
-        # Perform verification using 
+        # Perform verification using
         # the selected verifier
         status, str_description = verifier.verify(retrieved_data)
 
-        # Format and return the 
+        # Format and return the
         # verification result
-        return (f"Verification status: {status.name}; Description: {str_description}",
-                status.name)
+        return (
+            f"Verification status: {status.name}; Description: {str_description}",
+            status.name)

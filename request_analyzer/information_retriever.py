@@ -10,6 +10,7 @@ from request_analyzer.retreivers.budget_retriever import BudgetRetriever
 from request_analyzer.retreivers.abstract_retriever import BaseRetriever
 from request_analyzer.request_verification import RequestVerification
 
+
 class InformationRetriever:
     """
     A class to manage and utilize different retrievers 
@@ -37,16 +38,17 @@ class InformationRetriever:
         self.llm = llm
 
         self.verifier = RequestVerification()
-        
+
         # Register retrievers
         self.register_retriever(RequestField.Arrival, ArrivalRetriever(llm))
         self.register_retriever(RequestField.Return, ReturnRetriever(llm))
-        self.register_retriever(RequestField.Departure, DepartureRetriever(llm))
-        self.register_retriever(RequestField.Destination, DestinationRetriever(llm))
+        self.register_retriever(RequestField.Departure,
+                                DepartureRetriever(llm))
+        self.register_retriever(RequestField.Destination,
+                                DestinationRetriever(llm))
         self.register_retriever(RequestField.Budget, BudgetRetriever(llm))
-        
-    def register_retriever(self, 
-                           field_name: str,
+
+    def register_retriever(self, field_name: str,
                            retriever: BaseRetriever) -> None:
         """
         Registers a retriever for a specific field.
@@ -81,12 +83,12 @@ class InformationRetriever:
         is_all_fields_correct = True
         for field, retriever in self.retrievers.items():
             retrieved_data = retriever.retrieve(request)
-            verification_result, status = self.verifier.verify(field,
-                                                       retrieved_data)
+            verification_result, status = self.verifier.verify(
+                field, retrieved_data)
             result_map[field] = f"{field} data retrieved from user's " + \
                                 f"request: {retrieved_data}. " + \
                                 verification_result
-            
+
             if field.is_required and status != "OK":
                 is_all_fields_correct = False
 

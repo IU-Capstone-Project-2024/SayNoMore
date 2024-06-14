@@ -17,6 +17,7 @@ class ReturnVerif(ArrivalVerif):
     delegates the verification process
     to the parent class.
     """
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -49,7 +50,6 @@ class ReturnVerif(ArrivalVerif):
             the verify method of the parent
             class (ArrivalVerif).
         """
-        # Delegate the verification process to 
+        # Delegate the verification process to
         # the parent class
         return super().verify(retrieved_value)
-    

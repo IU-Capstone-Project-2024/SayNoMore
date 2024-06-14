@@ -2,6 +2,7 @@ from vllm import LLM, SamplingParams
 from request_analyzer.retreivers.abstract_retriever import BaseRetriever
 from request_analyzer.utils.embedding_city_search import EmbeddingCitySearch
 
+
 class DepartureRetriever(BaseRetriever):
     """
     A class designed to retrieve departure
@@ -35,10 +36,9 @@ class DepartureRetriever(BaseRetriever):
                        entered by the user
         """
         self.llm = llm
-        # Setting up sampling parameters for deterministic 
+        # Setting up sampling parameters for deterministic
         # output
-        self.sampling_params = SamplingParams(temperature=0,
-                                              stop='"')
+        self.sampling_params = SamplingParams(temperature=0, stop='"')
         # Defining a prompt template to guide the model towards
         # extracting departure cities
         self.prefix_prompt = \
@@ -81,15 +81,13 @@ class DepartureRetriever(BaseRetriever):
                  string, or a message indicating the
                  departure city could not be determined.
         """
-        # Replace the placeholder in the prompt template 
+        # Replace the placeholder in the prompt template
         # with the actual user request
-        prompt = self.prefix_prompt.replace("USER_REQUEST",
-                                            request)
-        # Generate a response from the VLLM using the 
+        prompt = self.prefix_prompt.replace("USER_REQUEST", request)
+        # Generate a response from the VLLM using the
         # customized prompt and sampling parameters
-        vllm_output = self.llm.generate(prompt, 
-                                        self.sampling_params)
-        # Extract and return the generated text as 
+        vllm_output = self.llm.generate(prompt, self.sampling_params)
+        # Extract and return the generated text as
         # the departure city
         extracted_city = vllm_output[0].outputs[0].text
         if not extracted_city == "None":

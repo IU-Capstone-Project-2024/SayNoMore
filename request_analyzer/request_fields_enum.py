@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class RequestField(Enum):
     Arrival = ("Arrival", True)
     Return = ("Return", True)

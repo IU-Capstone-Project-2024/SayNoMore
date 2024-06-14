@@ -1,6 +1,7 @@
 from vllm import LLM, SamplingParams
 from request_analyzer.retreivers.abstract_retriever import BaseRetriever
 
+
 class BudgetRetriever(BaseRetriever):
     """
     A class designed to retrieve the user's available
@@ -31,8 +32,7 @@ class BudgetRetriever(BaseRetriever):
         self.llm = llm
         # Setting up sampling parameters for deterministic
         #  output
-        self.sampling_params = SamplingParams(temperature=0,
-                                              stop='"')
+        self.sampling_params = SamplingParams(temperature=0, stop='"')
         # Defining a prompt template to guide the model towards
         #  extracting the user's budget
         self.prefix_prompt = \
@@ -73,14 +73,12 @@ class BudgetRetriever(BaseRetriever):
                 or a message indicating no budget was 
                 found.
         """
-        # Replace the placeholder in the prompt template with 
+        # Replace the placeholder in the prompt template with
         # the actual user request
-        prompt = self.prefix_prompt.replace("USER_REQUEST", 
-                                            request)
+        prompt = self.prefix_prompt.replace("USER_REQUEST", request)
         # Generate a response from the VLLM using the customized
         # prompt and sampling parameters
-        vllm_output = self.llm.generate(prompt, 
-                                        self.sampling_params)
+        vllm_output = self.llm.generate(prompt, self.sampling_params)
         # Extract and return the generated text as the budget
         # amount
         return vllm_output[0].outputs[0].text

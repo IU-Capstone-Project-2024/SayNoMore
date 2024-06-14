@@ -3,6 +3,7 @@ from typing import Tuple
 from request_analyzer.verifiers.abstract_verif import ValueStages, BaseVerifier
 from datetime import datetime
 
+
 # function to check validity of the data
 def is_valid_date(retrieved_value: str):
     # Attempt to parse the string according
@@ -77,5 +78,4 @@ class ArrivalVerif(BaseVerifier):
             return (ValueStages.INCORRECT_VALUE,
                     "The user entered wrong arrival time")
         # Return ok if everything is fine
-        return  (ValueStages.OK,
-                 "Everything is good")
+        return (ValueStages.OK, "Everything is good")

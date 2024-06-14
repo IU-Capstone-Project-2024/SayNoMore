@@ -1,6 +1,7 @@
 from typing import Tuple
 from request_analyzer.verifiers.abstract_verif import BaseVerifier, ValueStages
 
+
 class DestinationVerif(BaseVerifier):
     """
     A verifier class specifically designed
@@ -41,15 +42,14 @@ class DestinationVerif(BaseVerifier):
                     message describing the outcome of the 
                     verification. Will be used by LLM.
         """
-        # Check if the retrieved value indicates that the 
+        # Check if the retrieved value indicates that the
         # destination field was not provided
         if retrieved_value == "None":
-            # Return FIELD_NOT_FOUND status along with 
+            # Return FIELD_NOT_FOUND status along with
             # a descriptive message
-            return (ValueStages.FIELD_NOT_FOUND, 
+            return (ValueStages.FIELD_NOT_FOUND,
                     "The user has not entered this field")
-        
+
         # If the retrieved value passes the initial check,
         #  assume everything is good
-        return (ValueStages.OK,
-                "Everything is good")
+        return (ValueStages.OK, "Everything is good")

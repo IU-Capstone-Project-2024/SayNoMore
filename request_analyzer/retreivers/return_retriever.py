@@ -1,8 +1,11 @@
 from vllm import LLM, SamplingParams
 from datetime import datetime
 from request_analyzer.retreivers.abstract_retriever import BaseRetriever
+
+
 # retreive the date of the return from the destination city
 class ReturnRetriever(BaseRetriever):
+
     def __init__(self, llm: LLM) -> None:
         self.llm = llm
         # Setting up sampling parameters for deterministic output
@@ -63,12 +66,10 @@ class ReturnRetriever(BaseRetriever):
         """
         # Replace the placeholder in the prompt
         # template with the actual user request
-        prompt = self.prefix_prompt.replace("USER_REQUEST",
-                                            request)
+        prompt = self.prefix_prompt.replace("USER_REQUEST", request)
         # Generate a response from the VLLM using
         # the customized prompt and sampling parameters
-        vllm_output = self.llm.generate(prompt,
-                                        self.sampling_params)
+        vllm_output = self.llm.generate(prompt, self.sampling_params)
         # Extract and return the generated text as
         # the return time from the destination city
         return vllm_output[0].outputs[0].text
