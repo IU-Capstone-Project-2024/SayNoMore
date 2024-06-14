@@ -324,7 +324,7 @@ class HotelApi:
             with open(file_path, 'wb') as file:
                 file.write(response.content)
         else:
-            print(f"Failed to fetch photo from {url} for hotel {hotel_id}.")
+            raise Exception(f"Failed to fetch photo from {url} for hotel {hotel_id}. Status code: {response.status_code}")
 
     def fetch_hotel_photos(self, hotel_ids, width=800, height=520):
         """
@@ -355,3 +355,26 @@ class HotelApi:
                     self.fetch_and_save_photo(photo_url, int(hotel_id), i)
         else:
             raise Exception(f"Failed to fetch photo IDs. Status code: {photo_ids_response.status_code}")
+
+    def fetch_city_photo(self, iata_code, width=960, height=720):
+        """
+        Fetches city photos for specified IATA codes and saves them locally.
+        :param iata_code: iata code og the city
+        :return: None
+        """
+        photo_directory = "cityPhotos"
+        os.makedirs(photo_directory, exist_ok=True)  # Ensure the directory exists
+        photo_url = f'{self.fetch_city_photos_base_url}{width}x{height}/{iata_code}.jpg'
+        photo_path = os.path.join(photo_directory, f"{iata_code}.png")
+
+        # Attempt to fetch the photo
+        try:
+            response = requests.get(photo_url)
+            # If the request is successful, save the logo to the local directory
+            if response.status_code == 200:
+                with open(photo_path, 'wb') as file:
+                    file.write(response.content)
+            else:
+                raise Exception(f"Failed to fetch cheapest tickets. Status code: {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Failed to fetch logo for {iata_code}: {str(e)}")
