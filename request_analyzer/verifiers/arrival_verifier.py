@@ -1,5 +1,5 @@
 from typing import Tuple
-from request_analyzer.verifiers.abstract_verif import ValueStages, BaseVerifier
+from request_analyzer.verifiers.abstract_verifier import ValueStages, BaseVerifier
 from datetime import datetime
 import re
 
@@ -33,7 +33,7 @@ def is_valid_date(retrieved_value: str):
         return "Date is outdated."
 
 
-class ArrivalVerif(BaseVerifier):
+class ArrivalVerifier(BaseVerifier):
     '''
     A verifier class specifically designed
     to validate the retrieved arrival time

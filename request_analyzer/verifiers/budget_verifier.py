@@ -1,8 +1,8 @@
 from typing import Tuple
-from request_analyzer.verifiers.abstract_verif import BaseVerifier, ValueStages
+from request_analyzer.verifiers.abstract_verifier import BaseVerifier, ValueStages
 
 
-class BudgetVerif(BaseVerifier):
+class BudgetVerifier(BaseVerifier):
     '''
     A verifier class specifically designed
     to validate the retrieved budget information
