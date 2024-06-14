@@ -27,7 +27,6 @@ The technology stack for **SayNoMore** will include:
    - **Docker:** For containerizing the application to ensure consistent environments across development and production.
    - **AWS/GCP/Azure/YaCloud:** Cloud platforms for hosting the application, providing scalability, and managing storage and computing resources.
    - **CI/CD Tools:** Jenkins/GitHub Actions for automating deployment and ensuring continuous integration and delivery.
-
 TechStack requied for the Proof of Concept:
 - Python
 - LLaMa
@@ -43,13 +42,14 @@ TechStack requied for the Proof of Concept:
        - **RequestAnalyzer Class**: Orchestrates the overall request processing.
        - **InformationRetrieval Classes**: Extract specific travel details like destination, dates, and budget.
        - **RequestVerification Classes**: Validate the accuracy and relevancy of the extracted information.
+   ![Request Analyzer](https://hackmd.io/_uploads/S1C5TOtSA.svg)
   
    - **Module B: API Collector**
      - **Purpose**: Fetches real-time data on flights and hotels from external APIs.
      - **Key Components**:
        - **AirTicketsApi Class**: Retrieves flight information, including prices and availability.
        - **HotelApi Class**: Retrieves hotel data, including room availability and pricing.
-  
+       ![ApiCollector UML](https://hackmd.io/_uploads/rkIiTOtBR.svg)
    - **Module C: Telegram Bot Interface**
      - **Purpose**: Facilitates user interaction through the Telegram Bot API.
      - **Key Components**:
@@ -150,23 +150,34 @@ Graphical representation and interconection of those 3 modules:
      * **GitHub Actions**: Automates testing and deployment processes to ensure reliable updates and integrations.
 
 ### **Week 2 questionnaire:**
-
-1) Tech Stack Resources: ...
-
-2) Mentorship Support: ...
-
-3) Exploring Alternative Resources: ...
-
-4) Identifying Knowledge Gaps: ...
-
-5) Engaging with the Tech Community: ...
-
-6) Learning Objectives: ...
-
-7) Sharing Knowledge with Peers: ...
-
-8) Leveraging AI: ...
-
+1. **Tech Stack Resources**:
+   - **Backend**: Python (Flask/FastAPI) for developing APIs and handling server logic, PostgreSQL for database management, and Docker for containerization.
+   - **Frontend**: Telegram Bot for immediate user interaction; future plans for React for web interfaces and React Native/Flutter for mobile applications.
+   - **APIs**: Aviasales for fetching travel data, with potential integrations for Google Maps.
+   - **Machine Learning**: LLaMA Library for NLP, TensorFlow/PyTorch for model development.
+   - **DevOps**: GitHub Actions for CI/CD and cloud services like AWS/YaCloud/VKCloud for deployment.
+2. **Mentorship Support**:
+   - **Zamira Kholmatova**: Our mentor who provides guidance and expert advice throughout the project. She oversees our work, offers insights on complex issues, and helps us align our efforts with industry best practices.
+3. **Exploring Alternative Resources**:
+   - **Open-Source Libraries**: We continuously explore and integrate open-source libraries and frameworks that can enhance our development process, such as using different NLP tools or alternative API services.
+   - **Online Courses and Documentation**: Team members utilize online resources like Coursera, Udemy, and official documentation to stay updated on new technologies and methodologies.
+4. **Identifying Knowledge Gaps**:
+   - **API Integration**: Gaps identified in understanding complex API interactions and data synchronization.
+   - **Machine Learning**: Need for deeper knowledge in implementing and optimizing machine learning models, particularly for NLP tasks.
+   - **Security**: Enhancing our understanding of data security practices and privacy regulations.
+5. **Learning Objectives**:
+   - **Master API Integrations**: Gain proficiency in integrating and managing data from multiple APIs.
+   - **Advance in NLP**: Enhance skills in natural language processing to accurately interpret and process user inputs.
+   - **Develop Robust Backend Systems**: Build a scalable and secure backend architecture that supports complex operations and data management.
+6. **Sharing Knowledge with Peers**:
+   - **Regular Team Meetings**: Weekly sync-ups to discuss progress, share learnings, and address challenges collectively.
+   - **Documentation and Wiki Updates**: Keeping our project documentation and GitHub Wiki up-to-date with new insights, code snippets, and tutorials for easy reference by all team members.
+   - **Code Reviews**: Conducting regular code reviews to share feedback, improve code quality, and promote best practices.
+7. **Leveraging AI**:
+   - **Natural Language Processing**: Using the LLaMA Library to parse and understand user inputs effectively.
+   - **Machine Learning Models**: Applying TensorFlow/PyTorch to develop and refine models that can recommend optimal travel options.
+   - **AI in Data Analysis**: Utilizing AI tools to analyze and predict user preferences and trends, enabling more personalized travel recommendations.
+   
 ### **Tech Stack and Team Allocation**
 | Team Member         | Role             | Responsibilities                                             |
 |---------------------|------------------|--------------------------------------------------------------|
@@ -177,13 +188,95 @@ Graphical representation and interconection of those 3 modules:
 | Anastasia Pichugina | ML, Fullstack    | - Integrating LLMs into the application<br>- Developing the Telegram bot<br>- Potential frontend development for the website |
 
 ### **Weekly Progress Report**
+#### Overview
+This week, we made significant strides in finalizing the architecture and defining the tech stack for the **SayNoMore** project. These foundational decisions have provided us with a clear roadmap for the development process and have set the stage for efficient team collaboration and task management.
+#### Key Achievements
+1. **Finalized Project Architecture**:
+   - We have completed the design and documentation of the project’s architecture, outlining the structure and interactions of the three main modules:
+     - **Module A: Request Analyzer** – Handles user input processing and data verification.
+     - **Module B: API Collector** – Fetches real-time travel data from external APIs.
+     - **Module C: Telegram Bot Interface** – Manages user interactions through the Telegram Bot API.
+   - Detailed component breakdowns and workflow diagrams were created to ensure a comprehensive understanding of each module’s functionality and integration points.
+2. **Defined Tech Stack**:
+   - We have chosen the technologies and tools that will form the backbone of our project:
+3. **Sub-Team Formation and Task Allocation**:
+   - We have organized our team into sub-teams aligned with the project modules to focus on specific areas of development:
+     - **Module A Team**: Focuses on user input processing and verification.
+     - **Module B Team**: Specializes in integrating and fetching data from external APIs.
+     - **Module C Team**: Handles the development and enhancement of the Telegram Bot interface.
+   - Roles and responsibilities were distributed within each sub-team to leverage individual strengths and expertise, ensuring efficient progress and accountability.
+4. **Streamlined Coding Process**:
+   - With the architecture and tech stack in place, we have streamlined our coding process.
+   - Clear module definitions and task allocations have enabled us to start implementing core functionalities systematically.
+   - This alignment has brought us closer to our goal of developing the first prototype of **SayNoMore**.
+#### Next Steps
 
-Our team did...
+- **Module Development**: Continue coding and integrating functionalities within each module, focusing on completing the initial versions of Module A and B.
+- **Prototype Assembly**: Begin assembling the components to form the first prototype, enabling initial end-to-end testing.
+- **Testing and Refinement**: Plan and execute unit tests and integration tests to ensure the stability and reliability of each module.
+We are excited about the progress made this week and are confident that with our structured approach and dedicated sub-teams, we are well on our way to developing a robust and user-friendly travel planning assistant.
 
 ### **Challenges & Solutions**
+As we advance in the development of **SayNoMore**, several challenges have emerged. Here are the key obstacles we've encountered this week and the solutions we have implemented to address them:
+1. **Challenge: Complex Data Extraction and Validation**
+   - **Description**: Extracting and validating accurate travel details from user inputs, especially in natural language, proved to be more complex than initially anticipated. Users may provide incomplete or ambiguous information that needs to be parsed and understood accurately by the system.
+   - **Solution**:
+     - **Advanced NLP Techniques**: We decided to employ more sophisticated natural language processing techniques using the LLaMA Library. This allows for better interpretation of varied user inputs and helps in extracting relevant travel details more effectively.
+     - **Incremental Data Collection**: Implementing an iterative approach where the system asks for missing details step-by-step has helped in gathering comprehensive information from users. This also simplifies the user’s input process, making it more interactive and manageable.
 
-...
+2. **Challenge: API Integration and Data Synchronization**
+   - **Description**: Integrating multiple external APIs, such as Aviasales and potential future APIs like Google Maps, posed difficulties in ensuring consistent and synchronized data retrieval. Variations in data formats and API response times also added to the complexity.
+   - **Solution**:
+     - **Standardized Data Handling**: We developed a unified data handling framework within the API Collector module to standardize the data retrieved from various sources. This framework ensures that all API responses are processed into a consistent format before being used by the system.
+     - **Caching and Data Refresh Mechanisms**: Implementing caching mechanisms to store frequently accessed data and periodically refreshing this data has helped in managing API response times and ensuring the availability of up-to-date information.
+
+3. **Challenge: Ensuring Seamless User Experience Across Platforms**
+   - **Description**: With plans to transition from the Telegram Bot interface to web and mobile platforms, maintaining a seamless and cohesive user experience across these different interfaces is a significant challenge.
+   - **Solution**:
+     - **Unified Design Principles**: We established unified design principles that will guide the development of the web and mobile interfaces. These principles focus on maintaining consistency in functionality and user interaction patterns across all platforms.
+     - **Incremental Rollout**: Our approach involves incrementally rolling out features first on the Telegram Bot and then extending them to the web and mobile platforms. This allows us to refine the user experience iteratively and gather feedback early on.
+
+4. **Challenge: Team Coordination and Task Management**
+   - **Description**: Coordinating tasks and ensuring effective communication among sub-teams, especially with the division of responsibilities, has been challenging. Misalignment in understanding or delays in one team can impact overall project progress.
+   - **Solution**:
+     - **Regular Synchronization Meetings**: We have instituted regular synchronization meetings to align on progress, share updates, and address any blockers promptly. These meetings ensure that all sub-teams are on the same page and can coordinate their efforts effectively.
+     - **Clear Documentation and Task Tracking**: Using detailed documentation and task tracking tools like GitHub Issues and Project boards has helped in clarifying responsibilities and tracking progress transparently. Each team member has a clear view of their tasks and how they contribute to the larger project goals.
+By addressing these challenges with strategic solutions, we are enhancing the robustness and user-friendliness of **SayNoMore** and are confident in our ability to deliver a reliable and effective travel planning assistant.
 
 ### **Conclusions & Next Steps**
 
-...
+### Conclusions & Next Steps
+#### Conclusions
+This week has been pivotal for the **SayNoMore** project as we made significant progress in several critical areas:
+1. **Architecture Finalization**:
+   - We have clearly defined the system’s architecture, outlining the roles and interactions of the three main modules: Request Analyzer, API Collector, and Telegram Bot Interface. This provides a strong foundation for our development efforts.
+2. **Tech Stack Selection**:
+   - By finalizing our tech stack, we now have a well-structured set of tools and technologies that align with our project’s needs. This decision streamlines our development process and ensures we are equipped with the best resources to build a scalable and efficient system.
+3. **Team Coordination and Task Allocation**:
+   - Forming sub-teams based on the project modules and distributing tasks has enhanced our focus and efficiency. Each team member now has a clear understanding of their responsibilities and how they contribute to the overall project.
+4. **Streamlined Development Process**:
+   - The alignment on architecture and technology has enabled us to streamline the coding process. We have started implementing core functionalities, bringing us closer to developing our first prototype.
+#### Next Steps
+With our foundational work in place, we are now ready to advance to the next stages of our project:
+1. **Module Development**:
+   - Continue coding and integrating functionalities within each module:
+     - **Module A (Request Analyzer)**: Complete the development of user input processing and validation features.
+     - **Module B (API Collector)**: Finalize the integration with external APIs for fetching travel data.
+     - **Module C (Telegram Bot Interface)**: Enhance the Telegram bot’s capabilities to handle complex user interactions smoothly.
+2. **Prototype Assembly**:
+   - Begin assembling the components of each module to form the first working prototype. This involves:
+     - Ensuring seamless communication between modules.
+     - Validating the end-to-end functionality from user input to travel recommendation.
+     - Integrating core features to provide a basic but complete travel planning experience.
+3. **Testing and Refinement**:
+   - Develop and execute comprehensive testing strategies to ensure the stability and reliability of each module:
+     - **Unit Testing**: Verify that individual components and classes function correctly.
+     - **Integration Testing**: Test the interaction between modules and external APIs.
+     - **User Acceptance Testing**: Validate that the system meets user needs and expectations.
+   - Use feedback from testing to refine features and fix any identified issues.
+4. **Documentation and Knowledge Sharing**:
+   - Continue updating our project documentation to reflect new developments and decisions.
+   - Share knowledge and insights across sub-teams to maintain alignment and ensure everyone is up-to-date with the latest progress.
+5. **Planning for Future Expansion**:
+   - Start conceptualizing the transition to web and mobile platforms. Outline the necessary steps and requirements to expand beyond the Telegram Bot interface.
+   - Explore additional data sources and API integrations to enhance the system’s capabilities.
