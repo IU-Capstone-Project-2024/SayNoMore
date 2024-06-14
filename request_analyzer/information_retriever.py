@@ -8,7 +8,7 @@ from request_analyzer.retreivers.departure_retriever import DepartureRetriever
 from request_analyzer.retreivers.destination_retriever import DestinationRetriever
 from request_analyzer.retreivers.budget_retriever import BudgetRetriever
 from request_analyzer.retreivers.abstract_retriever import BaseRetriever
-from request_analyzer.request_verification import RequestVerification
+from SayNoMore.request_analyzer.request_verifier import RequestVerification
 
 
 class InformationRetriever:
