@@ -1,5 +1,5 @@
 from typing import Tuple
-from SayNoMore.request_analyzer.verifiers.abstract_verifier import BaseVerifier, ValueStages
+from request_analyzer.verifiers.abstract_verifier import BaseVerifier, ValueStages
 
 
 class DestinationVerifier(BaseVerifier):

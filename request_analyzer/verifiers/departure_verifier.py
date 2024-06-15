@@ -1,6 +1,6 @@
 from typing import Tuple
-from SayNoMore.request_analyzer.verifiers.destination_verifier import DestinationVerifier
-from SayNoMore.request_analyzer.verifiers.abstract_verifier import ValueStages
+from request_analyzer.verifiers.destination_verifier import DestinationVerifier
+from request_analyzer.verifiers.abstract_verifier import ValueStages
 
 
 class DepartureVerifier(DestinationVerifier):

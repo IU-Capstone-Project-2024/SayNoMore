@@ -4,17 +4,17 @@ from datetime import datetime
 import re
 from enum import Enum
 
+
 class DateInfo(Enum):
-    OK = "OK."
-    WRONG_DATE_FORMAT = "Wrong date format."
-    DATE_IS_OUTDATED = "Date is outdated."
+    OK = "Everything is good."
+    WRONG_DATE_FORMAT = "The user entered wrong date format."
+    DATE_IS_OUTDATED =  "The user entered outdated date."
 
     def __init__(self, message: str):
         self.message = message
+    
 
-    def describe(self):
-        return f"{self.name}: {self.message}"
-class ArrivalVerif(BaseVerifier):
+class ArrivalVerifier(BaseVerifier):
     '''
     A verifier class specifically designed
     to validate the retrieved arrival time
@@ -33,16 +33,16 @@ class ArrivalVerif(BaseVerifier):
         super().__init__()
 
     # Check is date follows expected format or not
-    def __check_date(self, retrieved_value: str):
+    def _check_date(self, retrieved_value: str):
         # create regexp for expected format
         right_data_format = '^\d\d/\d\d/\d\d\d\d'
         # check if parsed date follows required format
-        if re.match(right_data_format, self):
+        if re.match(right_data_format, retrieved_value):
             return DateInfo.OK
         else:
             return DateInfo.WRONG_DATE_FORMAT
 
-    def __is_valid_date(self, retrieved_value: str):
+    def _is_valid_date(self, retrieved_value: str):
         # Attempt to parse the string according
         # to the format specified in the
         # arrival_retriever
@@ -56,7 +56,7 @@ class ArrivalVerif(BaseVerifier):
             # then it is valid
             # else it is outdated
             if arr_time >= present_time:
-                return True
+                return DateInfo.OK
             else:
                 return DateInfo.DATE_IS_OUTDATED
         except ValueError:
@@ -92,20 +92,21 @@ class ArrivalVerif(BaseVerifier):
         # check if something wrong with the time
         # (outdated or wrong format)
         # Fields containing possible state of the check
-        check_date_reply = self.__check_date(retrieved_value)
-        is_valid_date_reply = self.__is_valid_date(retrieved_value)
+
+        check_date_reply = self._check_date(retrieved_value)
+        is_valid_date_reply = self._is_valid_date(retrieved_value)
+
         # If data is in wrong format
         if check_date_reply == DateInfo.WRONG_DATE_FORMAT:
             return (ValueStages.INCORRECT_VALUE,
-                    "The user entered wrong date format.")
+                    check_date_reply.message)
+        
         # Outdated data check
-        if is_valid_date_reply == DateInfo.DATE_IS_OUTDATED:
+        if is_valid_date_reply == DateInfo.DATE_IS_OUTDATED or \
+           is_valid_date_reply == DateInfo.WRONG_DATE_FORMAT:
             return (ValueStages.INCORRECT_VALUE,
-                    "The user entered outdated date.")
-        # Wrong date format check
-        if is_valid_date_reply == DateInfo.WRONG_DATE_FORMAT:
-            return (ValueStages.INCORRECT_VALUE,
-                    "The user entered wrong date format.")
+                    is_valid_date_reply.message)
+        
         # Return ok if everything is fine
         return (ValueStages.OK,
-                "Everething is good.")
+                DateInfo.OK.message)

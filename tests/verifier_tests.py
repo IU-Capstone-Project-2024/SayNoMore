@@ -1,10 +1,10 @@
 import unittest
-from SayNoMore.request_analyzer.verifiers.abstract_verifier import ValueStages
-from SayNoMore.request_analyzer.verifiers.departure_verifier import DepartureVerifier
-from SayNoMore.request_analyzer.verifiers.destination_verifier import DestinationVerifier
-from SayNoMore.request_analyzer.verifiers.arrival_verifier import ArrivalVerifier
-from SayNoMore.request_analyzer.verifiers.return_verifier import ReturnVerifier
-from SayNoMore.request_analyzer.verifiers.budget_verifier import BudgetVerifier
+from request_analyzer.verifiers.abstract_verifier import ValueStages
+from request_analyzer.verifiers.departure_verifier import DepartureVerifier
+from request_analyzer.verifiers.destination_verifier import DestinationVerifier
+from request_analyzer.verifiers.arrival_verifier import ArrivalVerifier
+from request_analyzer.verifiers.return_verifier import ReturnVerifier
+from request_analyzer.verifiers.budget_verifier import BudgetVerifier
 
 
 class TestRetrievers(unittest.TestCase):
@@ -76,25 +76,25 @@ class TestRetrievers(unittest.TestCase):
             "retrieved_field":
             'None',
             "expected_answer": (ValueStages.FIELD_NOT_FOUND,
-                                "The user has not entered this field")
+                                "The user has not entered this field.")
         }, {
             "retrieved_field":
             'Муром',
             "expected_answer": (ValueStages.INCORRECT_VALUE,
-                                "The user entered wrong arrival time")
+                                "The user entered wrong date format.")
         }, {
             "retrieved_field":
             '02/12/2023',
             "expected_answer": (ValueStages.INCORRECT_VALUE,
-                                "The user entered wrong arrival time")
+                                "The user entered outdated date.")
         }, {
             "retrieved_field":
             '02/13/2025',
             "expected_answer": (ValueStages.INCORRECT_VALUE,
-                                "The user entered wrong arrival time")
+                                "The user entered wrong date format.")
         }, {
             "retrieved_field": '02/10/2024',
-            "expected_answer": (ValueStages.OK, "Everything is good")
+            "expected_answer": (ValueStages.OK, "Everything is good.")
         }]
 
         for case in test_cases:
@@ -109,25 +109,25 @@ class TestRetrievers(unittest.TestCase):
             "retrieved_field":
             'None',
             "expected_answer": (ValueStages.FIELD_NOT_FOUND,
-                                "The user has not entered this field")
+                                "The user has not entered this field.")
         }, {
             "retrieved_field":
             'Муром',
             "expected_answer": (ValueStages.INCORRECT_VALUE,
-                                "The user entered wrong arrival time")
+                                "The user entered wrong date format.")
         }, {
             "retrieved_field":
             '02/12/2023',
             "expected_answer": (ValueStages.INCORRECT_VALUE,
-                                "The user entered wrong arrival time")
+                                "The user entered outdated date.")
         }, {
             "retrieved_field":
             '02/13/2025',
             "expected_answer": (ValueStages.INCORRECT_VALUE,
-                                "The user entered wrong arrival time")
+                                "The user entered wrong date format.")
         }, {
             "retrieved_field": '02/10/2024',
-            "expected_answer": (ValueStages.OK, "Everything is good")
+            "expected_answer": (ValueStages.OK, "Everything is good.")
         }]
 
         for case in test_cases:
@@ -147,17 +147,17 @@ class TestRetrievers(unittest.TestCase):
             "retrieved_field":
             'Муром',
             "expected_answer":
-            (ValueStages.INCORRECT_VALUE, "The user has entered wrong budget")
+            (ValueStages.INCORRECT_VALUE, "Can not parse the budget")
         }, {
             "retrieved_field":
             '-10243',
             "expected_answer":
-            (ValueStages.INCORRECT_VALUE, "The user has entered wrong budget")
+            (ValueStages.INCORRECT_VALUE, "Negative amount of budget is not available.")
         }, {
             "retrieved_field":
             '0.32',
             "expected_answer":
-            (ValueStages.INCORRECT_VALUE, "The user has entered wrong budget")
+            (ValueStages.INCORRECT_VALUE, "Can not parse the budget")
         }, {
             "retrieved_field": '10000',
             "expected_answer": (ValueStages.OK, "Everything is good")
