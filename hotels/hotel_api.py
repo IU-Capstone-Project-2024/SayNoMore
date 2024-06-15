@@ -1,6 +1,7 @@
 import requests
 from hotels import hotel_api_data
 import os
+from hotels.hotel_enums import Language, LookFor, ConvertCase, Currency, CollectionType
 
 
 class HotelApi:
@@ -21,16 +22,17 @@ class HotelApi:
         self.fetch_city_photos_base_url = hotel_api_data.fetch_city_hotel_base_url
         self.photos_dir = "hotelPhotos"
 
-    def search_hotel_or_location(self, query, lang='en', lookFor='both', limit=10, convertCase=1):
+    def search_hotel_or_location(self, query, lang=Language.EN, look_for=LookFor.BOTH, limit=10,
+                                 convert_case=ConvertCase.ENABLED):
         """
         Searches for hotels or locations based on the provided query.
 
         Parameters:
         - query: The main parameter that can be text, IATA city code, or latitude/longitude coordinates.
         - lang: Language code for the output. Defaults to 'en'.
-        - lookFor: What objects to display in results ('city', 'hotel', 'both'). Defaults to 'both'.
+        - look_for: What objects to display in results ('city', 'hotel', 'both'). Defaults to 'both'.
         - limit: Limit on the number of results to display (1-10). Defaults to 10.
-        - convertCase: Automatic keyboard layout change flag (1 or 0). Defaults to 1.
+        - convert_case: Automatic keyboard layout change flag (1 or 0). Defaults to 1.
 
         Returns:
             A dictionary containing the search results. The structure includes:
@@ -59,10 +61,10 @@ class HotelApi:
         # Constructing the query string
         params = {
             'query': query,
-            'lang': lang,
-            'lookFor': lookFor,
+            'lang': lang.value,
+            'lookFor': look_for.value,
             'limit': limit,
-            'convertCase': convertCase,
+            'convertCase': convert_case.value,
             'token': self.api_token
         }
 
@@ -72,7 +74,7 @@ class HotelApi:
             # Check if the request was successful
             if response.status_code != 200:
                 # Raise an exception if the response status code indicates failure
-                raise Exception(f"Failed to fetch cheapest tickets. Status code: {response.status_code}")
+                raise Exception(f"Failed to search hotel or location. Status code: {response.status_code}")
             # Return the JSON content of the response
             return response.json()
 
@@ -80,21 +82,21 @@ class HotelApi:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
 
-    def fetch_hotel_prices(self, location, checkIn, checkOut, locationId=None, hotelId=None, hotel=None,
-                           adults=2, limit=4, customerIp=None, currency='USD'):
+    def fetch_hotel_prices(self, location, check_in, check_out, location_id=None, hotel_id=None, hotel=None,
+                           adults=2, limit=4, customer_ip=None, currency=Currency.USD):
         """
         Fetches hotel prices based on the provided parameters.
 
         Parameters:
         - location: Name of the location (can use IATA code).
-        - checkIn: Check-in date.
-        - checkOut: Check-out date.
-        - locationId: ID of the location (can be used instead of location).
-        - hotelId: ID of the hotel.
-        - hotel: Name of the hotel (must specify location or locationId when using this).
+        - check_in: Check-in date.
+        - check_out: Check-out date.
+        - location_id: ID of the location (can be used instead of location).
+        - hotel_id: ID of the hotel.
+        - hotel: Name of the hotel (must specify location or location_id when using this).
         - adults: Number of guests (default is 2).
         - limit: Number of hotels to return. Default is 4.
-        - customerIp: IP address of the user for non-direct requests through server proxy.
+        - customer_ip: IP address of the user for non-direct requests through server proxy.
         - currency: Currency of the response.
         - token: Your partner token.
 
@@ -116,15 +118,15 @@ class HotelApi:
         # Constructing the query string
         params = {
             'location': location,
-            'checkIn': checkIn,
-            'checkOut': checkOut,
-            'locationId': locationId,
-            'hotelId': hotelId,
+            'checkIn': check_in,
+            'checkOut': check_out,
+            'locationId': location_id,
+            'hotelId': hotel_id,
             'hotel': hotel,
             'adults': adults,
             'limit': limit,
-            'customerIp': customerIp,
-            'currency': currency,
+            'customerIp': customer_ip,
+            'currency': currency.value,
             'token': self.api_token
         }
 
@@ -142,8 +144,8 @@ class HotelApi:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
 
-    def fetch_hotel_collections(self, check_in, check_out, id, currency='rub', language='en', limit=10,
-                                type='popularity'):
+    def fetch_hotel_collections(self, check_in, check_out, city_id, currency=Currency.RUB, language=Language.EN,
+                                limit=10, collection_type=CollectionType.POPULARITY):
         """
         Fetches collections of hotels based on the provided parameters.
 
@@ -153,8 +155,8 @@ class HotelApi:
         - currency: Currency of the response.
         - language: Language of the response.
         - limit: Limit on the number of hotels to return.
-        - type: Types of hotels (refer to /tp/public/available_selections.json for options).
-        - id: ID of the city (from the Cities request).
+        - collection_type: Types of hotels (refer to /tp/public/available_selections.json for options).
+        - city_id: ID of the city (from the Cities request).
 
         Returns:
             A dictionary containing the hotel collection information. The structure includes:
@@ -184,11 +186,11 @@ class HotelApi:
         params = {
             'check_in': check_in,
             'check_out': check_out,
-            'currency': currency,
-            'language': language,
+            'currency': currency.value,
+            'language': language.value,
             'limit': limit,
-            'type': type,
-            'id': id,
+            'type': collection_type.value,
+            'id': str(city_id),
             'token': self.api_token
         }
 
@@ -205,6 +207,7 @@ class HotelApi:
         except requests.exceptions.RequestException as e:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
+
 
     def fetch_hotel_collection_types(self, city_id):
         """
@@ -251,7 +254,8 @@ class HotelApi:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
 
-    def fetch_room_types(self, language='en'):
+
+    def fetch_room_types(self, language=Language.EN):
         """
         Fetches room types
 
@@ -264,7 +268,7 @@ class HotelApi:
         """
         # Constructing the query string
         params = {
-            'language': language,
+            'language': language.value,
             'token': self.api_token  # Assuming the token is stored as an instance variable
         }
 
@@ -282,7 +286,8 @@ class HotelApi:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
 
-    def fetch_hotel_types(self, language='en'):
+
+    def fetch_hotel_types(self, language=Language.EN):
         """
         Fetches hotel types
 
@@ -295,7 +300,7 @@ class HotelApi:
         """
         # Constructing the query string
         params = {
-            'language': language,
+            'language': language.value,
             'token': self.api_token  # Assuming the token is stored as an instance variable
         }
 
@@ -312,6 +317,7 @@ class HotelApi:
         except requests.exceptions.RequestException as e:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
+
 
     def fetch_and_save_photo(self, url, hotel_id, photo_index):
         """Fetches and saves a photo given its URL."""
@@ -326,22 +332,22 @@ class HotelApi:
         else:
             raise Exception(f"Failed to fetch photo from {url} for hotel {hotel_id}. Status code: {response.status_code}")
 
+
     def fetch_hotel_photos(self, hotel_ids, width=800, height=520):
         """
         Fetches photos for specified hotels and saves them locally.
 
         Parameters:
-        - hotel_ids: Comma-separated string of hotel IDs.
+        - hotel_ids: list of Hotel ids.
 
         Returns:
         None
         """
-        # Splitting hotel_ids into a list
-        hotel_id_list = hotel_ids.split(',')
+        hotel_ids_str = ','.join(map(str, hotel_ids))
 
         params = {
-            'id' : hotel_ids,
-            'token' : self.api_token
+            'id': hotel_ids_str,
+            'token': self.api_token
         }
         # First, fetching photo IDs for each hotel
         photo_ids_response = requests.get(self.fetch_hotel_photos_base_url, params=params)
@@ -355,6 +361,7 @@ class HotelApi:
                     self.fetch_and_save_photo(photo_url, int(hotel_id), i)
         else:
             raise Exception(f"Failed to fetch photo IDs. Status code: {photo_ids_response.status_code}")
+
 
     def fetch_city_photo(self, iata_code, width=960, height=720):
         """

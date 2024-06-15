@@ -110,20 +110,20 @@ class TestAirTicketsApi(TestCase):
         two_weeks_later = today + timedelta(weeks=2)
         three_weeks_later = today + timedelta(weeks=3)
         # Format the departure date as a string in YYYY-MM-DD format
-        check_In = two_weeks_later.strftime('%Y-%m-%d')
-        check_Out = three_weeks_later.strftime('%Y-%m-%d')
-        response = self.hotel_api.fetch_hotel_prices(location=location, checkIn=check_In, checkOut=check_Out)
+        check_in = two_weeks_later.strftime('%Y-%m-%d')
+        check_out = three_weeks_later.strftime('%Y-%m-%d')
+        response = self.hotel_api.fetch_hotel_prices(location=location, check_in=check_in, check_out=check_out)
         self.assertTrue(response[0]['locationId'])
 
     def test_fetch_hotel_collections(self):
-        id = 12209
+        city_id = 12209
         today = datetime.today()
         two_weeks_later = today + timedelta(weeks=2)
         three_weeks_later = today + timedelta(weeks=3)
         # Format the departure date as a string in YYYY-MM-DD format
         check_in = two_weeks_later.strftime('%Y-%m-%d')
         check_out = three_weeks_later.strftime('%Y-%m-%d')
-        response = self.hotel_api.fetch_hotel_collections(id=id, check_in=check_in, check_out=check_out)
+        response = self.hotel_api.fetch_hotel_collections(city_id=city_id, check_in=check_in, check_out=check_out)
         self.assertTrue(response['popularity'])
 
     def test_fetch_hotel_collection_types(self):
@@ -140,7 +140,7 @@ class TestAirTicketsApi(TestCase):
         self.assertTrue(response['1'])
 
     def test_fetch_hotel_photos(self):
-        id = '4'
+        id = [4]
         file_path = f'hotelPhotos/4/photo1.avif'
         # Check if the file exists
         if os.path.exists(file_path):
