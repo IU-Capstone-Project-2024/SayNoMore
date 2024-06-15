@@ -1,6 +1,7 @@
 import requests
 from air_tickets import air_api_data
 import os
+from air_tickets.flight_enums import Currency, Market, Sorting, GroupBy, PeriodType, TripClass
 
 
 class AirTicketsApi:
@@ -20,63 +21,63 @@ class AirTicketsApi:
         self.fetch_popular_routes_from_city_url = air_api_data.fetch_popular_routes_from_city_url
         self.fetch_airline_logos_url_base = air_api_data.fetch_airline_logos_url_base
 
-    def fetch_cheapest_tickets(self, origin=None, destination=None, currency='rub', departure_at=None, return_at=None,
-                               one_way='true', direct='false', market='ru', limit=30, page=1, sorting='price',
-                               unique='false'):
+    def fetch_cheapest_tickets(self, currency=Currency.RUB, origin=None, destination=None, departure_at=None,
+                               return_at=None, one_way=True, direct=False, market=Market.RU, limit=30, page=1,
+                               sorting=Sorting.PRICE, unique=False):
         """
-               Fetch the cheapest air tickets for specific dates.
+        Fetch the cheapest air tickets for specific dates.
 
-               :param origin: Departure point (IATA code).
-               :param destination: Destination point (IATA code).
-               :param currency: Currency of the ticket prices. Default is 'rub'.
-               :param departure_at: Departure date (format YYYY-MM or YYYY-MM-DD).
-               :param return_at: Return date (format YYYY-MM or YYYY-MM-DD).
-               :param one_way: One way ticket. Default is True.
-               :param direct: Direct flights only. Default is False.
-               :param market: Data source market. Default is 'ru'.
-               :param limit: Number of records in the response. Default is 30.
-               :param page: Page number to skip the first records. Default is 1.
-               :param sorting: Sorting of prices. Default is 'price'. Can be 'price' or 'route'
-               :param unique: Return only unique directions if origin is specified but destination is not. Default is False.
-               :return: JSON response with the structure:
-                    {
-                        "success": bool,  # Indicates the success of the request
-                        "data": [
-                            {
-                                "origin": str,  # Departure point
-                                "destination": str,  # Destination point
-                                "origin_airport": str,  # IATA code of the departure airport
-                                "destination_airport": str,  # IATA code of the destination airport
-                                "price": float,  # Ticket price
-                                "airline": str,  # IATA code of the airline
-                                "flight_number": str,  # Flight number
-                                "departure_at": str,  # Departure date
-                                "return_at": str,  # Return date
-                                "transfers": int,  # Number of transfers on the outbound trip
-                                "return_transfers": int,  # Number of transfers on the return trip
-                                "duration": int,  # Total duration of the round trip in minutes
-                                "duration_to": int,  # Duration of the outbound flight in minutes
-                                "duration_back": int,  # Duration of the return flight in minutes
-                                "link": str,  # Link to the ticket on Aviasales
-                                "currency": str  # Currency of the ticket price
-                            },
-                            ...
-                        ]
-                    }
-               """
+        :param currency: Currency of the ticket prices. Default is 'rub'.
+        :param origin: Departure point (IATA code).
+        :param destination: Destination point (IATA code).
+        :param departure_at: Departure date (format YYYY-MM or YYYY-MM-DD).
+        :param return_at: Return date (format YYYY-MM or YYYY-MM-DD).
+        :param one_way: One way ticket. Default is True.
+        :param direct: Direct flights only. Default is False.
+        :param market: Data source market. Default is 'ru'.
+        :param limit: Number of records in the response. Default is 30.
+        :param page: Page number to skip the first records. Default is 1.
+        :param sorting: Sorting of prices. Default is 'price'. Can be 'price' or 'route'
+        :param unique: Return only unique directions if origin is specified but destination is not. Default is False.
+        :return: JSON response with the structure:
+             {
+                 "success": bool,  # Indicates the success of the request
+                 "data": [
+                     {
+                         "origin": str,  # Departure point
+                         "destination": str,  # Destination point
+                         "origin_airport": str,  # IATA code of the departure airport
+                         "destination_airport": str,  # IATA code of the destination airport
+                         "price": float,  # Ticket price
+                         "airline": str,  # IATA code of the airline
+                         "flight_number": str,  # Flight number
+                         "departure_at": str,  # Departure date
+                         "return_at": str,  # Return date
+                         "transfers": int,  # Number of transfers on the outbound trip
+                         "return_transfers": int,  # Number of transfers on the return trip
+                         "duration": int,  # Total duration of the round trip in minutes
+                         "duration_to": int,  # Duration of the outbound flight in minutes
+                         "duration_back": int,  # Duration of the return flight in minutes
+                         "link": str,  # Link to the ticket on Aviasales
+                         "currency": str  # Currency of the ticket price
+                     },
+                     ...
+                 ]
+             }
+        """
         params = {
-            'currency': currency,
+            'currency': currency.value,
             'origin': origin,
             'destination': destination,
             'departure_at': departure_at,
             'return_at': return_at,
-            'one_way': one_way,
-            'direct': direct,
-            'market': market,
+            'one_way': str(one_way).lower(),
+            'direct': str(direct).lower(),
+            'market': market.value,
             'limit': limit,
             'page': page,
-            'sorting': sorting,
-            'unique': unique,
+            'sorting': sorting.value,
+            'unique': str(unique).lower(),
             'token': self.api_token
         }
 
@@ -94,8 +95,8 @@ class AirTicketsApi:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
 
-    def fetch_grouped_tickets(self, currency='rub', origin=None, destination=None, group_by='departure_at',
-                              departure_at=None, return_at=None, market='ru', direct='false', trip_duration=None):
+    def fetch_grouped_tickets(self, currency=Currency.RUB, origin=None, destination=None, group_by=GroupBy.DEPARTURE_AT,
+                              departure_at=None, return_at=None, market=Market.RU, direct=False, trip_duration=None):
         """
         Fetch grouped cheap air tickets.
 
@@ -135,14 +136,14 @@ class AirTicketsApi:
             }
         """
         params = {
-            'currency': currency,
+            'currency': currency.value,
             'origin': origin,
             'destination': destination,
-            'group_by': group_by,
+            'group_by': group_by.value,
             'departure_at': departure_at,
             'return_at': return_at,
-            'market': market,
-            'direct': direct,
+            'market': market.value,
+            'direct': str(direct).lower(),
             'trip_duration': trip_duration,
             'token': self.api_token
         }
@@ -161,9 +162,9 @@ class AirTicketsApi:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
 
-    def fetch_period_tickets(self, currency='rub', origin='MOW', destination=None, beginning_of_period=None,
-                             period_type=None, group_by='dates', one_way='true', page=1, market='ru', limit=30,
-                             sorting='price', trip_duration=None, trip_class=0):
+    def fetch_period_tickets(self, currency=Currency.RUB, origin='MOW', destination=None, beginning_of_period=None,
+                             period_type=PeriodType.MONTH, group_by=GroupBy.DATES, one_way=True, page=1, market=Market.RU,
+                             limit=30, sorting=Sorting.PRICE, trip_duration=None, trip_class=TripClass.ECONOMY):
         """
         Fetch air ticket prices for a specified period.
 
@@ -201,19 +202,19 @@ class AirTicketsApi:
             }
         """
         params = {
-            'currency': currency,
+            'currency': currency.value,
             'origin': origin,
             'destination': destination,
             'beginning_of_period': beginning_of_period,
-            'period_type': period_type,
-            'group_by': group_by,
-            'one_way': one_way,
+            'period_type': period_type.value,
+            'group_by': group_by.value,
+            'one_way': str(one_way).lower(),
             'page': page,
-            'market': market,
+            'market': market.value,
             'limit': limit,
-            'sorting': sorting,
+            'sorting': sorting.value,
             'trip_duration': trip_duration,
-            'trip_class': trip_class,
+            'trip_class': trip_class.value,
             'token': self.api_token
         }
 
@@ -223,7 +224,7 @@ class AirTicketsApi:
             # Check if the request was successful
             if response.status_code != 200:
                 # Raise an exception if the response status code indicates failure
-                raise Exception(f"Failed to fetch cheapest tickets. Status code: {response.status_code}")
+                raise Exception(f"Failed to fetch period tickets. Status code: {response.status_code}")
             # Return the JSON content of the response
             return response.json()
 
