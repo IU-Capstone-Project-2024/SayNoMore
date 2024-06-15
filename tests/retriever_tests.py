@@ -6,6 +6,7 @@ from request_analyzer.retreivers.departure_retriever import DepartureRetriever
 from request_analyzer.retreivers.arrival_retriever import ArrivalRetriever
 from request_analyzer.retreivers.return_retriever import ReturnRetriever
 from request_analyzer.retreivers.budget_retriever import BudgetRetriever
+from request_analyzer.information_retriever import InformationRetriever
 from request_analyzer.utils.embedding_city_search import EmbeddingCitySearch
 
 
@@ -44,6 +45,8 @@ class TestRetrievers(unittest.TestCase):
         cls.arrival_retr = ArrivalRetriever(cls.llm)
         cls.return_retr = ReturnRetriever(cls.llm)
         cls.budget_retr = BudgetRetriever(cls.llm)
+
+        cls.information_retr = InformationRetriever(cls.llm)
 
     def test_departure_retriever(self):
         test_cases = [{
@@ -159,6 +162,12 @@ class TestRetrievers(unittest.TestCase):
             expected_return = case["expected_return"]
             retrieved_return = self.return_retr.retrieve(request).strip()
             self.assertEqual(retrieved_return.lower(), expected_return.lower())
+
+    def test_information_retriever(self):
+        request = "Поеду из Казани в Москву в середине июня. Мой бюджет 200 тысяч."
+        information_retrieved = self.information_retr.retrieve(request)
+        print(information_retrieved)
+
 
 
 if __name__ == '__main__':
