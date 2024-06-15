@@ -232,9 +232,9 @@ class AirTicketsApi:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
 
-    def fetch_alternative_route_tickets(self, currency='rub', origin=None, destination=None, show_to_affiliates='false',
-                                        depart_date=None, return_date=None, distance=None, market='ru', limit=1,
-                                        flexibility=0):
+    def fetch_alternative_route_tickets(self, currency=Currency.RUB, origin=None, destination=None,
+                                        show_to_affiliates=False, depart_date=None, return_date=None,
+                                        distance=None, market=Market.RU, limit=1, flexibility=0):
         """
         Fetch alternative route tickets based on the given parameters.
 
@@ -269,14 +269,14 @@ class AirTicketsApi:
             }
         """
         params = {
-            'currency': currency,
+            'currency': currency.value,
             'origin': origin,
             'destination': destination,
-            'show_to_affiliates': show_to_affiliates,
+            'show_to_affiliates': str(show_to_affiliates).lower(),
             'depart_date': depart_date,
             'return_date': return_date,
             'distance': distance,
-            'market': market,
+            'market': market.value,
             'limit': limit,
             'flexibility': flexibility,
             'token': self.api_token
@@ -288,7 +288,7 @@ class AirTicketsApi:
             # Check if the request was successful
             if response.status_code != 200:
                 # Raise an exception if the response status code indicates failure
-                raise Exception(f"Failed to fetch cheapest tickets. Status code: {response.status_code}")
+                raise Exception(f"Failed to fetch alternative route tickets. Status code: {response.status_code}")
             # Return the JSON content of the response
             return response.json()
 
@@ -296,7 +296,7 @@ class AirTicketsApi:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
 
-    def fetch_popular_routes_from_city(self, origin=None, currency='rub'):
+    def fetch_popular_routes_from_city(self, origin=None, currency=Currency.RUB):
         """
         Fetch popular routes from a city based on the given parameters.
 
@@ -327,7 +327,7 @@ class AirTicketsApi:
         """
         params = {
             'origin': origin,
-            'currency': currency,
+            'currency': currency.value,
             'token': self.api_token
         }
 
@@ -337,7 +337,7 @@ class AirTicketsApi:
             # Check if the request was successful
             if response.status_code != 200:
                 # Raise an exception if the response status code indicates failure
-                raise Exception(f"Failed to fetch cheapest tickets. Status code: {response.status_code}")
+                raise Exception(f"Failed to fetch popular routes. Status code: {response.status_code}")
             # Return the JSON content of the response
             return response.json()
 
