@@ -1,4 +1,3 @@
-import os
 import unittest
 from vllm import LLM
 from request_analyzer.retreivers.destination_retriever import DestinationRetriever
