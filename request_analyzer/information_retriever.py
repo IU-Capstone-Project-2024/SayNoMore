@@ -11,6 +11,7 @@ from request_analyzer.retreivers.abstract_retriever import BaseRetriever
 from request_analyzer.verifiers.abstract_verifier import ValueStages
 from request_analyzer.request_verifier import RequestVerifier
 from request_analyzer.verifiers.post_verifier import PostVerifier
+from request_analyzer.utils.embedding_city_search import EmbeddingCitySearch
 
 
 class InformationRetriever:
@@ -40,14 +41,15 @@ class InformationRetriever:
         self.llm = llm
 
         self.verifier = RequestVerifier()
+        self.searcher = EmbeddingCitySearch()
 
         # Register retrievers
         self.register_retriever(RequestField.Arrival, ArrivalRetriever(llm))
         self.register_retriever(RequestField.Return, ReturnRetriever(llm))
         self.register_retriever(RequestField.Departure,
-                                DepartureRetriever(llm))
+                                DepartureRetriever(llm, self.searcher))
         self.register_retriever(RequestField.Destination,
-                                DestinationRetriever(llm))
+                                DestinationRetriever(llm, self.searcher))
         self.register_retriever(RequestField.Budget, BudgetRetriever(llm))
 
     def register_retriever(self, field_name: str,
@@ -98,8 +100,9 @@ class InformationRetriever:
             if field.is_required and status != ValueStages.OK:
                 is_all_fields_correct = False
 
+        post_verif_res = []
         if is_all_fields_correct:
-            post_verif_res = PostVerifier.verify_all_fields(
+            post_verif_res = PostVerifier().verify_all_fields(
                 map_for_post_verification)
             is_all_fields_correct = post_verif_res == []
 

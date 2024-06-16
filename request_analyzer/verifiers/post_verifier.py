@@ -44,8 +44,8 @@ class PostVerifier():
                 verification_result[RequestField.Return][0],
                 verification_result[RequestField.Return][1]):
             result_verif_status.append((ValueStages.INCORRECT_VALUE,
-                                        "The time of arrival in a city is "
-                                        "earlier than the time of departure "
+                                        "The time of return from a city is "
+                                        "earlier than the time of arrival "
                                         "from that city."))
         if not self._cities_verification(
                 verification_result[RequestField.Departure][0],
@@ -88,8 +88,8 @@ class PostVerifier():
         return_time = datetime.strptime(return_time_retrieved, '%d/%m/%Y')
         # Check if arrival time is later than return time
         if arrival_time > return_time:
-            return True
-        return False
+            return False
+        return True
 
     def _cities_verification(self, departure_city_status: ValueStages,
                              departure_city_retrieved: str,

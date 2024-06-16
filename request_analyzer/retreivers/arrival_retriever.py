@@ -13,7 +13,7 @@ class ArrivalRetriever(BaseRetriever):
     def __init__(self, llm: LLM) -> None:
         self.llm = llm
         # Setting up sampling parameters for deterministic output
-        self.sampling_params = SamplingParams(temperature=0, stop="\n")
+        self.sampling_params = SamplingParams(temperature=0, stop='"')
         # Defining a prompt template to guide the model towards
         # extracting arrival cities
         self.prefix_prompt = \
@@ -23,6 +23,9 @@ class ArrivalRetriever(BaseRetriever):
     
             Q: "Хочу уехать из Москвы куда-нибудь на три дня, есть двадцать тысяч"
             A: Arrival Time: "None"
+
+            Q: "Поеду в Альметьевск в середине августа"
+            A: Arrival Time: "15/08/2024"
     
             Q: "Уеду в Питер из Казани в июле с 12 по 17 числа +- 300000 рублей"
             A: Arrival Time: "12/07/2024"

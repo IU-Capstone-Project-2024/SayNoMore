@@ -13,7 +13,7 @@ class ReturnRetriever(BaseRetriever):
         # Defining a prompt template to guide the model extract return date
         self.cur_day = datetime.now()
         self.prefix_prompt = \
-            '''Today is June 9, 2024. Sunday. Your task is to extract the return time from the destination city from the user's request. Examples:
+            '''Today is June 9, 2024. Sunday. Your task is to extract the return time from the destination city from the user's request depending on the todays date. Examples:
             Q: "Планирую сгонять в Хабаровск через три недели."
             A: Return date: "None"
             
@@ -44,7 +44,7 @@ class ReturnRetriever(BaseRetriever):
             Q: "Я в Москву в с 1ое по 5ое мая"
             A: Return date: "05/05/2025"
 
-            Today is {self.cur_day.strftime('%B %d, %Y. %A.') } Your task is to extract the return time from the destination city from the user's request.
+            Today is INSERT_DATE Your task is to extract the return time from the destination city from the user's request depending on the todays date.
 
             Q: "USER_REQUEST"
             A: Return date: "'''
@@ -64,9 +64,13 @@ class ReturnRetriever(BaseRetriever):
                  as a string, or a message indicating
                  no destination was found.
         """
+        # Put actual information about the date in the prompt
+        cur_day = datetime.now()
+        prompt = self.prefix_prompt.replace("INSERT_DATE",
+                                            cur_day.strftime('%B %d, %Y. %A.'))
         # Replace the placeholder in the prompt
         # template with the actual user request
-        prompt = self.prefix_prompt.replace("USER_REQUEST", request)
+        prompt = prompt.replace("USER_REQUEST", request)
         # Generate a response from the VLLM using
         # the customized prompt and sampling parameters
         vllm_output = self.llm.generate(prompt, self.sampling_params)

@@ -49,10 +49,3 @@ class EmbeddingCitySearch():
             raise FileNotFoundError(
                 f"Could not locate {root_marker_file} to determine project root."
             )
-
-
-# Example usage
-query_city = "Иннплdcscsdcsис"
-
-searcher = EmbeddingCitySearch()
-print(searcher.search_city(query_city))
