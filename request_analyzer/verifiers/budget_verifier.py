@@ -50,8 +50,6 @@ class BudgetVerifier(BaseVerifier):
                 return (ValueStages.INCORRECT_VALUE,
                         "Negative amount of budget is not available.")
         except ValueError:
-            return (ValueStages.INCORRECT_VALUE,
-                    "Can not parse the budget")
+            return (ValueStages.INCORRECT_VALUE, "Can not parse the budget")
         # everything is fine
-        return (ValueStages.OK,
-                "Everything is good")
+        return (ValueStages.OK, "Everything is good")

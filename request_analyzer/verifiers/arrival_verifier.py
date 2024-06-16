@@ -8,11 +8,11 @@ from enum import Enum
 class DateInfo(Enum):
     OK = "Everything is good."
     WRONG_DATE_FORMAT = "The user entered wrong date format."
-    DATE_IS_OUTDATED =  "The user entered outdated date."
+    DATE_IS_OUTDATED = "The user entered outdated date."
 
     def __init__(self, message: str):
         self.message = message
-    
+
 
 class ArrivalVerifier(BaseVerifier):
     '''
@@ -98,15 +98,12 @@ class ArrivalVerifier(BaseVerifier):
 
         # If data is in wrong format
         if check_date_reply == DateInfo.WRONG_DATE_FORMAT:
-            return (ValueStages.INCORRECT_VALUE,
-                    check_date_reply.message)
-        
+            return (ValueStages.INCORRECT_VALUE, check_date_reply.message)
+
         # Outdated data check
         if is_valid_date_reply == DateInfo.DATE_IS_OUTDATED or \
            is_valid_date_reply == DateInfo.WRONG_DATE_FORMAT:
-            return (ValueStages.INCORRECT_VALUE,
-                    is_valid_date_reply.message)
-        
+            return (ValueStages.INCORRECT_VALUE, is_valid_date_reply.message)
+
         # Return ok if everything is fine
-        return (ValueStages.OK,
-                DateInfo.OK.message)
+        return (ValueStages.OK, DateInfo.OK.message)

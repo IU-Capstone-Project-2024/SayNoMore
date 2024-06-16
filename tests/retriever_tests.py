@@ -7,9 +7,9 @@ from request_analyzer.retreivers.return_retriever import ReturnRetriever
 from request_analyzer.retreivers.budget_retriever import BudgetRetriever
 from request_analyzer.information_retriever import InformationRetriever
 from request_analyzer.utils.embedding_city_search import EmbeddingCitySearch
-from request_analyzer.more_info_required_message_generator import MoreInfoRequiredMessageGenerator
 from request_analyzer.request_fields_enum import RequestField
 from request_analyzer.verifiers.abstract_verifier import ValueStages
+
 
 class TestRetrievers(unittest.TestCase):
 
@@ -168,20 +168,28 @@ class TestRetrievers(unittest.TestCase):
         request = "Отправляюсь из Казани в город Казань c 15ое по 2ое сентября. Мой бюджет 200 тысяч."
         information_retrieved = self.information_retr.retrieve(request)
 
-        test_answer = (
-            {RequestField.Arrival: "RequestField.Arrival data retrieved from user's request: 15/09/2024. Verification status: OK; Description: Everything is good.",
-             RequestField.Return: "RequestField.Return data retrieved from user's request: 02/09/2024. Verification status: OK; Description: Everything is good.", 
-             RequestField.Departure: "RequestField.Departure data retrieved from user's request: Казань. Verification status: OK; Description: Everything is good", 
-             RequestField.Destination: "RequestField.Destination data retrieved from user's request: Казань. Verification status: OK; Description: Everything is good",
-             RequestField.Budget: "RequestField.Budget data retrieved from user's request: 200000. Verification status: OK; Description: Everything is good"},
-             False,
-             [(ValueStages.INCORRECT_VALUE, 'The time of return from a city is earlier than the time of arrival from that city.'), 
-              (ValueStages.INCORRECT_VALUE, 'Destination and departure cities match')]
-        )
+        test_answer = ({
+            RequestField.Arrival:
+            "RequestField.Arrival data retrieved from user's request: 15/09/2024. Verification status: OK; Description: Everything is good.",
+            RequestField.Return:
+            "RequestField.Return data retrieved from user's request: 02/09/2024. Verification status: OK; Description: Everything is good.",
+            RequestField.Departure:
+            "RequestField.Departure data retrieved from user's request: Казань. Verification status: OK; Description: Everything is good",
+            RequestField.Destination:
+            "RequestField.Destination data retrieved from user's request: Казань. Verification status: OK; Description: Everything is good",
+            RequestField.Budget:
+            "RequestField.Budget data retrieved from user's request: 200000. Verification status: OK; Description: Everything is good"
+        }, False, [(
+            ValueStages.INCORRECT_VALUE,
+            'The time of return from a city is earlier than the time of arrival from that city.'
+        ),
+                   (ValueStages.INCORRECT_VALUE,
+                    'Destination and departure cities match')])
 
         for key in information_retrieved[0]:
-            self.assertEqual(information_retrieved[0][key], test_answer[0][key])
-        
+            self.assertEqual(information_retrieved[0][key],
+                             test_answer[0][key])
+
         self.assertEqual(information_retrieved[1], test_answer[1])
         self.assertEqual(len(information_retrieved[2]), len(test_answer[2]))
         for idx, retr_post_verif in enumerate(information_retrieved[2]):

@@ -65,7 +65,9 @@ class InformationRetriever:
         """
         self.retrievers[field_name] = retriever
 
-    def retrieve(self, request: str) -> List[Dict[RequestField, str], bool, List[Tuple[ValueStages, str]]]:
+    def retrieve(
+        self, request: str
+    ) -> Tuple[Dict[RequestField, str], bool, List[Tuple[ValueStages, str]]]:
         """
         Retrieves information from a user request using
         registered retrievers.

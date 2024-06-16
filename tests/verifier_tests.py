@@ -85,15 +85,16 @@ class TestRetrievers(unittest.TestCase):
         }, {
             "retrieved_field":
             '02/12/2023',
-            "expected_answer": (ValueStages.INCORRECT_VALUE,
-                                "The user entered outdated date.")
+            "expected_answer":
+            (ValueStages.INCORRECT_VALUE, "The user entered outdated date.")
         }, {
             "retrieved_field":
             '02/13/2025',
             "expected_answer": (ValueStages.INCORRECT_VALUE,
                                 "The user entered wrong date format.")
         }, {
-            "retrieved_field": '02/10/2024',
+            "retrieved_field":
+            '02/10/2024',
             "expected_answer": (ValueStages.OK, "Everything is good.")
         }]
 
@@ -118,15 +119,16 @@ class TestRetrievers(unittest.TestCase):
         }, {
             "retrieved_field":
             '02/12/2023',
-            "expected_answer": (ValueStages.INCORRECT_VALUE,
-                                "The user entered outdated date.")
+            "expected_answer":
+            (ValueStages.INCORRECT_VALUE, "The user entered outdated date.")
         }, {
             "retrieved_field":
             '02/13/2025',
             "expected_answer": (ValueStages.INCORRECT_VALUE,
                                 "The user entered wrong date format.")
         }, {
-            "retrieved_field": '02/10/2024',
+            "retrieved_field":
+            '02/10/2024',
             "expected_answer": (ValueStages.OK, "Everything is good.")
         }]
 
@@ -151,8 +153,8 @@ class TestRetrievers(unittest.TestCase):
         }, {
             "retrieved_field":
             '-10243',
-            "expected_answer":
-            (ValueStages.INCORRECT_VALUE, "Negative amount of budget is not available.")
+            "expected_answer": (ValueStages.INCORRECT_VALUE,
+                                "Negative amount of budget is not available.")
         }, {
             "retrieved_field":
             '0.32',
