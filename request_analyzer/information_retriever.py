@@ -1,5 +1,5 @@
 from vllm import LLM
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 
 from request_analyzer.request_fields_enum import RequestField
 from request_analyzer.retreivers.arrival_retriever import ArrivalRetriever
@@ -65,7 +65,7 @@ class InformationRetriever:
         """
         self.retrievers[field_name] = retriever
 
-    def retrieve(self, request: str) -> Tuple[Dict[str, str], bool]:
+    def retrieve(self, request: str) -> List[Dict[RequestField, str], bool, List[Tuple[ValueStages, str]]]:
         """
         Retrieves information from a user request using
         registered retrievers.
