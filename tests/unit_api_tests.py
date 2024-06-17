@@ -84,7 +84,7 @@ class TestAirTicketsApi(TestCase):
 
     def test_fetch_airline_logo(self):
         iata_code = 'UN'
-        file_path = f'airline_logos/{iata_code}.png'
+        file_path = f'photos/airline_logos/{iata_code}.png'
         # Check if the file exists
         if os.path.exists(file_path):
             # Delete the file
@@ -141,7 +141,7 @@ class TestAirTicketsApi(TestCase):
 
     def test_fetch_hotel_photos(self):
         id = [4]
-        file_path = f'hotelPhotos/4/photo1.avif'
+        file_path = f'photos/hotelPhotos/4/photo1.avif'
         # Check if the file exists
         if os.path.exists(file_path):
             # Delete the file
@@ -154,7 +154,7 @@ class TestAirTicketsApi(TestCase):
 
     def test_fetch_city_photo(self):
         iata_code = 'MOW'
-        file_path = f'cityPhotos/{iata_code}.png'
+        file_path = f'photos/cityPhotos/{iata_code}.png'
         # Check if the file exists
         if os.path.exists(file_path):
             # Delete the file

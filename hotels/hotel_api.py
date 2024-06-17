@@ -20,7 +20,7 @@ class HotelApi:
         self.fetch_hotel_types_url = hotel_api_data.fetch_hotel_types_url
         self.fetch_hotel_photos_base_url = hotel_api_data.fetch_hotel_photos_base_url
         self.fetch_city_photos_base_url = hotel_api_data.fetch_city_hotel_base_url
-        self.photos_dir = "hotelPhotos"
+        self.photos_dir = "photos/hotelPhotos"
 
     def search_hotel_or_location(self, query, lang=Language.EN, look_for=LookFor.BOTH, limit=10,
                                  convert_case=ConvertCase.ENABLED):
@@ -369,7 +369,7 @@ class HotelApi:
         :param iata_code: iata code og the city
         :return: None
         """
-        photo_directory = "cityPhotos"
+        photo_directory = "photos/cityPhotos"
         os.makedirs(photo_directory, exist_ok=True)  # Ensure the directory exists
         photo_url = f'{self.fetch_city_photos_base_url}{width}x{height}/{iata_code}.jpg'
         photo_path = os.path.join(photo_directory, f"{iata_code}.png")

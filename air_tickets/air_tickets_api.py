@@ -355,7 +355,7 @@ class AirTicketsApi:
         :return: None
         """
 
-        logo_directory = "airline_logos"
+        logo_directory = "photos/airline_logos"
         os.makedirs(logo_directory, exist_ok=True)  # Ensure the directory exists
 
         # Construct the URL for the airline logo using the base URL, IATA code, and dimensions
