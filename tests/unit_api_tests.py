@@ -63,7 +63,7 @@ class TestAirTicketsApi(TestCase):
 
         # Call the fetch_period_tickets method on the api object and store its response
         response = self.air_api.fetch_period_tickets(origin='MOW', destination='DXB',
-                                                 beginning_of_period=beginning_of_period)
+                                                     beginning_of_period=beginning_of_period)
 
         # Assert that the response indicates success
         self.assertTrue(response['success'])
@@ -97,14 +97,14 @@ class TestAirTicketsApi(TestCase):
 
     def test_search_hotel_or_location(self):
         expected_data = {
-            'status' : 'ok'
+            'status': 'ok'
         }
-        query='moscow'
+        query = 'moscow'
         response = self.hotel_api.search_hotel_or_location(query=query)
         self.assertEqual(response['status'], expected_data['status'])
 
     def test_fetch_hotel_prices(self):
-        location='moscow'
+        location = 'moscow'
         # Get today's date and calculate the date two weeks later
         today = datetime.today()
         two_weeks_later = today + timedelta(weeks=2)

@@ -83,7 +83,7 @@ class HotelApi:
             raise Exception("There was an error making the request.") from e
 
     def fetch_hotel_prices(self, location, check_in, check_out, location_id=None, hotel_id=None, hotel=None,
-                           adults=2, limit=4, customer_ip=None, currency=Currency.USD):
+                           adults=2, limit=5, customer_ip=None, currency=Currency.RUB):
         """
         Fetches hotel prices based on the provided parameters.
 
