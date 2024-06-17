@@ -74,4 +74,54 @@ class RouteCollector:
             # Slice the tickets list to only include tickets within budget
             tickets = tickets[:last_index]
         # Return the last ticket in the filtered list, which should be the cheapest
-        return tickets[-1]
+        if len(tickets) > 0:
+            return tickets[-1]
+        else:
+            return None
+
+    def get_hotel(self, location, check_in, check_out, budget=None):
+        """
+        Fetches the hotel based on the specified parameters.
+
+        Parameters:
+        - location: str, Name of the location (can use IATA code).
+        - check_in: str, Check-in date (format YYYY-MM-DD).
+        - check_out: str, Check-out date (format YYYY-MM-DD).
+        - budget: float, optional, Maximum price for the hotel.
+
+        Returns:
+        - dict: The hotel that matches the criteria or None if no hotels match:
+            {
+                'locationId': int,  # ID of the location
+                'hotelId': int,  # ID of the hotel
+                'priceFrom': float,  # Minimum price for staying at the hotel room
+                'priceAvg': float,  # Average price for staying at the hotel room
+                'pricePercentile': dict,  # Price distribution by percentages
+                'stars': int,  # Number of stars of the hotel
+                'hotelName': str,  # Name of the hotel
+                'location': dict,  # Information about the hotel location
+                'geo': dict,  # Coordinates of the location (city)
+                'name': str,  # Name of the location (city)
+                'state': str,  # State where the city is located
+                'country': str  # Country of the hotel
+            }
+        """
+
+        # Fetch hotel prices based on the provided location, check-in and check-out dates, and limit
+        hotels = self.hotel_api.fetch_hotel_prices(location=location,
+                                                   check_in=check_in,
+                                                   check_out=check_out,
+                                                   limit=1000)
+
+        # Sort the fetched hotels by the 'priceFrom' field in ascending order
+        hotels = sorted(hotels, key=lambda x: x['priceFrom'])
+
+        # If a budget is specified, filter hotels to include only those with 'priceFrom' less than the budget
+        if budget:
+            hotels = [hotel for hotel in hotels if hotel['priceFrom'] < budget]
+
+        # Return the last hotel in the filtered list (the cheapest within budget), or None if no hotels match
+        if len(hotels) > 0:
+            return hotels[-1]
+        else:
+            return None
