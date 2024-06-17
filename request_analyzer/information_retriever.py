@@ -86,7 +86,7 @@ class InformationRetriever:
                     retrieved correctly.
         """
         result_map = {}
-        is_all_fields_correct = True
+        are_all_fields_correct = []
         map_for_post_verification = {}
         for field, retriever in self.retrievers.items():
             retrieved_data = retriever.retrieve(request)
@@ -100,12 +100,14 @@ class InformationRetriever:
                                 verification_result
 
             if field.is_required and status != ValueStages.OK:
-                is_all_fields_correct = False
+                are_all_fields_correct.append(False)
+            else:
+                are_all_fields_correct.append(True)
 
         post_verif_res = []
-        if is_all_fields_correct:
+        if all(are_all_fields_correct):
             post_verif_res = PostVerifier().verify_all_fields(
                 map_for_post_verification)
-            is_all_fields_correct = post_verif_res == []
+            are_all_fields_correct.append(post_verif_res == [])
 
-        return result_map, is_all_fields_correct, post_verif_res
+        return result_map, are_all_fields_correct, post_verif_res

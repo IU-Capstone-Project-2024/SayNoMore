@@ -30,6 +30,8 @@ class RequestAnalyzer:
         self.llm = llm 
         self.information_retriever = InformationRetriever(self.llm)
         self.message_generator = MoreInfoRequiredMessageGenerator(self.llm)
+        self.extracted_data = {}
+        self.are_all_fields_retrieved = []
     
     def analyzer_step(self, user_request: str) -> Tuple[bool, str]:
         """
@@ -62,11 +64,35 @@ class RequestAnalyzer:
         # Retrieve information and 
         # verification results from 
         # the user request
-        fields_verification_map, is_all_fields_correct, post_verif_result = \
+        fields_verification_map, are_all_fields_correct, post_verif_result = \
             self.information_retriever.retrieve(user_request)
         
+        if not self.are_all_fields_retrieved:
+            self.are_all_fields_retrieved = are_all_fields_correct
+        else:
+            for idx in enumerate(are_all_fields_correct):
+                if self.are_all_fields_retrieved[idx] is False \
+                    and are_all_fields_correct[idx] is True:
+                    self.are_all_fields_retrieved[idx] = True
+        
+        # Compile a regular expression pattern to 
+        # extract field names and data from the 
+        # verification results
+        pattern = re.compile(r"RequestField\.(\w+) data retrieved from user's request: (.+?)\. Verification status:")
+        
+        # Iterate through the verification map 
+        # to extract and concatenate field names 
+        # and data
+        for idx, key in enumerate(fields_verification_map):
+            data_string = fields_verification_map[key]
+            match = pattern.search(data_string)
+            if match and self.are_all_fields_retrieved[idx] is False:
+                field_name = match.group(1)
+                field_data = match.group(2)
+                self.extracted_data[field_name] = field_data
+
         return_message = ""  # Initialize the return message
-        if not is_all_fields_correct:
+        if not all(self.are_all_fields_retrieved):
             # Generate a feedback message if 
             # any field verification failed
             return_message = self \
@@ -76,24 +102,9 @@ class RequestAnalyzer:
                                               post_verif_result)
             return False, return_message
         
-        # Compile a regular expression pattern to 
-        # extract field names and data from the 
-        # verification results
-        pattern = re.compile(r"RequestField\.(\w+) data retrieved from user's request: (.+?)\. Verification status:")
-        fields_retrieved = ""  # Initialize the string to hold retrieved fields
-        
-        # Iterate through the verification map 
-        # to extract and concatenate field names 
-        # and data
-        for key in fields_verification_map:
-            data_string = fields_verification_map[key]
-            match = pattern.search(data_string)
-            if match:
-                field_name = match.group(1)
-                field_data = match.group(2)
-                fields_retrieved += f"{field_name}:{field_data};"
-        
         # Return true if all fields were correctly 
         # verified, along with the retrieved 
-        # fields
-        return True, fields_retrieved
+        # fields        
+        return True, ";".join(f"{field_name}:{retr_data}" 
+                              for field_name, retr_data 
+                              in self.extracted_data.items())
