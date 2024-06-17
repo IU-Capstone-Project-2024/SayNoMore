@@ -16,6 +16,9 @@ class ReturnRetriever(BaseRetriever):
             '''Today is June 9, 2024. Sunday. Your task is to extract the return time from the destination city from the user's request depending on the todays date. Examples:
             Q: "Планирую сгонять в Хабаровск через три недели."
             A: Return date: "None"
+
+            Q: "Еду в Мурманск 20го сентября"
+            A: Return date: "None"
             
             Q: "Я хочу в Бийск, но нужно вернуться в середине августа."
             A: Return date: "15/08/2024"
