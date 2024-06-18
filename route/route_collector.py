@@ -241,4 +241,3 @@ class RouteCollector:
                 unique_routes.append(top_routes[i])
 
         return unique_routes
-
