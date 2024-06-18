@@ -73,6 +73,8 @@ class RouteCollector:
                     break
             # Slice the tickets list to only include tickets within budget
             tickets = tickets[:last_index]
+        else:
+            return tickets[0] if len(tickets) > 0 else None
         # Return the last ticket in the filtered list, which should be the cheapest
         if len(tickets) > 0:
             return tickets[-1]
@@ -119,9 +121,124 @@ class RouteCollector:
         # If a budget is specified, filter hotels to include only those with 'priceFrom' less than the budget
         if budget:
             hotels = [hotel for hotel in hotels if hotel['priceFrom'] < budget]
+        else:
+            return hotels[0] if len(hotels) > 0 else None
 
         # Return the last hotel in the filtered list (the cheapest within budget), or None if no hotels match
         if len(hotels) > 0:
             return hotels[-1]
         else:
             return None
+
+    def find_top_routes(self, origin, destination, departure_at=None, return_at=None, budget=None, route_number=3):
+        """
+        Find the top routes based on the cheapest tickets and hotels.
+
+        Parameters:
+        - origin: str, IATA code of the departure point.
+        - destination: str, IATA code of the destination point.
+        - departure_at: str, optional, departure date (format YYYY-MM-DD).
+        - return_at: str, optional, return date (format YYYY-MM-DD).
+        - budget: float, optional, maximum combined price for the ticket and hotel.
+        - route_number: int, optional, number of top routes to find (default is 3).
+
+        Returns:
+        - list of dicts: Each dictionary contains a 'ticket' and 'hotel' key with details of the route.
+            [{
+                'ticket': {
+                    'origin': str,
+                    'destination': str,
+                    'origin_airport': str,
+                    'destination_airport': str,
+                    'price': float,
+                    'airline': str,
+                    'flight_number': str,
+                    'departure_at': str,
+                    'return_at': str,
+                    'transfers': int,
+                    'return_transfers': int,
+                    'duration': int,
+                    'duration_to': int,
+                    'duration_back': int,
+                    'link': str,
+                    'currency': str
+                },
+                'hotel': {
+                    'locationId': int,
+                    'hotelId': int,
+                    'priceFrom': float,
+                    'priceAvg': float,
+                    'pricePercentile': dict,
+                    'stars': int,
+                    'hotelName': str,
+                    'location': dict,
+                    'geo': dict,
+                    'name': str,
+                    'state': str,
+                    'country': str
+                }
+            }]
+        """
+        # Get the cheapest ticket and hotel
+        cheapest_ticket = self.get_ticket(origin=origin, destination=destination, departure_at=departure_at,
+                                          return_at=return_at)
+        cheapest_hotel = self.get_hotel(location=origin, check_in=departure_at, check_out=return_at)
+
+        # Create a return array with the initial cheapest route
+        top_routes = [{
+            'ticket': cheapest_ticket,
+            'hotel': cheapest_hotel
+        }]
+
+        # Define minimum prices
+        min_ticket_price = cheapest_ticket['price']
+        min_hotel_price = cheapest_hotel['priceFrom']
+
+        # Check if budget is specified
+        if budget:
+            # Check if the cheapest route exceeds the budget
+            if cheapest_hotel['priceFrom'] + cheapest_ticket['price'] > budget:
+                return top_routes
+            else:
+                # Make return value empty
+                top_routes = []
+                # Define part of a budget for tickets and hotels
+                coef = min_ticket_price / (min_ticket_price + min_hotel_price)
+                ticket_price = max(coef * budget * 0.9, min_ticket_price)
+                hotel_price = max((1 - coef) * budget * 0.9, min_hotel_price)
+
+                # Find some routes within the budget
+                for _ in range(route_number):
+                    ticket = self.get_ticket(origin=origin, destination=destination, departure_at=departure_at,
+                                             return_at=return_at, budget=ticket_price)
+                    hotel = self.get_hotel(location=origin, check_in=departure_at, check_out=return_at,
+                                           budget=hotel_price)
+                    top_routes.append({
+                        'ticket': ticket,
+                        'hotel': hotel
+                    })
+                    ticket_price *= 1.1
+                    hotel_price *= 1.1
+        else:
+            # Budget is not specified, finding arbitrary routes
+            for _ in range(1, route_number):
+                min_ticket_price *= 2
+                ticket = self.get_ticket(origin=origin, destination=destination, departure_at=departure_at,
+                                         return_at=return_at, budget=min_ticket_price)
+                min_hotel_price *= 3
+                hotel = self.get_hotel(location=origin, check_in=departure_at, check_out=return_at,
+                                       budget=min_hotel_price)
+                top_routes.append({
+                    'ticket': ticket,
+                    'hotel': hotel
+                })
+
+        # Remove duplicates
+        unique_routes = []
+        for i in range(len(top_routes)):
+            if i == 0 or (top_routes[i]['ticket'] != top_routes[i - 1]['ticket'] and top_routes[i]['hotel'] !=
+                          top_routes[i - 1]['hotel']):
+                unique_routes.append(top_routes[i])
+
+        return unique_routes
+
