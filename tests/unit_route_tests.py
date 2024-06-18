@@ -188,5 +188,6 @@ class TestRouteCollector(unittest.TestCase):
         self.assertEqual(routes[0]['ticket']['price'], 150.0)
         self.assertEqual(routes[0]['hotel']['priceFrom'], 100.0)
 
+
 if __name__ == '__main__':
     unittest.main()
