@@ -144,5 +144,49 @@ class TestRouteCollector(unittest.TestCase):
         self.assertEqual(hotel['hotelId'], 40972234)
         self.assertEqual(hotel['priceFrom'], 18014.44)
 
+    @patch('route.route_collector.RouteCollector.get_ticket')  # Adjust the import path as needed
+    @patch('route.route_collector.RouteCollector.get_hotel')  # Adjust the import path as needed
+    def test_find_top_routes_with_budget(self, mock_get_hotel, mock_get_ticket):
+        # Set up the mock responses
+        mock_get_ticket.return_value = {
+            'origin': 'JFK',
+            'destination': 'LAX',
+            'price': 150.0,
+            'airline': 'AA',
+            'flight_number': 'AA100',
+            'departure_at': '2024-07-01',
+            'return_at': '2024-07-15',
+            'transfers': 0,
+            'return_transfers': 0,
+            'duration': 300,
+            'duration_to': 300,
+            'duration_back': 300,
+            'link': 'http://example.com/ticket1',
+            'currency': 'USD'
+        }
+
+        mock_get_hotel.return_value = {
+            'locationId': 12186,
+            'hotelId': 714884,
+            'priceFrom': 100.0,
+            'priceAvg': 100.0,
+            'pricePercentile': {'3': 100.0, '10': 100.0, '35': 100.0, '50': 100.0, '75': 100.0, '99': 100.0},
+            'stars': 3,
+            'hotelName': 'Aragon Hotel',
+            'location': {'name': 'Ryazan', 'country': 'Russia', 'state': None,
+                         'geo': {'lat': 54.619779, 'lon': 39.744939}}
+        }
+
+        collector = RouteCollector()
+
+        # Call the method with a budget
+        routes = collector.find_top_routes(origin='JFK', destination='LAX', departure_at='2024-07-01',
+                                           return_at='2024-07-15', budget=300.0, route_number=2)
+
+        # Check the returned routes
+        self.assertEqual(len(routes), 1)
+        self.assertEqual(routes[0]['ticket']['price'], 150.0)
+        self.assertEqual(routes[0]['hotel']['priceFrom'], 100.0)
+
 if __name__ == '__main__':
     unittest.main()
