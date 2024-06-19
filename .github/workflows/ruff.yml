@@ -28,8 +28,8 @@ jobs:
     - name: Run Ruff Linter
       run: |
         mkdir -p lint-reports
-        ruff check --output-format concise --output-file lint-reports/ruff-report.txt
-      continue-on-error: false  
+        ruff check . --output-format concise --output-file lint-reports/ruff-report.txt
+      continue-on-error: false
 
     - name: Upload Lint Report
       uses: actions/upload-artifact@v3
