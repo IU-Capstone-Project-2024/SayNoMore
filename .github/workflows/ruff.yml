@@ -28,7 +28,7 @@ jobs:
     - name: Run Ruff Linter
       run: |
         mkdir -p lint-reports
-        ruff check . --output-format concise --output-file lint-reports/ruff-report.txt
+        ruff check . --output-format=full --output-file lint-reports/ruff-report.txt
       continue-on-error: false
 
     - name: Upload Lint Report
