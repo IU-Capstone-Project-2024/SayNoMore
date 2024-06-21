@@ -1,0 +1,68 @@
+name: Pylint
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10"]
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-$(date +%Y%m%d)
+        restore-keys: |
+          ${{ runner.os }}-pip-${{ matrix.python-version }}-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint
+
+    - name: Run Pylint and save output
+      run: |
+        pylint $(git ls-files '*.py') > pylint-report.txt || true
+
+    - name: Parse Pylint score
+      id: pylint-score
+      run: |
+        score=$(grep -oP '(?<=rated at )[0-9\.]+' pylint-report.txt | tail -1)
+        echo "score=${score}" >> $GITHUB_ENV
+        echo "score=${score}" # Output the score for debugging
+
+    - name: Determine badge color
+      id: determine-color
+      run: |
+        score=${{ env.score }}
+        if (( $(echo "$score > 8" | bc -l) )); then
+          color="brightgreen"
+        elif (( $(echo "$score > 6" | bc -l) )); then
+          color="yellow"
+        else
+          color="red"
+        fi
+        echo "color=$color" >> $GITHUB_ENV
+        echo "color=$color" # Output the color for debugging
+
+    - name: Generate Pylint badge
+      run: |
+        score=${{ env.score }}
+        color=${{ env.color }}
+        curl -o pylint-badge.svg "https://img.shields.io/badge/pylint-${score}/10-${color}"
+
+    - name: Upload Pylint badge
+      uses: actions/upload-artifact@v3
+      with:
+        name: pylint-badge
+        path: pylint-badge.svg
