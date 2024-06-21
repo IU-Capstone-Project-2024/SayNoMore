@@ -1,7 +1,7 @@
 import requests
-from air_tickets import air_api_data
+from api_data.air_tickets import air_api_data
 import os
-from air_tickets.flight_enums import Currency, Market, Sorting, GroupBy, PeriodType, TripClass
+from api_data.air_tickets.flight_enums import Currency, Market, Sorting, GroupBy, PeriodType, TripClass
 
 
 class AirTicketsApi:

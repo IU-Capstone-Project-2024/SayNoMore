@@ -1,5 +1,5 @@
-from air_tickets.air_tickets_api import AirTicketsApi
-from hotels.hotel_api import HotelApi
+from api_data.air_tickets.air_tickets_api import AirTicketsApi
+from api_data.hotels.hotel_api import HotelApi
 
 
 class RouteCollector:

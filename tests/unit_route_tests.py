@@ -1,11 +1,11 @@
 import unittest
-from unittest.mock import patch, MagicMock
-from route.route_collector import RouteCollector
+from unittest.mock import patch
+from api_data.route.route_collector import RouteCollector
 
 
 class TestRouteCollector(unittest.TestCase):
 
-    @patch('route.route_collector.AirTicketsApi')  # Mock the AirTicketsApi class
+    @patch('api_data.route.route_collector.AirTicketsApi')  # Mock the AirTicketsApi class
     def test_get_ticket_with_budget(self, MockAirTicketsApi):
         # Set up the mock response
         mock_api_instance = MockAirTicketsApi.return_value
@@ -67,7 +67,7 @@ class TestRouteCollector(unittest.TestCase):
         self.assertEqual(ticket['price'], 150.0)
         self.assertEqual(ticket['airline'], 'AA')
 
-    @patch('route.route_collector.HotelApi')  # Adjust the import path as needed
+    @patch('api_data.route.route_collector.HotelApi')  # Adjust the import path as needed
     def test_get_hotel_with_budget(self, MockHotelApi):
         # Set up the mock response
         mock_api_instance = MockHotelApi.return_value
@@ -144,8 +144,8 @@ class TestRouteCollector(unittest.TestCase):
         self.assertEqual(hotel['hotelId'], 40972234)
         self.assertEqual(hotel['priceFrom'], 18014.44)
 
-    @patch('route.route_collector.RouteCollector.get_ticket')  # Adjust the import path as needed
-    @patch('route.route_collector.RouteCollector.get_hotel')  # Adjust the import path as needed
+    @patch('api_data.route.route_collector.RouteCollector.get_ticket')
+    @patch('api_data.route.route_collector.RouteCollector.get_hotel')
     def test_find_top_routes_with_budget(self, mock_get_hotel, mock_get_ticket):
         # Set up the mock responses
         mock_get_ticket.return_value = {
