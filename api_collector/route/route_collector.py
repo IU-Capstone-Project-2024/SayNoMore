@@ -182,7 +182,7 @@ class RouteCollector:
         # Get the cheapest ticket and hotel
         cheapest_ticket = self.get_ticket(origin=origin, destination=destination, departure_at=departure_at,
                                           return_at=return_at)
-        cheapest_hotel = self.get_hotel(location=origin, check_in=departure_at, check_out=return_at)
+        cheapest_hotel = self.get_hotel(location=destination, check_in=departure_at, check_out=return_at)
 
         # Create a return array with the initial cheapest route
         top_routes = [{
