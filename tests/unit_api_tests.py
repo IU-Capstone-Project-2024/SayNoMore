@@ -1,6 +1,6 @@
 from unittest import TestCase, main
-from api_data.air_tickets.air_tickets_api import AirTicketsApi
-from api_data.hotels.hotel_api import HotelApi
+from api_collector.air_tickets.air_tickets_api import AirTicketsApi
+from api_collector.hotels.hotel_api import HotelApi
 from datetime import datetime, timedelta
 import os
 

@@ -1,7 +1,7 @@
 import requests
-from api_data.hotels import hotel_api_data
+from api_collector.hotels import hotel_api_data
 import os
-from api_data.hotels.hotel_enums import Language, LookFor, ConvertCase, Currency, CollectionType
+from api_collector.hotels.hotel_enums import Language, LookFor, ConvertCase, Currency, CollectionType
 
 
 class HotelApi:
