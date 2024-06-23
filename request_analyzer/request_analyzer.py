@@ -27,13 +27,15 @@ class RequestAnalyzer:
                 instance used for information 
                 retrieval and message generation.
         """
-        self.llm = llm 
+        self.llm = llm
         self.information_retriever = InformationRetriever(self.llm)
         self.message_generator = MoreInfoRequiredMessageGenerator(self.llm)
         self.extracted_data = {}  # Stores extracted data from user requests
-        self.are_all_fields_retrieved = []  # Tracks if all fields have been successfully retrieved
-        self.fields_to_update = []  # Indicates which fields need to be updated with new data
-    
+        self.are_all_fields_retrieved = [
+        ]  # Tracks if all fields have been successfully retrieved
+        self.fields_to_update = [
+        ]  # Indicates which fields need to be updated with new data
+
     async def analyzer_step(self, user_request: str) -> Tuple[bool, str]:
         """
         Performs the analysis step for a
@@ -62,41 +64,46 @@ class RequestAnalyzer:
                 fields if verification 
                 passed.
         """
-        # Retrieve information and 
-        # verification results from 
+        # Retrieve information and
+        # verification results from
         # the user request
         fields_verification_map, are_all_fields_correct, post_verif_result = \
             await self.information_retriever.retrieve(user_request)
-        
+
         if not self.are_all_fields_retrieved:
             self.are_all_fields_retrieved = are_all_fields_correct
             self.fields_to_update = [True] * len(are_all_fields_correct)
         else:
             self.fields_to_update = [False] * len(self.fields_to_update)
-            for idx, is_field_retireved in enumerate(self.are_all_fields_retrieved):
-                if are_all_fields_correct[idx] is True and is_field_retireved is False:
+            for idx, is_field_retireved in enumerate(
+                    self.are_all_fields_retrieved):
+                if are_all_fields_correct[
+                        idx] is True and is_field_retireved is False:
                     self.are_all_fields_retrieved[idx] = True
                     self.fields_to_update[idx] = True
-        
-        # Compile a regular expression pattern to 
-        # extract field names and data from the 
+
+        # Compile a regular expression pattern to
+        # extract field names and data from the
         # verification results
-        pattern = re.compile(r"RequestField\.(\w+) data retrieved from user's request: (.+?)\. Verification status:")
-        
-        # Iterate through the verification map 
-        # to extract and concatenate field names 
+        pattern = re.compile(
+            r"RequestField\.(\w+) data retrieved from user's request: (.+?)\. Verification status:"
+        )
+
+        # Iterate through the verification map
+        # to extract and concatenate field names
         # and data
         for idx, key in enumerate(fields_verification_map):
             data_string = fields_verification_map[key]
             match = pattern.search(data_string)
             field_name, field_data = match.groups()
-            if match and (self.fields_to_update[idx] or 
-                          self.extracted_data.get(field_name, "None") == "None"):
+            if match and (self.fields_to_update[idx]
+                          or self.extracted_data.get(field_name,
+                                                     "None") == "None"):
                 self.extracted_data[field_name] = field_data
 
         return_message = ""  # Initialize the return message
         if not all(self.are_all_fields_retrieved):
-            # Generate a feedback message if 
+            # Generate a feedback message if
             # any field verification failed
             return_message = await self \
                            .message_generator \
@@ -104,10 +111,10 @@ class RequestAnalyzer:
                                               fields_verification_map,
                                               post_verif_result)
             return False, return_message
-        
-        # Return true if all fields were correctly 
-        # verified, along with the retrieved 
-        # fields        
-        return True, ";".join(f"{field_name}:{retr_data}" 
-                              for field_name, retr_data 
-                              in self.extracted_data.items())
+
+        # Return true if all fields were correctly
+        # verified, along with the retrieved
+        # fields
+        return True, ";".join(
+            f"{field_name}:{retr_data}"
+            for field_name, retr_data in self.extracted_data.items())

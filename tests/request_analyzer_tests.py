@@ -11,7 +11,6 @@ class TestRequestAnalyzer(unittest.IsolatedAsyncioTestCase):
         # Initialize the LLM
         cls.llm = LLM()
 
-
     async def test_request_analyzer(self):
         requests = [
             "Хочу уехать в Москву c 1го по 15 декабря",
@@ -28,8 +27,10 @@ class TestRequestAnalyzer(unittest.IsolatedAsyncioTestCase):
                 break
             request_idx += 1
 
-        self.assertEqual(message, "Arrival:01/12/2024;Return:15/12/2024;Departure:Казань;Destination:Москва;Budget:35000")
-
+        self.assertEqual(
+            message,
+            "Arrival:01/12/2024;Return:15/12/2024;Departure:Казань;Destination:Москва;Budget:35000"
+        )
 
         requests = [
             "Хочу уехать из Казани 1го декабря",
@@ -45,8 +46,11 @@ class TestRequestAnalyzer(unittest.IsolatedAsyncioTestCase):
             if are_all_fields_retireved is True:
                 break
             request_idx += 1
-        
-        self.assertEqual(message, "Arrival:01/12/2024;Return:22/12/2024;Departure:Казань;Destination:Москва;Budget:None")
+
+        self.assertEqual(
+            message,
+            "Arrival:01/12/2024;Return:22/12/2024;Departure:Казань;Destination:Москва;Budget:None"
+        )
 
 
 if __name__ == '__main__':

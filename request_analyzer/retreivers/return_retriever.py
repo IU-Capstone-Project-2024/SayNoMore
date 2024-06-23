@@ -9,10 +9,7 @@ class ReturnRetriever(BaseRetriever):
     def __init__(self, llm: LLM) -> None:
         self.llm = llm
         # Setting up sampling parameters for deterministic output
-        self.json_input = {
-                "temperature": 0,
-                "stop": '"'
-            }
+        self.json_input = {"temperature": 0, "stop": '"'}
         # Defining a prompt template to guide the model extract return date
         self.cur_day = datetime.now()
         self.prefix_prompt = \

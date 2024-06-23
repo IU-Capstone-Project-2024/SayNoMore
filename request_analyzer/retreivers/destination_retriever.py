@@ -36,10 +36,7 @@ class DestinationRetriever(BaseRetriever):
         """
         self.llm = llm
         # Setting up sampling parameters for deterministic output
-        self.json_input = {
-                "temperature": 0,
-                "stop": '"'
-            }
+        self.json_input = {"temperature": 0, "stop": '"'}
         # Defining a prompt template to guide the model towards
         # extracting destination cities
         self.prefix_prompt = \

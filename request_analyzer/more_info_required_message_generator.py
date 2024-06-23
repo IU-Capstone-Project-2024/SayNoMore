@@ -20,9 +20,8 @@ class MoreInfoRequiredMessageGenerator():
                    be filled with user request details 
                    and verification results.
     """
-     
-    def __init__(self,
-                 llm: LLM) -> None:
+
+    def __init__(self, llm: LLM) -> None:
         """
         Initializes the MoreInfoRequiredMessageGenerator 
         with a given language model instance.
@@ -86,10 +85,10 @@ A: "Похоже, что я не получил все необходимые д
 Q: "PASTE_DATA"
 A: "'''
 
-    async def generate_message(self,
-                         user_request: str,
-                         field_verification_map: Dict[RequestField, str],
-                         post_verif_result: List[Tuple[ValueStages, str]]) -> str:
+    async def generate_message(
+            self, user_request: str, field_verification_map: Dict[RequestField,
+                                                                  str],
+            post_verif_result: List[Tuple[ValueStages, str]]) -> str:
         """
         Generates a message based on 
         the user's request and its 
@@ -112,12 +111,12 @@ A: "'''
         DATA_TO_PASTE = f"User's request: '{user_request}'\n" + \
                         "\n".join(field_verification_map[key] for key in field_verification_map)
         if post_verif_result:
-            post_verif_text = ". ".join([pair[1] for pair in post_verif_result])
+            post_verif_text = ". ".join(
+                [pair[1] for pair in post_verif_result])
             DATA_TO_PASTE += f"\nBUT: {post_verif_text}."
-        
+
         prompt = self.prefix_prompt.replace("PASTE_DATA", DATA_TO_PASTE)
         self.json_input["prompt"] = prompt
         result = await self.llm.get_response(self.json_input)
         result = result.strip('"')
         return result
-        

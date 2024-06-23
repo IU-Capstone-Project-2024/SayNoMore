@@ -18,7 +18,8 @@ class TestMessageGenerators(unittest.IsolatedAsyncioTestCase):
 
     async def test_more_info_required_msg_gen(self):
         request = "Хочу сгонять в Магадан из Санкт Петербурга. Планирую лететь туда 12 августа."
-        information_retriever_result = await self.information_retr.retrieve(request)
+        information_retriever_result = await self.information_retr.retrieve(
+            request)
         field_verification_map, _, post_verification_results = information_retriever_result
         message_generated = await self.more_info_required_msg_gen.generate_message(
             request, field_verification_map, post_verification_results)
