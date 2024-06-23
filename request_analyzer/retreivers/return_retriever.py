@@ -1,4 +1,4 @@
-from vllm import LLM, SamplingParams
+from request_analyzer.llm import LLM
 from datetime import datetime
 from request_analyzer.retreivers.abstract_retriever import BaseRetriever
 
@@ -9,7 +9,10 @@ class ReturnRetriever(BaseRetriever):
     def __init__(self, llm: LLM) -> None:
         self.llm = llm
         # Setting up sampling parameters for deterministic output
-        self.sampling_params = SamplingParams(temperature=0, stop='"')
+        self.json_input = {
+                "temperature": 0,
+                "stop": '"'
+            }
         # Defining a prompt template to guide the model extract return date
         self.cur_day = datetime.now()
         self.prefix_prompt = \
@@ -52,7 +55,7 @@ class ReturnRetriever(BaseRetriever):
             Q: "USER_REQUEST"
             A: Return date: "'''
 
-    def retrieve(self, request: str) -> str:
+    async def retrieve(self, request: str) -> str:
         """
         Generates a response from the VLLM based
         on the user's travel request, aiming to
@@ -76,7 +79,7 @@ class ReturnRetriever(BaseRetriever):
         prompt = prompt.replace("USER_REQUEST", request)
         # Generate a response from the VLLM using
         # the customized prompt and sampling parameters
-        vllm_output = self.llm.generate(prompt, self.sampling_params)
-        # Extract and return the generated text as
-        # the return time from the destination city
-        return vllm_output[0].outputs[0].text
+        self.json_input["prompt"] = prompt
+        result = await self.llm.get_response(self.json_input)
+        result = result.strip('"')
+        return result

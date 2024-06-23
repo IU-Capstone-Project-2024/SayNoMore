@@ -1,4 +1,4 @@
-from vllm import LLM, SamplingParams
+from request_analyzer.llm import LLM
 from typing import Dict, List, Tuple
 
 from request_analyzer.request_fields_enum import RequestField
@@ -14,7 +14,7 @@ class MoreInfoRequiredMessageGenerator():
     Attributes:
         llm (LLM): An instance of the Language Model
                    used for generating the message.
-        sampling_params (SamplingParams): Parameters 
+        json_input (dict): Parameters 
                    for controlling the generation process.
         prefix_prompt (str): A template string that will 
                    be filled with user request details 
@@ -32,10 +32,12 @@ class MoreInfoRequiredMessageGenerator():
                        to use for generating messages.
         """
         self.llm = llm
-        self.sampling_params = SamplingParams(temperature=0, 
-                                              min_tokens=35, 
-                                              max_tokens=100, 
-                                              stop='"')
+        self.json_input = {
+            "temperature": 0,
+            "min_tokens": 35,
+            "max_tokens": 100,
+            "stop": '"'
+        }
         self.prefix_prompt = \
 '''The user has sent his request. Not all fields received from the request passed the verification check. Your task is to generate a message to the user to make him re-enter the required fields correctly. Please note that the 'Budget' field is optional. Users can choose whether or not to fill it in. If the Budget field is left blank, you may suggest entering a value, but it is not mandatory. If some fields are not found, ask to enter only those fields. If some fields are in the wrong format, ask to enter them correctly. Examples:
 
@@ -84,7 +86,7 @@ A: "Похоже, что я не получил все необходимые д
 Q: "PASTE_DATA"
 A: "'''
 
-    def generate_message(self,
+    async def generate_message(self,
                          user_request: str,
                          field_verification_map: Dict[RequestField, str],
                          post_verif_result: List[Tuple[ValueStages, str]]) -> str:
@@ -114,9 +116,8 @@ A: "'''
             DATA_TO_PASTE += f"\nBUT: {post_verif_text}."
         
         prompt = self.prefix_prompt.replace("PASTE_DATA", DATA_TO_PASTE)
-        vllm_output = self.llm.generate(prompt, self.sampling_params)
-
-        # Extract and return the generated text as
-        # the return time from the destination city
-        return vllm_output[0].outputs[0].text
+        self.json_input["prompt"] = prompt
+        result = await self.llm.get_response(self.json_input)
+        result = result.strip('"')
+        return result
         

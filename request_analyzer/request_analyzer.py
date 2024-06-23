@@ -1,4 +1,4 @@
-from vllm import LLM
+from request_analyzer.llm import LLM
 from request_analyzer.information_retriever import InformationRetriever
 from request_analyzer.more_info_required_message_generator import MoreInfoRequiredMessageGenerator
 import re
@@ -34,7 +34,7 @@ class RequestAnalyzer:
         self.are_all_fields_retrieved = []  # Tracks if all fields have been successfully retrieved
         self.fields_to_update = []  # Indicates which fields need to be updated with new data
     
-    def analyzer_step(self, user_request: str) -> Tuple[bool, str]:
+    async def analyzer_step(self, user_request: str) -> Tuple[bool, str]:
         """
         Performs the analysis step for a
         given user request.
@@ -66,7 +66,7 @@ class RequestAnalyzer:
         # verification results from 
         # the user request
         fields_verification_map, are_all_fields_correct, post_verif_result = \
-            self.information_retriever.retrieve(user_request)
+            await self.information_retriever.retrieve(user_request)
         
         if not self.are_all_fields_retrieved:
             self.are_all_fields_retrieved = are_all_fields_correct
@@ -98,7 +98,7 @@ class RequestAnalyzer:
         if not all(self.are_all_fields_retrieved):
             # Generate a feedback message if 
             # any field verification failed
-            return_message = self \
+            return_message = await self \
                            .message_generator \
                            .generate_message(user_request,
                                               fields_verification_map,
