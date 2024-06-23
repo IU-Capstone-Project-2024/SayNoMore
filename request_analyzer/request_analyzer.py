@@ -2,6 +2,8 @@ from request_analyzer.llm import LLM
 from request_analyzer.information_retriever import InformationRetriever
 from request_analyzer.more_info_required_message_generator import MoreInfoRequiredMessageGenerator
 import re
+import json
+from datetime import datetime
 from typing import Tuple
 
 
@@ -112,9 +114,19 @@ class RequestAnalyzer:
                                               post_verif_result)
             return False, return_message
 
-        # Return true if all fields were correctly
-        # verified, along with the retrieved
-        # fields
-        return True, ";".join(
-            f"{field_name}:{retr_data}"
-            for field_name, retr_data in self.extracted_data.items())
+        # Convert extracted data to the required JSON format
+        json_output = {}
+        for field_name, retr_data in self.extracted_data.items():
+            if field_name in ["Arrival", "Return"]:
+                # Convert dates to YYYY-MM-DD format
+                date_obj = datetime.strptime(retr_data, "%d/%m/%Y")
+                json_output[field_name] = date_obj.strftime("%Y-%m-%d")
+            elif field_name == "Budget" and retr_data != "None":
+                # Convert budget to integer
+                json_output[field_name] = int(retr_data)
+            else:
+                # Add other fields as is
+                json_output[field_name] = retr_data
+
+        # Return true if all fields were correctly verified, along with the JSON output
+        return True, json.dumps(json_output, ensure_ascii=False)
