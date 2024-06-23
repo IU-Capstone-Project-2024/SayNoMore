@@ -21,8 +21,7 @@ class RequestAnalyzer:
     is correct, then it will return extracted data instead of feedback message.
     """
 
-    def __init__(self,
-                 llm: LLM) -> None:
+    def __init__(self, llm: LLM) -> None:
         """
         Initializes the RequestAnalyzer with a 
         Language Model instance.
@@ -52,7 +51,8 @@ class RequestAnalyzer:
         current_dir = os.path.dirname(os.path.abspath(__file__))
         root_marker_file = 'data'
 
-        while current_dir != '/' and root_marker_file not in os.listdir(current_dir):
+        while current_dir != '/' and root_marker_file not in os.listdir(
+                current_dir):
             current_dir = os.path.dirname(current_dir)
 
         if root_marker_file in os.listdir(current_dir):
@@ -61,7 +61,6 @@ class RequestAnalyzer:
             raise FileNotFoundError(
                 f"Could not locate {root_marker_file} to determine project root."
             )
-
 
     async def analyzer_step(self, user_request: str) -> Tuple[bool, str]:
         """
@@ -149,7 +148,8 @@ class RequestAnalyzer:
             elif field_name == "Budget" and retr_data != "None":
                 # Convert budget to integer
                 json_output[field_name] = int(retr_data)
-            elif field_name in ["Departure", "Destination"] and retr_data != "None":
+            elif field_name in ["Departure", "Destination"
+                                ] and retr_data != "None":
                 city_code = self.city_name_to_code.get(retr_data)
                 if city_code:
                     json_output[field_name] = city_code

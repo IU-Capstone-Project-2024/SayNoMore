@@ -52,7 +52,6 @@ class TestRequestAnalyzer(unittest.IsolatedAsyncioTestCase):
             '{"Arrival": "2024-12-01", "Return": "2024-12-22", "Departure": "KZN", "Destination": "MOW", "Budget": "None"}'
         )
 
-
         requests = [
             "Хочу съездить в Санкт-Петербург с 1го по 8ое июля. Из Улан-Удэ.",
         ]
