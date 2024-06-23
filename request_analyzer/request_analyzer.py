@@ -2,6 +2,8 @@ from request_analyzer.llm import LLM
 from request_analyzer.information_retriever import InformationRetriever
 from request_analyzer.more_info_required_message_generator import MoreInfoRequiredMessageGenerator
 import re
+import os
+import pandas as pd
 import json
 from datetime import datetime
 from typing import Tuple
@@ -19,7 +21,8 @@ class RequestAnalyzer:
     is correct, then it will return extracted data instead of feedback message.
     """
 
-    def __init__(self, llm: LLM) -> None:
+    def __init__(self,
+                 llm: LLM) -> None:
         """
         Initializes the RequestAnalyzer with a 
         Language Model instance.
@@ -37,6 +40,28 @@ class RequestAnalyzer:
         ]  # Tracks if all fields have been successfully retrieved
         self.fields_to_update = [
         ]  # Indicates which fields need to be updated with new data
+
+        # Load the CSV file and create a city name to code mapping
+        project_root = self._get_project_root()
+        csv_file_path = os.path.join(project_root, 'data/city_name_code.csv')
+        df = pd.read_csv(csv_file_path)
+        self.city_name_to_code = dict(zip(df['city_name'], df['city_code']))
+
+    def _get_project_root(self):
+        """Return the absolute path to the project root."""
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        root_marker_file = 'data'
+
+        while current_dir != '/' and root_marker_file not in os.listdir(current_dir):
+            current_dir = os.path.dirname(current_dir)
+
+        if root_marker_file in os.listdir(current_dir):
+            return current_dir
+        else:
+            raise FileNotFoundError(
+                f"Could not locate {root_marker_file} to determine project root."
+            )
+
 
     async def analyzer_step(self, user_request: str) -> Tuple[bool, str]:
         """
@@ -124,6 +149,12 @@ class RequestAnalyzer:
             elif field_name == "Budget" and retr_data != "None":
                 # Convert budget to integer
                 json_output[field_name] = int(retr_data)
+            elif field_name in ["Departure", "Destination"] and retr_data != "None":
+                city_code = self.city_name_to_code.get(retr_data)
+                if city_code:
+                    json_output[field_name] = city_code
+                else:
+                    json_output[field_name] = retr_data
             else:
                 # Add other fields as is
                 json_output[field_name] = retr_data
