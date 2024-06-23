@@ -29,7 +29,7 @@ class TestRequestAnalyzer(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(
             message,
-            '{"Arrival": "2024-12-01", "Return": "2024-12-15", "Departure": "Казань", "Destination": "Москва", "Budget": 35000}'
+            '{"Arrival": "2024-12-01", "Return": "2024-12-15", "Departure": "KZN", "Destination": "MOW", "Budget": 35000}'
         )
 
         requests = [
@@ -49,7 +49,7 @@ class TestRequestAnalyzer(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(
             message,
-            '{"Arrival": "2024-12-01", "Return": "2024-12-22", "Departure": "Казань", "Destination": "Москва", "Budget": "None"}'
+            '{"Arrival": "2024-12-01", "Return": "2024-12-22", "Departure": "KZN", "Destination": "MOW", "Budget": "None"}'
         )
 
 
