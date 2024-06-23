@@ -53,5 +53,25 @@ class TestRequestAnalyzer(unittest.IsolatedAsyncioTestCase):
         )
 
 
+        requests = [
+            "Хочу съездить в Санкт-Петербург с 1го по 8ое июля. Из Улан-Удэ.",
+        ]
+        request_idx = 0
+        message = ""
+        request_analyzer = RequestAnalyzer(self.llm)
+        while True:
+            are_all_fields_retireved, message = await \
+                request_analyzer.analyzer_step(requests[request_idx])
+            # print(message)
+            if are_all_fields_retireved is True:
+                break
+            request_idx += 1
+
+        self.assertEqual(
+            message,
+            '{"Arrival": "2024-07-01", "Return": "2024-07-08", "Departure": "UUD", "Destination": "LED", "Budget": "None"}'
+        )
+
+
 if __name__ == '__main__':
     unittest.main()
