@@ -16,7 +16,11 @@ class SayNoMoreBot:
     def setup_handlers(self):
         @self.bot.message_handler(commands=['start'])
         def send_welcome(message):
-            self.bot.send_message(message.chat.id, messages.WELCOME_MESSAGE)
+            self.bot.send_message(message.chat.id, messages.WELCOME)
+
+        @self.bot.message_handler(commands=['help'])
+        def send_help(message):
+            self.bot.send_message(message.chat.id, messages.HELP)
 
         @self.bot.message_handler(func=lambda message: True)
         def handle_user_request(message):
@@ -27,10 +31,10 @@ class SayNoMoreBot:
 
     def process_message(self, message):
         if message.text == 'I want to leave Kazan on July 1st.' and not self.second:
-            self.bot.send_message(message.chat.id, messages.MORE_INFO_MESSAGE)
+            self.bot.send_message(message.chat.id, messages.MORE_INFO)
             self.second = True
         elif message.text == "I will go to Moscow. Returning on July 22nd. The budget is 800 thousand." and self.second:
-            self.bot.send_message(message.chat.id, messages.AWAIT_MESSAGE)
+            self.bot.send_message(message.chat.id, messages.AWAIT)
             analyzed_message = "Arrival:2024-08-01;Return:2024-08-22;Departure:KZN;Destination:SVO;Budget:800000"
             self.second = False
             request = request_to_json(analyzed_message)
