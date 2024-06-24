@@ -39,29 +39,21 @@ The current UI is a Telegram Bot that facilitates user interaction for travel pl
    - If initial information is incomplete, the bot interacts dynamically to gather additional necessary details.
 4. **Travel Recommendations**:
    - After processing the request, the bot provides several travel routes that fit the user’s budget and preferences, including flights and hotel options.
-<img src="https://hackmd.io/_uploads/SySevl7IA.svg" width="230" height="510">
+![Demo](https://hackmd.io/_uploads/SJxS77QL0.png)
 
 These interactions ensure that users can plan their travel efficiently and receive tailored recommendations.
 
 ---
 
-#### Challenges and Solutions
+### Challenges and Solutions
 
-1. **Complex User Input Handling**:
-   - **Challenge**: Parsing and understanding varied user inputs, especially in natural language, was complex.
-   - **Solution**: We integrated advanced NLP techniques using the LLaMA Library to improve our ability to interpret user requests and accurately extract travel details.
+1. **Local LLM is GPU Expensive and Hard to Deploy**:
+   - **Challenge**: Running the local LLaMA model requires significant GPU resources and presents challenges in deployment, making it difficult to scale and manage.
+   - **Solution**: We are considering alternatives such as utilizing cloud-based LLM services or REST APIs for LLM tasks. This will reduce the burden on local resources and simplify deployment, ensuring scalability and easier management.
 
-2. **API Data Synchronization**:
-   - **Challenge**: Synchronizing data from multiple external APIs posed challenges in ensuring consistent and timely responses.
-   - **Solution**: We implemented a standardized data handling framework within the API Collector module to manage data retrieval and formatting efficiently. Caching and periodic data refresh mechanisms help maintain up-to-date information.
-
-3. **Seamless User Experience in Telegram**:
-   - **Challenge**: Providing a smooth and interactive experience within the constraints of a Telegram Bot interface.
-   - **Solution**: We focused on creating clear and concise messages, ensuring the bot maintains context and guides the user through each step interactively.
-
-4. **Integrating and Testing Modules**:
-   - **Challenge**: Combining the functionalities of different modules and ensuring they work seamlessly together.
-   - **Solution**: We conducted extensive integration testing and refined the interfaces between modules to ensure smooth data flow and functionality.
+2. **API Data is Limited by Aviasales Cache**:
+   - **Challenge**: The current API data from Aviasales is limited to their cache, which may not cover all possible user requests in real-time.
+   - **Solution**: We plan to develop a functional prototype demonstrating our bot's capabilities. With this prototype, we will approach Aviasales directly to negotiate access to their full API, which will allow us to handle a broader range of user requests with up-to-date and comprehensive data.
 
 ---
 
@@ -88,7 +80,5 @@ As we move forward, our focus will be on enhancing the bot’s capabilities and 
 5. **Documentation and Knowledge Sharing**:
    - **Detailed Documentation**: Update and expand the documentation to reflect new features and provide clear guidance for users and developers.
    - **Team Knowledge Sharing**: Foster ongoing knowledge sharing within the team to ensure everyone is aligned and up-to-date on the latest developments.
-
-By focusing on these areas, we aim to build a robust, user-friendly travel planning assistant that meets and exceeds user expectations.
 
 ---
