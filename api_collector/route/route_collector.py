@@ -174,6 +174,7 @@ class Route:
             total_cost += self.hotel_price_avg
         return total_cost
 
+
 def get_ticket(origin, destination, departure_at=None, return_at=None, budget=None):
     """
     Fetch the cheapest air ticket based on the specified parameters.
@@ -309,41 +310,7 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
     - route_number: int, optional, number of top routes to find (default is 3).
 
     Returns:
-    - list of dicts: Each dictionary contains a 'ticket' and 'hotel' key with details of the route.
-        [{
-            'ticket': {
-                'origin': str,
-                'destination': str,
-                'origin_airport': str,
-                'destination_airport': str,
-                'price': float,
-                'airline': str,
-                'flight_number': str,
-                'departure_at': str,
-                'return_at': str,
-                'transfers': int,
-                'return_transfers': int,
-                'duration': int,
-                'duration_to': int,
-                'duration_back': int,
-                'link': str,
-                'currency': str
-            },
-            'hotel': {
-                'locationId': int,
-                'hotelId': int,
-                'priceFrom': float,
-                'priceAvg': float,
-                'pricePercentile': dict,
-                'stars': int,
-                'hotelName': str,
-                'location': dict,
-                'geo': dict,
-                'name': str,
-                'state': str,
-                'country': str
-            }
-        }]
+    - list of 'Route' class
     """
     # Get the cheapest ticket and hotel
     cheapest_ticket = get_ticket(origin=origin, destination=destination, departure_at=departure_at,
@@ -399,11 +366,13 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
                 'hotel': hotel
             })
 
-    # Remove duplicates
+    # Remove duplicates and convert to Route class
     unique_routes = []
     for i in range(len(top_routes)):
         if i == 0 or (top_routes[i]['ticket'] != top_routes[i - 1]['ticket'] and top_routes[i]['hotel'] !=
                       top_routes[i - 1]['hotel']):
-            unique_routes.append(top_routes[i])
+            unique_routes.append(
+                Route(origin=origin, destination=destination, departure_at=departure_at, return_at=return_at,
+                      budget=budget, ticket=top_routes[i]['ticket'], hotel=top_routes[i]['hotel']))
 
     return unique_routes
