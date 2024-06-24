@@ -7,5 +7,5 @@ class BaseRetriever(ABC):
     """
 
     @abstractmethod
-    def retrieve(self, request: str) -> str:
+    async def retrieve(self, request: str) -> str:
         pass
