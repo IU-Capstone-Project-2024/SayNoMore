@@ -97,8 +97,7 @@ class Route:
         self.flight_duration = ticket['duration']
         self.flight_duration_to = ticket['duration_to']
         self.flight_duration_back = ticket['duration_back']
-        self.flight_link = ticket['link']
-        self.flight_currency = ticket['currency']
+        self.flight_link = 'https://www.aviasales.com/' + ticket['link']
 
     def add_hotel(self, hotel):
         """
@@ -128,10 +127,10 @@ class Route:
         self.hotel_stars = hotel['stars']
         self.hotel_name = hotel['hotelName']
         self.hotel_location = hotel['location']
-        self.hotel_geo = hotel['geo']
-        self.hotel_city_name = hotel['name']
-        self.hotel_state = hotel['state']
-        self.hotel_country = hotel['country']
+        self.hotel_geo = hotel['location']['geo']
+        self.hotel_city_name = hotel['location']['name']
+        self.hotel_state = hotel['location']['state']
+        self.hotel_country = hotel['location']['country']
 
     def to_string(self):
         """
@@ -144,7 +143,7 @@ class Route:
             flight_info = (f"Flight: {self.flight_origin} to {self.flight_destination}, "
                            f"Departing at: {self.flight_departure_at}, Returning at: {self.flight_return_at}, "
                            f"Airline: {self.airline}, Flight Number: {self.flight_number}, "
-                           f"Price: {self.ticket_price} {self.flight_currency}, "
+                           f"Price: {self.ticket_price} rub, "
                            f"Transfers: {self.transfers}, Return Transfers: {self.return_transfers}, "
                            f"Duration: {self.flight_duration} minutes")
         else:
@@ -153,8 +152,8 @@ class Route:
         if self.hotel:
             hotel_info = (
                 f"Hotel: {self.hotel_name}, Location: {self.hotel_city_name}, {self.hotel_state}, {self.hotel_country}, "
-                f"Stars: {self.hotel_stars}, Price From: {self.hotel_price_from} {self.flight_currency}, "
-                f"Average Price: {self.hotel_price_avg} {self.flight_currency}")
+                f"Stars: {self.hotel_stars}, Price From: {self.hotel_price_from} rub, "
+                f"Average Price: {self.hotel_price_avg} rub")
         else:
             hotel_info = 'No information about hotel'
 
@@ -297,7 +296,7 @@ def get_hotel(location, check_in, check_out, budget=None):
         return None
 
 
-def find_top_routes(origin, destination, departure_at=None, return_at=None, budget=None, route_number=3):
+def find_top_routes(origin, destination, departure_at=None, return_at=None, budget=None, route_number=3) -> list[Route]:
     """
     Find the top routes based on the cheapest tickets and hotels.
 
