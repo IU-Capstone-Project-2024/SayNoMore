@@ -343,7 +343,7 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
             for _ in range(route_number):
                 ticket = get_ticket(origin=origin, destination=destination, departure_at=departure_at,
                                     return_at=return_at, budget=ticket_price)
-                hotel = get_hotel(location=origin, check_in=departure_at, check_out=return_at,
+                hotel = get_hotel(location=destination, check_in=departure_at, check_out=return_at,
                                   budget=hotel_price)
                 top_routes.append({
                     'ticket': ticket,
@@ -358,7 +358,7 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
             ticket = get_ticket(origin=origin, destination=destination, departure_at=departure_at,
                                 return_at=return_at, budget=min_ticket_price)
             min_hotel_price *= 3
-            hotel = get_hotel(location=origin, check_in=departure_at, check_out=return_at,
+            hotel = get_hotel(location=destination, check_in=departure_at, check_out=return_at,
                               budget=min_hotel_price)
             top_routes.append({
                 'ticket': ticket,

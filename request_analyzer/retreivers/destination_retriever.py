@@ -87,7 +87,7 @@ class DestinationRetriever(BaseRetriever):
         self.json_input["prompt"] = prompt
         result = await self.llm.get_response(self.json_input)
         result = result.strip('"')
-        if not result == 'None':
-            found_russian_city = self.searcher.search_city(result)
-            return found_russian_city[0][0]
+        # if not result == 'None':
+        #     found_russian_city = self.searcher.search_city(result)
+        #     return found_russian_city[0][0]
         return result

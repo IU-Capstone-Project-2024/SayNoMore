@@ -41,7 +41,8 @@ class InformationRetriever:
         self.llm = llm
 
         self.verifier = RequestVerifier()
-        self.searcher = EmbeddingCitySearch()
+        # self.searcher = EmbeddingCitySearch()
+        self.searcher = None
 
         # Register retrievers
         self.register_retriever(RequestField.Arrival, ArrivalRetriever(llm))

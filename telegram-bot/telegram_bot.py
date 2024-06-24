@@ -1,9 +1,9 @@
 import telebot
 import sys
 
-from api_collector.route import route_collector
+from api_collector.route.route import Route, find_top_routes
 from utils import messages
-from utils.formatting import request_to_json, format_route_info
+from utils.formatting import request_to_json, route_list_to_string
 
 
 class SayNoMoreBot:
@@ -11,7 +11,6 @@ class SayNoMoreBot:
         self.bot = telebot.TeleBot('7333725090:AAFC6DwjlSs5VvvJ6ML863e5yx8h-NgAR60')
         self.second = False
         self.setup_handlers()
-        self.route_collector = route_collector
 
     def setup_handlers(self):
         @self.bot.message_handler(commands=['start'])
@@ -38,15 +37,13 @@ class SayNoMoreBot:
             analyzed_message = "Arrival:2024-08-01;Return:2024-08-22;Departure:KZN;Destination:SVO;Budget:800000"
             self.second = False
             request = request_to_json(analyzed_message)
-            rc = route_collector.RouteCollector()
-            routes_list = rc.find_top_routes(request['Departure'],
-                                             request['Destination'],
-                                             request['Arrival'],
-                                             request['Return'],
-                                             request['Budget'])
+            routes_list = find_top_routes(origin=request['Departure'],
+                                          destination=request['Destination'],
+                                          departure_at=request['Arrival'],
+                                          return_at=request['Return'],
+                                          budget=request['Budget'])
 
-            routes_str = format_route_info(routes_list)
-            self.bot.send_message(message.chat.id, routes_str)
+            self.bot.send_message(message.chat.id, route_list_to_string(routes_list))
         else:
             self.bot.send_message(message.chat.id, 'ERROR')
             sys.exit(0)

@@ -104,7 +104,7 @@ class RequestAnalyzer:
             for idx, is_field_retireved in enumerate(
                     self.are_all_fields_retrieved):
                 if are_all_fields_correct[
-                        idx] is True and is_field_retireved is False:
+                    idx] is True and is_field_retireved is False:
                     self.are_all_fields_retrieved[idx] = True
                     self.fields_to_update[idx] = True
 
@@ -132,10 +132,10 @@ class RequestAnalyzer:
             # Generate a feedback message if
             # any field verification failed
             return_message = await self \
-                           .message_generator \
-                           .generate_message(user_request,
-                                              fields_verification_map,
-                                              post_verif_result)
+                .message_generator \
+                .generate_message(user_request,
+                                  fields_verification_map,
+                                  post_verif_result)
             return False, return_message
 
         # Convert extracted data to the required JSON format

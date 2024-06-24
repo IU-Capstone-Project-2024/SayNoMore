@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from api_collector.route.route import Route
 
 def request_to_json(request: str) -> dict:
     pairs = request.split(';')
@@ -7,6 +7,13 @@ def request_to_json(request: str) -> dict:
     json_dict['Budget'] = int(json_dict['Budget'])
     return json_dict
 
+
+def route_list_to_string(route_list: list[Route]) -> str:
+    result = ''
+    for route in route_list:
+        result += route.to_string()
+        result += '\n________________________\n'
+    return result
 
 def format_route_info(self, routes):
     def format_datetime(dt_str):
