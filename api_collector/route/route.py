@@ -330,7 +330,8 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
     if budget:
         # Check if the cheapest route exceeds the budget
         if cheapest_hotel['priceFrom'] + cheapest_ticket['price'] > budget:
-            return top_routes
+            return [Route(origin=origin, destination=destination, departure_at=departure_at, return_at=return_at,
+                      budget=budget, ticket=top_routes[0]['ticket'], hotel=top_routes[0]['hotel'])]
         else:
             # Make return value empty
             top_routes = []
