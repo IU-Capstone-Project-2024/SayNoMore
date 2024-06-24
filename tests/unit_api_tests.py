@@ -154,7 +154,7 @@ class TestAirTicketsApi(TestCase):
 
     def test_fetch_hotel_photos(self):
         id = [4]
-        file_path = f'photos/hotelPhotos/4/photo1.avif'
+        file_path = f'photos/hotelPhotos/{id[0]}/photo1.avif'
         # Check if the file exists
         if os.path.exists(file_path):
             # Delete the file
