@@ -373,5 +373,4 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
             unique_routes.append(
                 Route(origin=origin, destination=destination, departure_at=departure_at, return_at=return_at,
                       budget=budget, ticket=top_routes[i]['ticket'], hotel=top_routes[i]['hotel']))
-
     return unique_routes
