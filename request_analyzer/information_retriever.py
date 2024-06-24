@@ -1,4 +1,4 @@
-from vllm import LLM
+from request_analyzer.llm import LLM
 from typing import Dict, Tuple, List
 
 from request_analyzer.request_fields_enum import RequestField
@@ -65,7 +65,7 @@ class InformationRetriever:
         """
         self.retrievers[field_name] = retriever
 
-    def retrieve(
+    async def retrieve(
         self, request: str
     ) -> Tuple[Dict[RequestField, str], bool, List[Tuple[ValueStages, str]]]:
         """
@@ -89,7 +89,7 @@ class InformationRetriever:
         are_all_fields_correct = []
         map_for_post_verification = {}
         for field, retriever in self.retrievers.items():
-            retrieved_data = retriever.retrieve(request)
+            retrieved_data = await retriever.retrieve(request)
             verification_result, status = self.verifier.verify(
                 field, retrieved_data)
 

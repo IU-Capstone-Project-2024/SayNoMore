@@ -7,12 +7,15 @@ import os
 
 # Define a class that inherits from TestCase to create unit tests for the AirTicketsApi
 class TestAirTicketsApi(TestCase):
-    def setUp(self):  # This method is called before each test method is executed
+
+    def setUp(
+            self):  # This method is called before each test method is executed
         # Initialize an instance of AirTicketsApi for use in the tests
         self.air_api = AirTicketsApi()
         self.hotel_api = HotelApi()
 
-    def test_fetch_cheapest_tickets(self):  # Test method for fetching cheapest tickets
+    def test_fetch_cheapest_tickets(
+            self):  # Test method for fetching cheapest tickets
         # Define expected data structure for comparison
         expected_data = {
             'origin': "MOW",  # Moscow (IATA: MOW) as origin
@@ -20,20 +23,22 @@ class TestAirTicketsApi(TestCase):
         }
 
         # Call the fetch_cheapest_tickets method on the api object and store its response
-        response = self.air_api.fetch_cheapest_tickets(origin='MOW', destination='DXB')
+        response = self.air_api.fetch_cheapest_tickets(origin='MOW',
+                                                       destination='DXB')
 
         # Assert that the response indicates success
         self.assertTrue(response['success'])
         # Assert that the first ticket in the response matches the expected origin and destination
-        self.assertEqual(response['data'][0]['origin'], expected_data['origin'])
-        self.assertEqual(response['data'][0]['destination'], expected_data['destination'])
+        self.assertEqual(response['data'][0]['origin'],
+                         expected_data['origin'])
+        self.assertEqual(response['data'][0]['destination'],
+                         expected_data['destination'])
 
-    def test_fetch_grouped_tickets(self):  # Test method for fetching grouped tickets based on departure date
+    def test_fetch_grouped_tickets(
+        self
+    ):  # Test method for fetching grouped tickets based on departure date
         # Define expected data structure for comparison
-        expected_data = {
-            'origin': "MOW",
-            'destination': "DXB"
-        }
+        expected_data = {'origin': "MOW", 'destination': "DXB"}
         # Get today's date and calculate the date two weeks later
         today = datetime.today()
         two_weeks_later = today + timedelta(weeks=2)
@@ -41,20 +46,21 @@ class TestAirTicketsApi(TestCase):
         departure_date = two_weeks_later.strftime('%Y-%m-%d')
 
         # Call the fetch_grouped_tickets method on the api object and store its response
-        response = self.air_api.fetch_grouped_tickets(origin='MOW', destination='DXB', departure_at=departure_date)
+        response = self.air_api.fetch_grouped_tickets(
+            origin='MOW', destination='DXB', departure_at=departure_date)
 
         # Assert that the response indicates success
         self.assertTrue(response['success'])
         # Assert that the ticket for the calculated departure date matches the expected origin and destination
-        self.assertEqual(response['data'][departure_date]['origin'], expected_data['origin'])
-        self.assertEqual(response['data'][departure_date]['destination'], expected_data['destination'])
+        self.assertEqual(response['data'][departure_date]['origin'],
+                         expected_data['origin'])
+        self.assertEqual(response['data'][departure_date]['destination'],
+                         expected_data['destination'])
 
-    def test_fetch_period_tickets(self):  # Test method for fetching tickets within a specific period
+    def test_fetch_period_tickets(
+            self):  # Test method for fetching tickets within a specific period
         # Define expected data structure for comparison
-        expected_data = {
-            'origin': "MOW",
-            'destination': "DXB"
-        }
+        expected_data = {'origin': "MOW", 'destination': "DXB"}
         # Get today's date and calculate the date two weeks later
         today = datetime.today()
         two_weeks_later = today + timedelta(weeks=2)
@@ -62,17 +68,22 @@ class TestAirTicketsApi(TestCase):
         beginning_of_period = two_weeks_later.strftime('%Y-%m-%d')
 
         # Call the fetch_period_tickets method on the api object and store its response
-        response = self.air_api.fetch_period_tickets(origin='MOW', destination='DXB',
-                                                     beginning_of_period=beginning_of_period)
+        response = self.air_api.fetch_period_tickets(
+            origin='MOW',
+            destination='DXB',
+            beginning_of_period=beginning_of_period)
 
         # Assert that the response indicates success
         self.assertTrue(response['success'])
         # Assert that the first ticket in the response matches the expected origin and destination
-        self.assertEqual(response['data'][0]['origin'], expected_data['origin'])
-        self.assertEqual(response['data'][0]['destination'], expected_data['destination'])
+        self.assertEqual(response['data'][0]['origin'],
+                         expected_data['origin'])
+        self.assertEqual(response['data'][0]['destination'],
+                         expected_data['destination'])
 
     def test_fetch_alternative_route_tickets(self):
-        response = self.air_api.fetch_alternative_route_tickets(origin='OVB', destination='LED')
+        response = self.air_api.fetch_alternative_route_tickets(
+            origin='OVB', destination='LED')
         # Check if 'prices' key exists in the response and contains at least one item
         assert 'prices' in response, "'prices' key not found in the response."
         assert len(response['prices']) > 0, "No prices found in the response."
@@ -96,9 +107,7 @@ class TestAirTicketsApi(TestCase):
         self.assertTrue(os.path.exists(file_path))
 
     def test_search_hotel_or_location(self):
-        expected_data = {
-            'status': 'ok'
-        }
+        expected_data = {'status': 'ok'}
         query = 'moscow'
         response = self.hotel_api.search_hotel_or_location(query=query)
         self.assertEqual(response['status'], expected_data['status'])
@@ -112,7 +121,9 @@ class TestAirTicketsApi(TestCase):
         # Format the departure date as a string in YYYY-MM-DD format
         check_in = two_weeks_later.strftime('%Y-%m-%d')
         check_out = three_weeks_later.strftime('%Y-%m-%d')
-        response = self.hotel_api.fetch_hotel_prices(location=location, check_in=check_in, check_out=check_out)
+        response = self.hotel_api.fetch_hotel_prices(location=location,
+                                                     check_in=check_in,
+                                                     check_out=check_out)
         self.assertTrue(response[0]['locationId'])
 
     def test_fetch_hotel_collections(self):
@@ -123,7 +134,9 @@ class TestAirTicketsApi(TestCase):
         # Format the departure date as a string in YYYY-MM-DD format
         check_in = two_weeks_later.strftime('%Y-%m-%d')
         check_out = three_weeks_later.strftime('%Y-%m-%d')
-        response = self.hotel_api.fetch_hotel_collections(city_id=city_id, check_in=check_in, check_out=check_out)
+        response = self.hotel_api.fetch_hotel_collections(city_id=city_id,
+                                                          check_in=check_in,
+                                                          check_out=check_out)
         self.assertTrue(response['popularity'])
 
     def test_fetch_hotel_collection_types(self):

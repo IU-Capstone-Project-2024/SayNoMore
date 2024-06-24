@@ -1,26 +1,17 @@
 import unittest
-from vllm import LLM
 
+from request_analyzer.llm import LLM
 from request_analyzer.request_analyzer import RequestAnalyzer
 
 
-class TestRequestAnalyzer(unittest.TestCase):
+class TestRequestAnalyzer(unittest.IsolatedAsyncioTestCase):
 
     @classmethod
-    def setUpClass(cls):
-        model_name = "meta-llama/Meta-Llama-3-8B"
-
+    def setUp(cls):
         # Initialize the LLM
-        cls.llm = LLM(
-            model=model_name,
-            tensor_parallel_size=1,  # Adjust as needed based on your GPU setup
-            gpu_memory_utilization=0.4,
-            enforce_eager=True,
-            enable_chunked_prefill=True,
-            max_num_batched_tokens=2048)
+        cls.llm = LLM()
 
-
-    def test_request_analyzer(self):
+    async def test_request_analyzer(self):
         requests = [
             "Хочу уехать в Москву c 1го по 15 декабря",
             "Я поеду из Казани. Бюджет примерно 35 тысяч"
@@ -29,15 +20,17 @@ class TestRequestAnalyzer(unittest.TestCase):
         message = ""
         request_analyzer = RequestAnalyzer(self.llm)
         while True:
-            are_all_fields_retireved, message = \
+            are_all_fields_retireved, message = await \
                 request_analyzer.analyzer_step(requests[request_idx])
-            print(message)
+            # print(message)
             if are_all_fields_retireved is True:
                 break
             request_idx += 1
 
-        self.assertEqual(message, "Arrival:01/12/2024;Return:15/12/2024;Departure:Казань;Destination:Москва;Budget:35000")
-
+        self.assertEqual(
+            message,
+            '{"Arrival": "2024-12-01", "Return": "2024-12-15", "Departure": "KZN", "Destination": "MOW", "Budget": 35000}'
+        )
 
         requests = [
             "Хочу уехать из Казани 1го декабря",
@@ -47,14 +40,36 @@ class TestRequestAnalyzer(unittest.TestCase):
         message = ""
         request_analyzer = RequestAnalyzer(self.llm)
         while True:
-            are_all_fields_retireved, message = \
+            are_all_fields_retireved, message = await \
                 request_analyzer.analyzer_step(requests[request_idx])
-            print(message)
+            # print(message)
             if are_all_fields_retireved is True:
                 break
             request_idx += 1
-        
-        self.assertEqual(message, "Arrival:01/12/2024;Return:22/12/2024;Departure:Казань;Destination:Москва;Budget:None")
+
+        self.assertEqual(
+            message,
+            '{"Arrival": "2024-12-01", "Return": "2024-12-22", "Departure": "KZN", "Destination": "MOW", "Budget": "None"}'
+        )
+
+        requests = [
+            "Хочу съездить в Санкт-Петербург с 1го по 8ое июля. Из Улан-Удэ.",
+        ]
+        request_idx = 0
+        message = ""
+        request_analyzer = RequestAnalyzer(self.llm)
+        while True:
+            are_all_fields_retireved, message = await \
+                request_analyzer.analyzer_step(requests[request_idx])
+            # print(message)
+            if are_all_fields_retireved is True:
+                break
+            request_idx += 1
+
+        self.assertEqual(
+            message,
+            '{"Arrival": "2024-07-01", "Return": "2024-07-08", "Departure": "UUD", "Destination": "LED", "Budget": "None"}'
+        )
 
 
 if __name__ == '__main__':
