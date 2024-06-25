@@ -1,7 +1,16 @@
-from datetime import datetime
 from api_collector.route.route import Route
 
+
 def request_to_json(request: str) -> dict:
+    """
+    Converts a request string into a dictionary with appropriate key-value pairs.
+
+    Args:
+        request (str): The request string in the format "key1:value1;key2:value2;...".
+
+    Returns:
+        dict: A dictionary representation of the request, with 'Budget' converted to an integer.
+    """
     pairs = request.split(';')
     json_dict = {key: value for key, value in (pair.split(':') for pair in pairs)}
     json_dict['Budget'] = int(json_dict['Budget'])
@@ -9,44 +18,17 @@ def request_to_json(request: str) -> dict:
 
 
 def route_list_to_string(route_list: list[Route]) -> str:
+    """
+    Converts a list of Route objects into a formatted string.
+
+    Args:
+        route_list (list[Route]): A list of Route objects.
+
+    Returns:
+        str: A formatted string representation of the route list.
+    """
     result = ''
     for route in route_list:
         result += route.to_string()
         result += '\n________________________\n'
     return result
-
-def format_route_info(self, routes):
-    def format_datetime(dt_str):
-        dt = datetime.fromisoformat(dt_str)
-        return dt.strftime('%Y-%m-%d %H:%M:%S')
-
-    formatted_routes = []
-    for route in routes:
-        ticket = route.get('ticket', {})
-        hotel = route.get('hotel', {})
-
-        flight_number = ticket.get('flight_number', 'N/A')
-        departure = format_datetime(ticket.get('departure_at', 'N/A'))
-        return_date = format_datetime(ticket.get('return_at', 'N/A'))
-        origin = ticket.get('origin', 'N/A')
-        destination = ticket.get('destination', 'N/A')
-        price = ticket.get('price', 'N/A')
-
-        hotel_name = hotel.get('hotelName', 'N/A')
-        hotel_price = hotel.get('priceFrom', 'N/A')
-
-        formatted_route = (
-            f"Flight:\n"
-            f"  - Flight Number: {flight_number}\n"
-            f"  - From: {origin} to {destination}\n"
-            f"  - Departure: {departure}\n"
-            f"  - Return: {return_date}\n"
-            f"  - Price: {price} RUB\n"
-            f"Hotel:\n"
-            f"  - Name: {hotel_name}\n"
-            f"  - Price: {hotel_price:.2f} RUB\n"
-        )
-
-        formatted_routes.append(formatted_route)
-
-    return "\n---\n".join(formatted_routes)
