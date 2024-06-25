@@ -388,7 +388,14 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
     return unique_routes
 
 def find_filtered_hotels(locationId, filter=(1, 2, 3, 12)):
+    """
+    This function filters hotels based on their type
+    :param locationId: location of hotels
+    :param filter: hotels types which will be chosen
+    :return: list of all suitable hotels ids
+    """
     hotel_api = HotelApi()
+    # check if we have already saved information about hotels in given location
     file_path = hotel_api.data_directory_path() + hotel_api.hotels_list_dir + f'/{locationId}.json'
     if not os.path.exists(file_path):
         data = hotel_api.fetch_hotel_list(locationId=locationId)
@@ -396,10 +403,13 @@ def find_filtered_hotels(locationId, filter=(1, 2, 3, 12)):
         with open(file_path) as f:
             data = json.load(f)
 
+    # list of chosen hotels
     filtered_hotels = []
+    # iterate through all hotels and choose one which satisfy the condition
     for hotel in data['hotels']:
         if hotel['propertyType'] in filter:
             filtered_hotels.append(hotel['id'])
 
+    # return list of chosen hotels
     return filtered_hotels
 
