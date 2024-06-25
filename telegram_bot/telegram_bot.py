@@ -2,8 +2,8 @@ import telebot
 import sys
 
 from api_collector.route.route import Route, find_top_routes
-from utils import messages
-from utils.formatting import request_to_json, route_list_to_string
+from telegram_bot.utils import messages
+from telegram_bot.utils.formatting import request_to_json, route_list_to_string
 
 
 class SayNoMoreBot:
