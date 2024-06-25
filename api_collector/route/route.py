@@ -278,10 +278,12 @@ def get_hotel(location, check_in, check_out, budget=None):
     hotels = hotel_api.fetch_hotel_prices(location=location,
                                           check_in=check_in,
                                           check_out=check_out,
-                                          limit=1000)
+                                          limit=10000)
+
 
     # Sort the fetched hotels by the 'priceFrom' field in ascending order
     hotels = sorted(hotels, key=lambda x: x['priceFrom'])
+
 
     # If a budget is specified, filter hotels to include only those with 'priceFrom' less than the budget
     if budget:
