@@ -19,12 +19,13 @@ class HotelApi:
         self.fetch_hotel_collection_types_url = hotel_api_data.fetch_hotel_collection_types_url
         self.fetch_room_types_url = hotel_api_data.fetch_room_types_url
         self.fetch_hotel_types_url = hotel_api_data.fetch_hotel_types_url
+        self.fetch_hotel_list_url = hotel_api_data.fetch_hotel_list_url
         self.fetch_hotel_photos_base_url = hotel_api_data.fetch_hotel_photos_base_url
         self.fetch_city_photos_base_url = hotel_api_data.fetch_city_hotel_base_url
         self.hotel_photos_dir = "/photos/hotelPhotos"
         self.city_photos_dir = "/photos/cityPhotos"
         self.hotel_types_dir = "/hotels"
-        self.hotels_list_dir  = "/hotels"
+        self.hotels_list_dir = "/hotels"
 
     def data_directory_path(self):
         """
@@ -320,7 +321,7 @@ class HotelApi:
         params = {
             'language': language.value,
             'token': self.
-            api_token  # Assuming the token is stored as an instance variable
+            api_token
         }
 
         try:
@@ -354,7 +355,7 @@ class HotelApi:
         params = {
             'language': language.value,
             'token': self.
-            api_token  # Assuming the token is stored as an instance variable
+            api_token
         }
 
         try:
@@ -374,6 +375,84 @@ class HotelApi:
                         exist_ok=True)  # Ensure the directory exists
             # Specify the file name where data will be saved
             file_path = os.path.join(file_directory, 'hotels_type.json')
+
+            # Save the JSON data to a file
+            with open(file_path, 'w') as file:
+                json.dump(data, file, indent=4)
+
+            # return response data
+            return data
+
+        except requests.exceptions.RequestException as e:
+            # Catch any request-related exceptions (e.g., timeouts, connection errors)
+            raise Exception("There was an error making the request.") from e
+
+    def fetch_hotel_list(self, locationId):
+        """
+        This function returns list of hotels in given location and saves the response
+        to /data/hotels/<locationId>.json file
+
+        :param locationId: id of location
+        :return: a dictionary containing information about hotels in this format:
+            - id: ID of the hotel in the HotelLook database
+            - cityId: ID of the city
+            - stars: number of stars
+            - pricefrom: the average minimum cost of the period, in USD
+            - rating: visitor rating
+            - popularity: popularity of the hotel
+            - propertyType: type of hotel (hostel, motel, villa, etc.)
+            - checkIn: check-in time
+            - checkOut: check-out time
+            - distance: distance to the center
+            - photoCount: number of photos
+            - photos: list of photos
+                - url: link to the photo
+                - width: width of the photo
+                - height: height of the photo
+            - facilities: list of amenity IDs in the database
+            - shortFacilities: list of available amenities
+            - photosByRoomType: photos of room types
+            - location: location details
+                - lat: latitude of the hotel
+                - lon: longitude of the hotel
+            - name: hotel name
+            - address: hotel address
+            - link: link to the hotel page
+            - poi_distance: distance to important places
+            - pois: array of important places
+                - id: ID of the place in the base
+                - rating: place ranking
+                - category: place category
+                - name: name of the place
+                - location: location details
+                - geom: coordinates of the point
+                - confirmed: whether the place is confirmed
+        """
+        # Constructing the query string
+        params = {
+            'locationId': locationId,
+            'token': self.
+            api_token
+        }
+
+        try:
+            # Making the GET request
+            response = requests.get(self.fetch_hotel_list_url, params=params)
+            # Check if the request was successful
+            if response.status_code != 200:
+                # Raise an exception if the response status code indicates failure
+                raise Exception(
+                    f"Failed to fetch room types. Status code: {response.status_code}"
+                )
+            # get data
+            data = response.json()
+            # define file directory
+            file_directory = self.data_directory_path() + self.hotels_list_dir
+            # make sure it exists
+            os.makedirs(file_directory,
+                        exist_ok=True)  # Ensure the directory exists
+            # Specify the file name where data will be saved
+            file_path = os.path.join(file_directory, f'{locationId}.json')
 
             # Save the JSON data to a file
             with open(file_path, 'w') as file:
@@ -436,7 +515,7 @@ class HotelApi:
         :param iata_code: iata code og the city
         :return: None
         """
-        photo_directory = self.data_directory_path()+self.city_photos_dir
+        photo_directory = self.data_directory_path() + self.city_photos_dir
         os.makedirs(photo_directory,
                     exist_ok=True)  # Ensure the directory exists
         photo_url = f'{self.fetch_city_photos_base_url}{width}x{height}/{iata_code}.jpg'
