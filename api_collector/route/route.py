@@ -282,17 +282,20 @@ def get_hotel(location, check_in, check_out, budget=None):
                                           check_in=check_in,
                                           check_out=check_out,
                                           limit=10000)
+    # check if we fetched at least one hotel
+    if len(hotels) == 0:
+        return None
 
+    # get all hotel ids satisfied our filter
+    filtered_hotels = find_filtered_hotels(locationId=hotels[0]['locationId'])
+    # filter obtained hotels
+    hotels[:] = [hotel for hotel in hotels if hotel['hotelId'] in filtered_hotels]
+    # check if we filtered at least one hotel
     if len(hotels) == 0:
         return None
 
     # Sort the fetched hotels by the 'priceFrom' field in ascending order
     hotels = sorted(hotels, key=lambda x: x['priceFrom'])
-
-    filtered_hotels = find_filtered_hotels(locationId=hotels[0]['locationId'])
-
-    hotels[:] = [hotel for hotel in hotels if hotel['hotelId'] in filtered_hotels]
-
 
     # If a budget is specified, filter hotels to include only those with 'priceFrom' less than the budget
     if budget:
@@ -342,7 +345,7 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
         # Check if the cheapest route exceeds the budget
         if cheapest_hotel['priceFrom'] + cheapest_ticket['price'] > budget:
             return [Route(origin=origin, destination=destination, departure_at=departure_at, return_at=return_at,
-                      budget=budget, ticket=top_routes[0]['ticket'], hotel=top_routes[0]['hotel'])]
+                          budget=budget, ticket=top_routes[0]['ticket'], hotel=top_routes[0]['hotel'])]
         else:
             # Make return value empty
             top_routes = []
@@ -387,11 +390,13 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
                       budget=budget, ticket=top_routes[i]['ticket'], hotel=top_routes[i]['hotel']))
     return unique_routes
 
+
 def find_filtered_hotels(locationId, filter=(1, 2, 3, 12)):
     """
     This function filters hotels based on their type
     :param locationId: location of hotels
-    :param filter: hotels types which will be chosen
+    :param filter: hotels types which will be chosen. More information about filters is saved in
+        data/hotels/hotels_type.json directory or can be obtained by 'fetch_hotel_types' method in HotelApi class
     :return: list of all suitable hotels ids
     """
     hotel_api = HotelApi()
@@ -412,4 +417,3 @@ def find_filtered_hotels(locationId, filter=(1, 2, 3, 12)):
 
     # return list of chosen hotels
     return filtered_hotels
-
