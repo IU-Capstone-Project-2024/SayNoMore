@@ -423,7 +423,8 @@ class AirTicketsApi:
 
     def fetch_airline_logo(self, iata_code, height=100, width=100):
         """
-        Fetches the logo for a single airline based on its IATA code and saves it as a.png file.
+        Fetches the logo for a single airline based on its IATA code and saves it as a.png file
+        Airline logo is saved to /data/photos/airline_logos/<iata_code>.png
 
         :param iata_code: IATA code of the airline whose logo needs to be fetched.
         :param height: Desired height of the logo in pixels.
