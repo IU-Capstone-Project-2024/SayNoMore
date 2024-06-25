@@ -2,6 +2,7 @@ import requests
 from api_collector.hotels import hotel_api_data
 import os
 from api_collector.hotels.hotel_enums import Language, LookFor, ConvertCase, Currency, CollectionType
+import json
 
 
 class HotelApi:
@@ -22,6 +23,8 @@ class HotelApi:
         self.fetch_city_photos_base_url = hotel_api_data.fetch_city_hotel_base_url
         self.hotel_photos_dir = "/photos/hotelPhotos"
         self.city_photos_dir = "/photos/cityPhotos"
+        self.hotel_types_dir = "/hotels"
+        self.hotels_list_dir  = "/hotels"
 
     def data_directory_path(self):
         """
@@ -338,7 +341,7 @@ class HotelApi:
 
     def fetch_hotel_types(self, language=Language.EN):
         """
-        Fetches hotel types
+        Fetches hotel types and saves to /data/hotels directory
 
         Parameters:
         - language: Language of the response (e.g., pt, en, fr, de, id, it, pl, es, th, ru). Defaults to English ('en').
@@ -356,15 +359,28 @@ class HotelApi:
 
         try:
             # Making the GET request
-            response = requests.get(self.fetch_room_types_url, params=params)
+            response = requests.get(self.fetch_hotel_types_url, params=params)
             # Check if the request was successful
             if response.status_code != 200:
                 # Raise an exception if the response status code indicates failure
                 raise Exception(
                     f"Failed to fetch room types. Status code: {response.status_code}"
                 )
-            # Return the JSON content of the response
-            return response.json()
+            data = response.json()
+            # define file directory
+            file_directory = self.data_directory_path() + self.hotel_types_dir
+            # make sure it exists
+            os.makedirs(file_directory,
+                        exist_ok=True)  # Ensure the directory exists
+            # Specify the file name where data will be saved
+            file_path = os.path.join(file_directory, 'hotels_type.json')
+
+            # Save the JSON data to a file
+            with open(file_path, 'w') as file:
+                json.dump(data, file, indent=4)
+
+            # return response data
+            return data
 
         except requests.exceptions.RequestException as e:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
