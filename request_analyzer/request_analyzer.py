@@ -89,6 +89,23 @@ class RequestAnalyzer:
                 message or the retrieved 
                 fields if verification 
                 passed in json format.
+                    - Example of json output:
+                        "{
+                        "Arrival": "2024-12-01",
+                        "Return": "2024-12-22",
+                        "Departure": "KZN",
+                        "Destination": "MOW",
+                        "Budget": 35000
+                        }"
+                    - Example of generated message:
+                        "Похоже, что я не получил 
+                        все необходимые данные для вашего 
+                        запроса. Пожалуйста, 
+                        укажите город назначения. 
+                        Кроме того, если у вас есть 
+                        бюджет, вы можете указать и 
+                        его, хотя это не обязательно. 
+                        Спасибо!"
         """
         # Retrieve information and
         # verification results from
