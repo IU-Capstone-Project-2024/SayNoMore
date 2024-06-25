@@ -35,7 +35,7 @@ class TestAirTicketsApi(TestCase):
                          expected_data['destination'])
 
     def test_fetch_grouped_tickets(
-        self
+            self
     ):  # Test method for fetching grouped tickets based on departure date
         # Define expected data structure for comparison
         expected_data = {'origin': "MOW", 'destination': "DXB"}
@@ -95,7 +95,7 @@ class TestAirTicketsApi(TestCase):
 
     def test_fetch_airline_logo(self):
         iata_code = 'UN'
-        file_path = self.air_api.data_directory_path() + f'/photos/airline_logos/{iata_code}.png'
+        file_path = self.air_api.data_directory_path() + self.air_api.air_logo_dir + f'/{iata_code}.png'
         # Check if the file exists
         if os.path.exists(file_path):
             # Delete the file
@@ -158,7 +158,7 @@ class TestAirTicketsApi(TestCase):
 
     def test_fetch_hotel_photos(self):
         id = [4]
-        file_path = self.hotel_api.data_directory_path() + f'/photos/hotelPhotos/{id[0]}/photo1.avif'
+        file_path = self.hotel_api.data_directory_path() + self.hotel_api.hotel_photos_dir + f'/{id[0]}/photo1.avif'
         # Check if the file exists
         if os.path.exists(file_path):
             # Delete the file
@@ -171,7 +171,7 @@ class TestAirTicketsApi(TestCase):
 
     def test_fetch_city_photo(self):
         iata_code = 'MOW'
-        file_path = self.hotel_api.data_directory_path() + f'/photos/cityPhotos/{iata_code}.png'
+        file_path = self.hotel_api.data_directory_path() + self.hotel_api.city_photos_dir + f'/{iata_code}.png'
         # Check if the file exists
         if os.path.exists(file_path):
             # Delete the file
