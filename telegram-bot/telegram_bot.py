@@ -7,13 +7,16 @@ from utils.formatting import request_to_json, format_route_info
 
 
 class SayNoMoreBot:
+
     def __init__(self):
-        self.bot = telebot.TeleBot('7333725090:AAFC6DwjlSs5VvvJ6ML863e5yx8h-NgAR60')
+        self.bot = telebot.TeleBot(
+            '7333725090:AAFC6DwjlSs5VvvJ6ML863e5yx8h-NgAR60')
         self.second = False
         self.setup_handlers()
         self.route_collector = route_collector
 
     def setup_handlers(self):
+
         @self.bot.message_handler(commands=['start'])
         def send_welcome(message):
             self.bot.send_message(message.chat.id, messages.WELCOME_MESSAGE)

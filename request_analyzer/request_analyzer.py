@@ -37,9 +37,9 @@ class RequestAnalyzer:
         self.message_generator = MoreInfoRequiredMessageGenerator(self.llm)
         self.extracted_data = {}  # Stores extracted data from user requests
         # Tracks if all fields have been successfully retrieved
-        self.are_all_fields_retrieved = []  
+        self.are_all_fields_retrieved = []
         # Indicates which fields need to be updated with new data
-        self.fields_to_update = [] 
+        self.fields_to_update = []
         # Load the CSV file and create a city name to code mapping
         project_root = self._get_project_root()
         csv_file_path = os.path.join(project_root, 'data/city_name_code.csv')
