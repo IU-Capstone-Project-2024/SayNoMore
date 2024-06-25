@@ -20,7 +20,29 @@ class HotelApi:
         self.fetch_hotel_types_url = hotel_api_data.fetch_hotel_types_url
         self.fetch_hotel_photos_base_url = hotel_api_data.fetch_hotel_photos_base_url
         self.fetch_city_photos_base_url = hotel_api_data.fetch_city_hotel_base_url
-        self.photos_dir = "photos/hotelPhotos"
+        self.hotel_photos_dir = "/photos/hotelPhotos"
+        self.city_photos_dir = "/photos/cityPhotos"
+
+    def data_directory_path(self):
+        """
+        This function determine absolute path to data directory
+        :return: absolute path to data directory
+        """
+        # Get the absolute path of the current script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # Find the project root directory (assuming this script is inside SayNoMore or its subdirectories)
+        project_root = current_dir
+        while os.path.basename(project_root) != 'SayNoMore':
+            project_root = os.path.dirname(project_root)
+
+        # Construct the path to the data directory
+        data_directory = os.path.join(project_root, 'data')
+
+        # Ensure the data directory exists
+        os.makedirs(data_directory, exist_ok=True)
+
+        return data_directory
 
     def search_hotel_or_location(self,
                                  query,
@@ -352,7 +374,7 @@ class HotelApi:
         """Fetches and saves a photo given its URL."""
         response = requests.get(url)
         if response.status_code == 200:
-            dir_path = os.path.join(self.photos_dir, str(hotel_id))
+            dir_path = os.path.join(self.data_directory_path() + self.hotel_photos_dir, str(hotel_id))
             file_path = os.path.join(dir_path, f"photo{photo_index}.avif")
             if not os.path.exists(dir_path):
                 os.makedirs(dir_path, exist_ok=True)
@@ -398,7 +420,7 @@ class HotelApi:
         :param iata_code: iata code og the city
         :return: None
         """
-        photo_directory = "photos/cityPhotos"
+        photo_directory = self.data_directory_path()+self.city_photos_dir
         os.makedirs(photo_directory,
                     exist_ok=True)  # Ensure the directory exists
         photo_url = f'{self.fetch_city_photos_base_url}{width}x{height}/{iata_code}.jpg'
