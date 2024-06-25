@@ -1,5 +1,8 @@
+import json
+
 from api_collector.air_tickets.air_tickets_api import AirTicketsApi
 from api_collector.hotels.hotel_api import HotelApi
+import os
 
 
 class Route:
@@ -280,9 +283,15 @@ def get_hotel(location, check_in, check_out, budget=None):
                                           check_out=check_out,
                                           limit=10000)
 
+    if len(hotels) == 0:
+        return None
 
     # Sort the fetched hotels by the 'priceFrom' field in ascending order
     hotels = sorted(hotels, key=lambda x: x['priceFrom'])
+
+    filtered_hotels = find_filtered_hotels(locationId=hotels[0]['locationId'])
+
+    hotels[:] = [hotel for hotel in hotels if hotel['hotelId'] in filtered_hotels]
 
 
     # If a budget is specified, filter hotels to include only those with 'priceFrom' less than the budget
@@ -377,3 +386,20 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
                 Route(origin=origin, destination=destination, departure_at=departure_at, return_at=return_at,
                       budget=budget, ticket=top_routes[i]['ticket'], hotel=top_routes[i]['hotel']))
     return unique_routes
+
+def find_filtered_hotels(locationId, filter=(1, 2, 3, 12)):
+    hotel_api = HotelApi()
+    file_path = hotel_api.data_directory_path() + hotel_api.hotels_list_dir + f'/{locationId}.json'
+    if not os.path.exists(file_path):
+        data = hotel_api.fetch_hotel_list(locationId=locationId)
+    else:
+        with open(file_path) as f:
+            data = json.load(f)
+
+    filtered_hotels = []
+    for hotel in data['hotels']:
+        if hotel['propertyType'] in filter:
+            filtered_hotels.append(hotel['id'])
+
+    return filtered_hotels
+
