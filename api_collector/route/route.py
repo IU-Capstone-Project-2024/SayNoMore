@@ -369,7 +369,7 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
     # Remove duplicates and convert to Route class
     unique_routes = []
     for i in range(len(top_routes)):
-        if i == 0 or (top_routes[i]['ticket'] != top_routes[i - 1]['ticket'] and top_routes[i]['hotel'] !=
+        if i == 0 or (top_routes[i]['ticket'] != top_routes[i - 1]['ticket'] or top_routes[i]['hotel'] !=
                       top_routes[i - 1]['hotel']):
             unique_routes.append(
                 Route(origin=origin, destination=destination, departure_at=departure_at, return_at=return_at,
