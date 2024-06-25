@@ -152,6 +152,10 @@ class TestAirTicketsApi(TestCase):
         response = self.hotel_api.fetch_hotel_types()
         self.assertTrue(response['1'])
 
+    def test_fetch_hotel_list(self):
+        response = self.hotel_api.fetch_hotel_list(locationId=895)
+        self.assertTrue(response['hotels'])
+
     def test_fetch_hotel_photos(self):
         id = [4]
         file_path = self.hotel_api.data_directory_path() + f'/photos/hotelPhotos/{id[0]}/photo1.avif'
