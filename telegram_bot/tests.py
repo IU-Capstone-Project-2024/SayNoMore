@@ -3,7 +3,7 @@ import sys
 import asyncio
 import threading
 
-from api_collector.route.route import Route, find_top_routes
+from api_collector.route.route import find_top_routes
 from utils import messages
 from utils.formatting import request_to_json, route_list_to_string
 from request_analyzer.request_analyzer import RequestAnalyzer

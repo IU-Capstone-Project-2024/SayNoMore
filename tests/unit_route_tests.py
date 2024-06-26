@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from api_collector.route.route import Route, get_hotel, get_ticket, find_top_routes
+from api_collector.route.route import get_hotel, get_ticket, find_top_routes
 
 
 class TestRouteCollector(unittest.TestCase):

@@ -8,10 +8,10 @@ from request_analyzer.retreivers.departure_retriever import DepartureRetriever
 from request_analyzer.retreivers.destination_retriever import DestinationRetriever
 from request_analyzer.retreivers.budget_retriever import BudgetRetriever
 from request_analyzer.retreivers.abstract_retriever import BaseRetriever
+from request_analyzer.utils.embedding_city_search import EmbeddingCitySearch
 from request_analyzer.verifiers.abstract_verifier import ValueStages
 from request_analyzer.request_verifier import RequestVerifier
 from request_analyzer.verifiers.post_verifier import PostVerifier
-from request_analyzer.utils.embedding_city_search import EmbeddingCitySearch
 
 
 class InformationRetriever:
@@ -41,8 +41,8 @@ class InformationRetriever:
         self.llm = llm
 
         self.verifier = RequestVerifier()
-        # self.searcher = EmbeddingCitySearch()
-        self.searcher = None
+        self.searcher = EmbeddingCitySearch()
+        # self.searcher = None
 
         # Register retrievers
         self.register_retriever(RequestField.Arrival, ArrivalRetriever(llm))

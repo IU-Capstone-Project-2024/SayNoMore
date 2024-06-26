@@ -4,9 +4,9 @@ import asyncio
 import threading
 import json
 
-from api_collector.route.route import Route, find_top_routes
+from api_collector.route.route import find_top_routes
 from telegram_bot.utils import messages
-from telegram_bot.utils.formatting import request_to_json, route_list_to_string
+from telegram_bot.utils.formatting import route_list_to_string
 from request_analyzer.request_analyzer import RequestAnalyzer
 from request_analyzer.llm import LLM
 
