@@ -139,8 +139,7 @@ class Route:
         """
         Returns a string representation of the route including flight and hotel details.
 
-        Returns:
-            str: A string describing the route, flight, and hotel details.
+        :return: str: A string describing the route, flight, and hotel details.
         """
         if self.ticket:
             flight_info = (f"Flight: {self.flight_origin} to {self.flight_destination}, "
@@ -166,8 +165,7 @@ class Route:
         """
         Calculates the total cost of the route including both flight and hotel.
 
-        Returns:
-            float: The total cost of the flight and hotel.
+        :return: float: The total cost of the flight and hotel.
         """
         total_cost = 0
         if self.ticket:
@@ -249,18 +247,18 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
         return None
 
 
-def get_hotel(location, check_in, check_out, budget=None):
+def get_hotel(location, check_in, check_out, budget=None, min_stars=0):
     """
     Fetches the hotel based on the specified parameters.
 
     Parameters:
-    - location: str, Name of the location (can use IATA code).
-    - check_in: str, Check-in date (format YYYY-MM-DD).
-    - check_out: str, Check-out date (format YYYY-MM-DD).
-    - budget: float, optional, Maximum price for the hotel.
+    :param location: str, Name of the location (can use IATA code).
+    :param check_in: str, Check-in date (format YYYY-MM-DD).
+    :param check_out: str, Check-out date (format YYYY-MM-DD).
+    :param budget: float, optional, Maximum price for the hotel.
+    :param min_stars: min number of stars for hotel required
 
-    Returns:
-    - dict: The hotel that matches the criteria or None if no hotels match:
+    :return: dict: The hotel that matches the criteria or None if no hotels match:
         {
             'locationId': int,  # ID of the location
             'hotelId': int,  # ID of the hotel
@@ -287,7 +285,7 @@ def get_hotel(location, check_in, check_out, budget=None):
         return None
 
     # get all hotel ids satisfied our filter
-    filtered_hotels = find_filtered_hotels(locationId=hotels[0]['locationId'])
+    filtered_hotels = find_filtered_hotels(locationId=hotels[0]['locationId'], min_stars=min_stars)
     # filter obtained hotels
     hotels[:] = [hotel for hotel in hotels if hotel['hotelId'] in filtered_hotels]
     # check if we filtered at least one hotel
@@ -310,20 +308,20 @@ def get_hotel(location, check_in, check_out, budget=None):
         return None
 
 
-def find_top_routes(origin, destination, departure_at=None, return_at=None, budget=None, route_number=3) -> list[Route]:
+def find_top_routes(origin, destination, departure_at=None, return_at=None, budget=None, route_number=3, min_stars=0) -> list[Route]:
     """
     Find the top routes based on the cheapest tickets and hotels.
 
     Parameters:
-    - origin: str, IATA code of the departure point.
-    - destination: str, IATA code of the destination point.
-    - departure_at: str, optional, departure date (format YYYY-MM-DD).
-    - return_at: str, optional, return date (format YYYY-MM-DD).
-    - budget: float, optional, maximum combined price for the ticket and hotel.
-    - route_number: int, optional, number of top routes to find (default is 3).
+    :param origin: str, IATA code of the departure point.
+    :param destination: str, IATA code of the destination point.
+    :param departure_at: str, optional, departure date (format YYYY-MM-DD).
+    :param return_at: str, optional, return date (format YYYY-MM-DD).
+    :param budget: float, optional, maximum combined price for the ticket and hotel.
+    :param route_number: int, optional, number of top routes to find (default is 3).
+    :param min_stars: min number of stars for hotel required
 
-    Returns:
-    - list of 'Route' class
+    :return: list of 'Route' class
     """
     # Get the cheapest ticket and hotel
     cheapest_ticket = get_ticket(origin=origin, destination=destination, departure_at=departure_at,
