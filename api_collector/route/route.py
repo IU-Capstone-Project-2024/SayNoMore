@@ -186,7 +186,7 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
     :param budget: float, optional, maximum price of the ticket
     :param number_of_tickets: amount of different tickets to return
 
-    :return: list of dict, the cheapest tickets that matches the criteria:
+    :return: list of dict, the cheapest tickets that matches the criteria or None if no tickets were found:
         [{
                      "origin": str,  # Departure point
                      "destination": str,  # Destination point
@@ -228,6 +228,8 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
             # Append the received ticket data to the tickets list
             tickets += response['data']
     # Filter tickets by budget if a budget is specified
+    if len(tickets) == 0:
+        return None
     if budget:
         # Initialize the last index of the ticket list to include
         last_index = 0
@@ -245,15 +247,15 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
             max_index = min(len(tickets), last_index + (number_of_tickets // 2) + (number_of_tickets % 2))
             if max_index - min_index < number_of_tickets:
                 if min_index == 0:
-                    return tickets[:max_index]
+                    return tickets[:number_of_tickets]
                 else:
-                    return tickets[max_index-number_of_tickets:max_index]
+                    return tickets[max_index - number_of_tickets:max_index]
             return tickets[min_index:max_index]
     else:
         return tickets[:number_of_tickets] if len(tickets) > number_of_tickets else tickets
 
 
-def get_hotel(location, check_in, check_out, budget=None, min_stars=0):
+def get_hotel(location, check_in, check_out, budget=None, min_stars=0, number_of_hotels=1):
     """
     Fetches the hotel based on the specified parameters.
 
@@ -263,8 +265,9 @@ def get_hotel(location, check_in, check_out, budget=None, min_stars=0):
     :param check_out: str, Check-out date (format YYYY-MM-DD).
     :param budget: float, optional, Maximum price for the hotel.
     :param min_stars: min number of stars for hotel required
+    :param number_of_hotels: number of different hotels to return
 
-    :return: dict: The hotel that matches the criteria or None if no hotels match:
+    :return: list of dict: The hotels that match the criteria or None if no hotels match:
         {
             'locationId': int,  # ID of the location
             'hotelId': int,  # ID of the hotel
@@ -303,19 +306,32 @@ def get_hotel(location, check_in, check_out, budget=None, min_stars=0):
 
     # If a budget is specified, filter hotels to include only those with 'priceFrom' less than the budget
     if budget:
-        hotels = [hotel for hotel in hotels if hotel['priceFrom'] < budget]
+        # Initialize the last index of the ticket list to include
+        last_index = 0
+        # Iterate through the tickets to find those within budget
+        for i, hotel in enumerate(hotels):
+            if hotel['priceFrom'] < budget:
+                last_index = i
+            else:
+                break
+        # Slice the tickets list to only include tickets within budget
+        if len(hotels) <= number_of_hotels:
+            return hotels
+        else:
+            min_index = max(0, last_index - (number_of_hotels // 2))
+            max_index = min(len(hotels), last_index + (number_of_hotels // 2) + (number_of_hotels % 2))
+            if max_index - min_index < number_of_hotels:
+                if min_index == 0:
+                    return hotels[:number_of_hotels]
+                else:
+                    return hotels[max_index - number_of_hotels:max_index]
+            return hotels[min_index:max_index]
     else:
-        return hotels[0] if len(hotels) > 0 else None
-
-    # Return the last hotel in the filtered list (the cheapest within budget), or None if no hotels match
-    if len(hotels) > 0:
-        return hotels[-1]
-    else:
-        return None
+        return hotels[:number_of_hotels] if len(hotels) > number_of_hotels else hotels
 
 
 def find_top_routes(origin, destination, departure_at=None, return_at=None, budget=None, route_number=3, min_stars=0) -> \
-list[Route]:
+        list[Route]:
     """
     Find the top routes based on the cheapest tickets and hotels.
 
