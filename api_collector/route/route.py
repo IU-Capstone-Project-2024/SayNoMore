@@ -391,12 +391,13 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
     return unique_routes
 
 
-def find_filtered_hotels(locationId, filter=(1, 2, 3, 12)):
+def find_filtered_hotels(locationId, filter=(1, 2, 3, 12), min_stars=0):
     """
     This function filters hotels based on their type
     :param locationId: location of hotels
     :param filter: hotels types which will be chosen. More information about filters is saved in
         data/hotels/hotels_type.json directory or can be obtained by 'fetch_hotel_types' method in HotelApi class
+    :param min_stars: min number of stars for hotel required
     :return: list of all suitable hotels ids
     """
     hotel_api = HotelApi()
@@ -413,7 +414,8 @@ def find_filtered_hotels(locationId, filter=(1, 2, 3, 12)):
     # iterate through all hotels and choose one which satisfy the condition
     for hotel in data['hotels']:
         if hotel['propertyType'] in filter:
-            filtered_hotels.append(hotel['id'])
+            if hotel['stars'] >= min_stars:
+                filtered_hotels.append(hotel['id'])
 
     # return list of chosen hotels
     return filtered_hotels
