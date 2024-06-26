@@ -482,7 +482,7 @@ class HotelApi:
 
     def fetch_hotel_photos(self, hotel_ids, width=800, height=520):
         """
-        Fetches photos for specified hotels and saves them locally.
+        Fetches photos for specified hotels and saves them locally in /data/photos/hotelPhotos/<hotel_id> directory.
 
         Parameters:
         - hotel_ids: list of Hotel ids.
@@ -511,7 +511,8 @@ class HotelApi:
 
     def fetch_city_photo(self, iata_code, width=960, height=720):
         """
-        Fetches city photos for specified IATA codes and saves them locally.
+        Fetches city photos for specified IATA codes and saves them locally in /data/photos/cityPhotos/<iata_code>.png
+         file.
         :param iata_code: iata code og the city
         :return: None
         """
