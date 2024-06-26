@@ -348,8 +348,8 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
     """
     # Get the cheapest ticket and hotel
     cheapest_ticket = get_ticket(origin=origin, destination=destination, departure_at=departure_at,
-                                 return_at=return_at)
-    cheapest_hotel = get_hotel(location=destination, check_in=departure_at, check_out=return_at, min_stars=min_stars)
+                                 return_at=return_at)[0]
+    cheapest_hotel = get_hotel(location=destination, check_in=departure_at, check_out=return_at, min_stars=min_stars)[0]
 
     # Create a return array with the initial cheapest route
     top_routes = [{
@@ -371,30 +371,39 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
         else:
             # Make return value empty
             top_routes = []
-            # Define part of a budget for tickets and hotels
+            # Define part of a budget for tickets
             coef = min_ticket_price / (min_ticket_price + min_hotel_price)
             ticket_price = max(coef * budget * 0.9, min_ticket_price)
+            # get ticket list
+            tickets = get_ticket(origin=origin, destination=destination, departure_at=departure_at,
+                                 return_at=return_at, budget=ticket_price, number_of_tickets=route_number)
 
-            ticket = get_ticket(origin=origin, destination=destination, departure_at=departure_at,
-                                return_at=return_at, budget=ticket_price)
-            hotel_price = budget - ticket['price']
-            hotel = get_hotel(location=destination, check_in=departure_at, check_out=return_at,
-                              budget=hotel_price, min_stars=min_stars)
-            top_routes.append({
-                'ticket': ticket,
-                'hotel': hotel
-            })
-            ticket_price *= 1.1
-            hotel_price *= 1.1
+            # define budget for a hotel
+            hotel_price = budget - tickets[len(tickets) // 2]['price']
+            # get hotel list
+            hotels = get_hotel(location=destination, check_in=departure_at, check_out=return_at,
+                               budget=hotel_price, min_stars=min_stars, number_of_hotels=route_number)
+            # check sizing
+            if len(hotels) != len(tickets):
+                return_size = min(len(hotels), len(tickets))
+                hotels = hotels[-return_size:]
+                tickets = tickets[-return_size:]
+
+            # combine top routes
+            for i in range(len(tickets)):
+                top_routes.append({
+                    'ticket': tickets[i],
+                    'hotel': hotels[len(tickets) - 1 - i]
+                })
     else:
         # Budget is not specified, finding arbitrary routes
         for _ in range(1, route_number):
             min_ticket_price *= 2
             ticket = get_ticket(origin=origin, destination=destination, departure_at=departure_at,
-                                return_at=return_at, budget=min_ticket_price)
+                                return_at=return_at, budget=min_ticket_price)[0]
             min_hotel_price *= 3
             hotel = get_hotel(location=destination, check_in=departure_at, check_out=return_at,
-                              budget=min_hotel_price, min_stars=min_stars)
+                              budget=min_hotel_price, min_stars=min_stars)[0]
             top_routes.append({
                 'ticket': ticket,
                 'hotel': hotel
