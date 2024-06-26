@@ -175,7 +175,7 @@ class Route:
         return total_cost
 
 
-def get_ticket(origin, destination, departure_at=None, return_at=None, budget=None):
+def get_ticket(origin, destination, departure_at=None, return_at=None, budget=None, number_of_tickets=1):
     """
     Fetch the cheapest air ticket based on the specified parameters.
 
@@ -184,9 +184,10 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
     :param departure_at: str, optional, departure date (format YYYY-MM or YYYY-MM-DD)
     :param return_at: str, optional, return date (format YYYY-MM or YYYY-MM-DD)
     :param budget: float, optional, maximum price of the ticket
+    :param number_of_tickets: amount of different tickets to return
 
-    :return: dict, the cheapest ticket that matches the criteria:
-        {
+    :return: list of dict, the cheapest tickets that matches the criteria:
+        [{
                      "origin": str,  # Departure point
                      "destination": str,  # Destination point
                      "origin_airport": str,  # IATA code of the departure airport
@@ -203,7 +204,7 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
                      "duration_back": int,  # Duration of the return flight in minutes
                      "link": str,  # Link to the ticket on Aviasales
                      "currency": str  # Currency of the ticket price
-        }
+        }]
     """
     # Initialize an empty list to store tickets
     tickets = []
@@ -229,22 +230,27 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
     # Filter tickets by budget if a budget is specified
     if budget:
         # Initialize the last index of the ticket list to include
-        last_index = 1
+        last_index = 0
         # Iterate through the tickets to find those within budget
         for i, ticket in enumerate(tickets):
             if ticket['price'] < budget:
-                last_index = i + 1
+                last_index = i
             else:
                 break
         # Slice the tickets list to only include tickets within budget
-        tickets = tickets[:last_index]
+        if len(tickets) <= number_of_tickets:
+            return tickets
+        else:
+            min_index = max(0, last_index - (number_of_tickets // 2))
+            max_index = min(len(tickets), last_index + (number_of_tickets // 2) + (number_of_tickets % 2))
+            if max_index - min_index < number_of_tickets:
+                if min_index == 0:
+                    return tickets[:max_index]
+                else:
+                    return tickets[max_index-number_of_tickets:max_index]
+            return tickets[min_index:max_index]
     else:
-        return tickets[0] if len(tickets) > 0 else None
-    # Return the last ticket in the filtered list, which should be the cheapest
-    if len(tickets) > 0:
-        return tickets[-1]
-    else:
-        return None
+        return tickets[:number_of_tickets] if len(tickets) > number_of_tickets else tickets
 
 
 def get_hotel(location, check_in, check_out, budget=None, min_stars=0):
@@ -308,7 +314,8 @@ def get_hotel(location, check_in, check_out, budget=None, min_stars=0):
         return None
 
 
-def find_top_routes(origin, destination, departure_at=None, return_at=None, budget=None, route_number=3, min_stars=0) -> list[Route]:
+def find_top_routes(origin, destination, departure_at=None, return_at=None, budget=None, route_number=3, min_stars=0) -> \
+list[Route]:
     """
     Find the top routes based on the cheapest tickets and hotels.
 
@@ -326,7 +333,7 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
     # Get the cheapest ticket and hotel
     cheapest_ticket = get_ticket(origin=origin, destination=destination, departure_at=departure_at,
                                  return_at=return_at)
-    cheapest_hotel = get_hotel(location=destination, check_in=departure_at, check_out=return_at)
+    cheapest_hotel = get_hotel(location=destination, check_in=departure_at, check_out=return_at, min_stars=min_stars)
 
     # Create a return array with the initial cheapest route
     top_routes = [{
@@ -342,6 +349,7 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
     if budget:
         # Check if the cheapest route exceeds the budget
         if cheapest_hotel['priceFrom'] + cheapest_ticket['price'] > budget:
+            # cheapest route exceed the budsget, return the cheapest route
             return [Route(origin=origin, destination=destination, departure_at=departure_at, return_at=return_at,
                           budget=budget, ticket=top_routes[0]['ticket'], hotel=top_routes[0]['hotel'])]
         else:
@@ -350,20 +358,18 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
             # Define part of a budget for tickets and hotels
             coef = min_ticket_price / (min_ticket_price + min_hotel_price)
             ticket_price = max(coef * budget * 0.9, min_ticket_price)
-            hotel_price = max((1 - coef) * budget * 0.9, min_hotel_price)
 
-            # Find some routes within the budget
-            for _ in range(route_number):
-                ticket = get_ticket(origin=origin, destination=destination, departure_at=departure_at,
-                                    return_at=return_at, budget=ticket_price)
-                hotel = get_hotel(location=destination, check_in=departure_at, check_out=return_at,
-                                  budget=hotel_price)
-                top_routes.append({
-                    'ticket': ticket,
-                    'hotel': hotel
-                })
-                ticket_price *= 1.1
-                hotel_price *= 1.1
+            ticket = get_ticket(origin=origin, destination=destination, departure_at=departure_at,
+                                return_at=return_at, budget=ticket_price)
+            hotel_price = budget - ticket['price']
+            hotel = get_hotel(location=destination, check_in=departure_at, check_out=return_at,
+                              budget=hotel_price, min_stars=min_stars)
+            top_routes.append({
+                'ticket': ticket,
+                'hotel': hotel
+            })
+            ticket_price *= 1.1
+            hotel_price *= 1.1
     else:
         # Budget is not specified, finding arbitrary routes
         for _ in range(1, route_number):
@@ -372,7 +378,7 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
                                 return_at=return_at, budget=min_ticket_price)
             min_hotel_price *= 3
             hotel = get_hotel(location=destination, check_in=departure_at, check_out=return_at,
-                              budget=min_hotel_price)
+                              budget=min_hotel_price, min_stars=min_stars)
             top_routes.append({
                 'ticket': ticket,
                 'hotel': hotel
