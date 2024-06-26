@@ -2,6 +2,7 @@ import telebot
 import sys
 import asyncio
 import threading
+import json
 
 from api_collector.route.route import Route, find_top_routes
 from telegram_bot.utils import messages
@@ -52,8 +53,7 @@ class SayNoMoreBot:
             
             if are_all_fields_retrieved:
                 user_state["completed"] = True
-                analyzed_message = response_message  # Assuming this is the final analyzed message
-                request = request_to_json(analyzed_message)
+                request = json.loads(response_message)  # Assuming this is the final analyzed message
                 routes_list = find_top_routes(
                     origin=request['Departure'],
                     destination=request['Destination'],

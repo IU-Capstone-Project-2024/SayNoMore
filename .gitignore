@@ -5,3 +5,4 @@ __pycache__/
 
 telegram-bot/tmp.py
 venv
+.ipynb_checkpoints
