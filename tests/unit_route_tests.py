@@ -65,82 +65,93 @@ class TestRouteCollector(unittest.TestCase):
         self.assertEqual(ticket['price'], 150.0)
         self.assertEqual(ticket['airline'], 'AA')
 
-    # @patch('api_collector.route.route.HotelApi')
-    # @patch('api_collector.route.route.find_filtered_hotels')
-    # def test_get_hotel_with_budget(self, MockHotelApi, mock_find_filtered_hotels):
-    #     # Set up the mock response
-    #     mock_api_instance = MockHotelApi.return_value
-    #     mock_api_instance.fetch_hotel_prices.return_value = [
-    #         {
-    #             'locationId': 12186,
-    #             'hotelId': 1405139619,
-    #             'priceFrom': 24619.74,
-    #             'priceAvg': 24619.74,
-    #             'pricePercentile': {'3': 24619.74, '10': 24619.74, '35': 24619.74, '50': 24619.74, '75': 24619.74,
-    #                                 '99': 24619.74},
-    #             'stars': 4,
-    #             'hotelName': 'AMAKS Congress Hotel',
-    #             'location': {'name': 'Ryazan', 'country': 'Russia', 'state': None,
-    #                          'geo': {'lat': 54.619779, 'lon': 39.744939}}
-    #         },
-    #         {
-    #             'locationId': 12186,
-    #             'hotelId': 546032,
-    #             'priceFrom': 24019.25,
-    #             'priceAvg': 24019.25,
-    #             'pricePercentile': {'3': 24019.25, '10': 24019.25, '35': 24019.25, '50': 24019.25, '75': 24019.25,
-    #                                 '99': 24019.25},
-    #             'stars': 4,
-    #             'hotelName': 'Congress Hotel Forum',
-    #             'location': {'name': 'Ryazan', 'country': 'Russia', 'state': None,
-    #                          'geo': {'lat': 54.619779, 'lon': 39.744939}}
-    #         },
-    #         {
-    #             'locationId': 12186,
-    #             'hotelId': 714884,
-    #             'priceFrom': 20446.39,
-    #             'priceAvg': 20446.39,
-    #             'pricePercentile': {'3': 20446.39, '10': 20446.39, '35': 20446.39, '50': 20446.39, '75': 20446.39,
-    #                                 '99': 20446.39},
-    #             'stars': 3,
-    #             'hotelName': 'Aragon Hotel',
-    #             'location': {'name': 'Ryazan', 'country': 'Russia', 'state': None,
-    #                          'geo': {'lat': 54.619779, 'lon': 39.744939}}
-    #         },
-    #         {
-    #             'locationId': 12186,
-    #             'hotelId': 40972234,
-    #             'priceFrom': 18014.44,
-    #             'priceAvg': 18014.44,
-    #             'pricePercentile': {'3': 18014.44, '10': 18014.44, '35': 18014.44, '50': 18014.44, '75': 18014.44,
-    #                                 '99': 18014.44},
-    #             'stars': 3,
-    #             'hotelName': 'Ryazan Hotel',
-    #             'location': {'name': 'Ryazan', 'country': 'Russia', 'state': None,
-    #                          'geo': {'lat': 54.619779, 'lon': 39.744939}}
-    #         },
-    #         {
-    #             'locationId': 12186,
-    #             'hotelId': 714887,
-    #             'priceFrom': 13811.07,
-    #             'priceAvg': 13811.07,
-    #             'pricePercentile': {'3': 13811.07, '10': 13811.07, '35': 13811.07, '50': 13811.07, '75': 13811.07,
-    #                                 '99': 13811.07},
-    #             'stars': 2,
-    #             'hotelName': 'Lovech Sport',
-    #             'location': {'name': 'Ryazan', 'country': 'Russia', 'state': None,
-    #                          'geo': {'lat': 54.619779, 'lon': 39.744939}}
-    #         }
-    #     ]
-    #     mock_api_instance.mock_find_filtered_hotels.return_value = [40972234, 45764856, 45656, 634, 23434]
-    #
-    #     # Call the method with a budget
-    #     hotel = get_hotel(location='Ryazan', check_in='2024-07-01', check_out='2024-07-10', budget=20000)
-    #
-    #     # Check the returned hotel
-    #     self.assertIsNotNone(hotel)
-    #     self.assertEqual(hotel['hotelId'], 40972234)
-    #     self.assertEqual(hotel['priceFrom'], 18014.44)
+
+    @patch('api_collector.route.route.HotelApi')
+    @patch('api_collector.route.route.find_filtered_hotels')
+    def test_get_hotel_with_budget(self, mock_find_filtered_hotels, mock_HotelApi):
+        # Setup mock responses
+        hotels = [
+            {
+                'locationId': 12186,
+                'hotelId': 1405139619,
+                'priceFrom': 24619.74,
+                'priceAvg': 24619.74,
+                'pricePercentile': {'3': 24619.74, '10': 24619.74, '35': 24619.74, '50': 24619.74, '75': 24619.74,
+                                    '99': 24619.74},
+                'stars': 4,
+                'hotelName': 'AMAKS Congress Hotel',
+                'location': {'name': 'Ryazan', 'country': 'Russia', 'state': None,
+                             'geo': {'lat': 54.619779, 'lon': 39.744939}}
+            },
+            {
+                'locationId': 12186,
+                'hotelId': 546032,
+                'priceFrom': 24019.25,
+                'priceAvg': 24019.25,
+                'pricePercentile': {'3': 24019.25, '10': 24019.25, '35': 24019.25, '50': 24019.25, '75': 24019.25,
+                                    '99': 24019.25},
+                'stars': 4,
+                'hotelName': 'Congress Hotel Forum',
+                'location': {'name': 'Ryazan', 'country': 'Russia', 'state': None,
+                             'geo': {'lat': 54.619779, 'lon': 39.744939}}
+            },
+            {
+                'locationId': 12186,
+                'hotelId': 714884,
+                'priceFrom': 20446.39,
+                'priceAvg': 20446.39,
+                'pricePercentile': {'3': 20446.39, '10': 20446.39, '35': 20446.39, '50': 20446.39, '75': 20446.39,
+                                    '99': 20446.39},
+                'stars': 3,
+                'hotelName': 'Aragon Hotel',
+                'location': {'name': 'Ryazan', 'country': 'Russia', 'state': None,
+                             'geo': {'lat': 54.619779, 'lon': 39.744939}}
+            },
+            {
+                'locationId': 12186,
+                'hotelId': 40972234,
+                'priceFrom': 18014.44,
+                'priceAvg': 18014.44,
+                'pricePercentile': {'3': 18014.44, '10': 18014.44, '35': 18014.44, '50': 18014.44, '75': 18014.44,
+                                    '99': 18014.44},
+                'stars': 3,
+                'hotelName': 'Ryazan Hotel',
+                'location': {'name': 'Ryazan', 'country': 'Russia', 'state': None,
+                             'geo': {'lat': 54.619779, 'lon': 39.744939}}
+            },
+            {
+                'locationId': 12186,
+                'hotelId': 714887,
+                'priceFrom': 13811.07,
+                'priceAvg': 13811.07,
+                'pricePercentile': {'3': 13811.07, '10': 13811.07, '35': 13811.07, '50': 13811.07, '75': 13811.07,
+                                    '99': 13811.07},
+                'stars': 2,
+                'hotelName': 'Lovech Sport',
+                'location': {'name': 'Ryazan', 'country': 'Russia', 'state': None,
+                             'geo': {'lat': 54.619779, 'lon': 39.744939}}
+            }
+        ]
+        mock_HotelApi.return_value.fetch_hotel_prices.return_value = hotels
+        mock_find_filtered_hotels.return_value = [1, 2, 40972234]
+
+        # get result
+        result = get_hotel(location='Ryazan', check_in='2024-07-01', check_out='2024-07-10', budget=20000)
+        expected_hotel = {
+                'locationId': 12186,
+                'hotelId': 40972234,
+                'priceFrom': 18014.44,
+                'priceAvg': 18014.44,
+                'pricePercentile': {'3': 18014.44, '10': 18014.44, '35': 18014.44, '50': 18014.44, '75': 18014.44,
+                                    '99': 18014.44},
+                'stars': 3,
+                'hotelName': 'Ryazan Hotel',
+                'location': {'name': 'Ryazan', 'country': 'Russia', 'state': None,
+                             'geo': {'lat': 54.619779, 'lon': 39.744939}}
+            }
+
+        # asses result
+        self.assertEqual(result, expected_hotel)
 
     @patch('api_collector.route.route.get_ticket')
     @patch('api_collector.route.route.get_hotel')
