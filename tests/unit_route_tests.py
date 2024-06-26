@@ -60,10 +60,10 @@ class TestRouteCollector(unittest.TestCase):
                                       budget=200.0)
 
         # Check the returned ticket
-        self.assertEqual(ticket['origin'], 'JFK')
-        self.assertEqual(ticket['destination'], 'LAX')
-        self.assertEqual(ticket['price'], 150.0)
-        self.assertEqual(ticket['airline'], 'AA')
+        self.assertEqual(ticket[0]['origin'], 'JFK')
+        self.assertEqual(ticket[0]['destination'], 'LAX')
+        self.assertEqual(ticket[0]['price'], 150.0)
+        self.assertEqual(ticket[0]['airline'], 'AA')
 
 
     @patch('api_collector.route.route.HotelApi')
@@ -151,13 +151,13 @@ class TestRouteCollector(unittest.TestCase):
             }
 
         # asses result
-        self.assertEqual(result, expected_hotel)
+        self.assertEqual(result[0], expected_hotel)
 
     @patch('api_collector.route.route.get_ticket')
     @patch('api_collector.route.route.get_hotel')
     def test_find_top_routes_with_budget(self, mock_get_hotel, mock_get_ticket):
         # Set up the mock responses
-        mock_get_ticket.return_value = {
+        mock_get_ticket.return_value = [{
             'origin': 'JFK',
             'destination': 'LAX',
             "origin_airport": "JFK",
@@ -174,9 +174,9 @@ class TestRouteCollector(unittest.TestCase):
             'duration_back': 300,
             'link': 'http://example.com/ticket1',
             'currency': 'USD'
-        }
+        }]
 
-        mock_get_hotel.return_value = {
+        mock_get_hotel.return_value = [{
             'locationId': 12186,
             'hotelId': 714884,
             'priceFrom': 100.0,
@@ -186,7 +186,7 @@ class TestRouteCollector(unittest.TestCase):
             'hotelName': 'Aragon Hotel',
             'location': {'name': 'Ryazan', 'country': 'Russia', 'state': None,
                          'geo': {'lat': 54.619779, 'lon': 39.744939}}
-        }
+        }]
 
         # Call the method with a budget
         routes = find_top_routes(origin='JFK', destination='LAX', departure_at='2024-07-01',
