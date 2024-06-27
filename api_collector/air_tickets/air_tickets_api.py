@@ -20,10 +20,42 @@ class AirTicketsApi:
         self.fetch_alternative_route_tickets_url = air_api_data.fetch_alternative_route_tickets_url
         self.fetch_popular_routes_from_city_url = air_api_data.fetch_popular_routes_from_city_url
         self.fetch_airline_logos_url_base = air_api_data.fetch_airline_logos_url_base
+        self.air_logo_dir = "/photos/airline_logos"
 
-    def fetch_cheapest_tickets(self, currency=Currency.RUB, origin=None, destination=None, departure_at=None,
-                               return_at=None, one_way=True, direct=False, market=Market.RU, limit=30, page=1,
-                               sorting=Sorting.PRICE, unique=False):
+    def data_directory_path(self):
+        """
+        This function determine absolute path to data directory
+        :return: absolute path to data directory
+        """
+        # Get the absolute path of the current script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # Find the project root directory (assuming this script is inside SayNoMore or its subdirectories)
+        project_root = current_dir
+        while os.path.basename(project_root) != 'SayNoMore':
+            project_root = os.path.dirname(project_root)
+
+        # Construct the path to the data directory
+        data_directory = os.path.join(project_root, 'data')
+
+        # Ensure the data directory exists
+        os.makedirs(data_directory, exist_ok=True)
+
+        return data_directory
+
+    def fetch_cheapest_tickets(self,
+                               currency=Currency.RUB,
+                               origin=None,
+                               destination=None,
+                               departure_at=None,
+                               return_at=None,
+                               one_way=True,
+                               direct=False,
+                               market=Market.RU,
+                               limit=30,
+                               page=1,
+                               sorting=Sorting.PRICE,
+                               unique=False):
         """
         Fetch the cheapest air tickets for specific dates.
 
@@ -83,11 +115,14 @@ class AirTicketsApi:
 
         try:
             # Send a GET request to fetch the cheapest tickets
-            response = requests.get(self.fetch_cheapest_tickets_url, params=params)
+            response = requests.get(self.fetch_cheapest_tickets_url,
+                                    params=params)
             # Check if the request was successful
             if response.status_code != 200:
                 # Raise an exception if the response status code indicates failure
-                raise Exception(f"Failed to fetch cheapest tickets. Status code: {response.status_code}")
+                raise Exception(
+                    f"Failed to fetch cheapest tickets. Status code: {response.status_code}"
+                )
             # Return the JSON content of the response
             return response.json()
 
@@ -95,8 +130,16 @@ class AirTicketsApi:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
 
-    def fetch_grouped_tickets(self, currency=Currency.RUB, origin=None, destination=None, group_by=GroupBy.DEPARTURE_AT,
-                              departure_at=None, return_at=None, market=Market.RU, direct=False, trip_duration=None):
+    def fetch_grouped_tickets(self,
+                              currency=Currency.RUB,
+                              origin=None,
+                              destination=None,
+                              group_by=GroupBy.DEPARTURE_AT,
+                              departure_at=None,
+                              return_at=None,
+                              market=Market.RU,
+                              direct=False,
+                              trip_duration=None):
         """
         Fetch grouped cheap air tickets.
 
@@ -150,11 +193,14 @@ class AirTicketsApi:
 
         try:
             # Send a GET request to fetch grouped tickets
-            response = requests.get(self.fetch_grouped_tickets_url, params=params)
+            response = requests.get(self.fetch_grouped_tickets_url,
+                                    params=params)
             # Check if the request was successful
             if response.status_code != 200:
                 # Raise an exception if the response status code indicates failure
-                raise Exception(f"Failed to fetch cheapest tickets. Status code: {response.status_code}")
+                raise Exception(
+                    f"Failed to fetch cheapest tickets. Status code: {response.status_code}"
+                )
             # Return the JSON content of the response
             return response.json()
 
@@ -162,9 +208,20 @@ class AirTicketsApi:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
 
-    def fetch_period_tickets(self, currency=Currency.RUB, origin='MOW', destination=None, beginning_of_period=None,
-                             period_type=PeriodType.MONTH, group_by=GroupBy.DATES, one_way=True, page=1, market=Market.RU,
-                             limit=30, sorting=Sorting.PRICE, trip_duration=None, trip_class=TripClass.ECONOMY):
+    def fetch_period_tickets(self,
+                             currency=Currency.RUB,
+                             origin='MOW',
+                             destination=None,
+                             beginning_of_period=None,
+                             period_type=PeriodType.MONTH,
+                             group_by=GroupBy.DATES,
+                             one_way=True,
+                             page=1,
+                             market=Market.RU,
+                             limit=30,
+                             sorting=Sorting.PRICE,
+                             trip_duration=None,
+                             trip_class=TripClass.ECONOMY):
         """
         Fetch air ticket prices for a specified period.
 
@@ -220,11 +277,14 @@ class AirTicketsApi:
 
         try:
             # Send a GET request to fetch period tickets
-            response = requests.get(self.fetch_period_tickets_url, params=params)
+            response = requests.get(self.fetch_period_tickets_url,
+                                    params=params)
             # Check if the request was successful
             if response.status_code != 200:
                 # Raise an exception if the response status code indicates failure
-                raise Exception(f"Failed to fetch period tickets. Status code: {response.status_code}")
+                raise Exception(
+                    f"Failed to fetch period tickets. Status code: {response.status_code}"
+                )
             # Return the JSON content of the response
             return response.json()
 
@@ -232,9 +292,17 @@ class AirTicketsApi:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
 
-    def fetch_alternative_route_tickets(self, currency=Currency.RUB, origin=None, destination=None,
-                                        show_to_affiliates=False, depart_date=None, return_date=None,
-                                        distance=None, market=Market.RU, limit=1, flexibility=0):
+    def fetch_alternative_route_tickets(self,
+                                        currency=Currency.RUB,
+                                        origin=None,
+                                        destination=None,
+                                        show_to_affiliates=False,
+                                        depart_date=None,
+                                        return_date=None,
+                                        distance=None,
+                                        market=Market.RU,
+                                        limit=1,
+                                        flexibility=0):
         """
         Fetch alternative route tickets based on the given parameters.
 
@@ -284,11 +352,14 @@ class AirTicketsApi:
 
         try:
             # Send a GET request to fetch alternative route tickets
-            response = requests.get(self.fetch_alternative_route_tickets_url, params=params)
+            response = requests.get(self.fetch_alternative_route_tickets_url,
+                                    params=params)
             # Check if the request was successful
             if response.status_code != 200:
                 # Raise an exception if the response status code indicates failure
-                raise Exception(f"Failed to fetch alternative route tickets. Status code: {response.status_code}")
+                raise Exception(
+                    f"Failed to fetch alternative route tickets. Status code: {response.status_code}"
+                )
             # Return the JSON content of the response
             return response.json()
 
@@ -296,7 +367,9 @@ class AirTicketsApi:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
 
-    def fetch_popular_routes_from_city(self, origin=None, currency=Currency.RUB):
+    def fetch_popular_routes_from_city(self,
+                                       origin=None,
+                                       currency=Currency.RUB):
         """
         Fetch popular routes from a city based on the given parameters.
 
@@ -333,11 +406,14 @@ class AirTicketsApi:
 
         try:
             # Send a GET request to fetch popular routes from the city
-            response = requests.get(self.fetch_popular_routes_from_city_url, params=params)
+            response = requests.get(self.fetch_popular_routes_from_city_url,
+                                    params=params)
             # Check if the request was successful
             if response.status_code != 200:
                 # Raise an exception if the response status code indicates failure
-                raise Exception(f"Failed to fetch popular routes. Status code: {response.status_code}")
+                raise Exception(
+                    f"Failed to fetch popular routes. Status code: {response.status_code}"
+                )
             # Return the JSON content of the response
             return response.json()
 
@@ -347,7 +423,8 @@ class AirTicketsApi:
 
     def fetch_airline_logo(self, iata_code, height=100, width=100):
         """
-        Fetches the logo for a single airline based on its IATA code and saves it as a.png file.
+        Fetches the logo for a single airline based on its IATA code and saves it as a.png file
+        Airline logo is saved to /data/photos/airline_logos/<iata_code>.png
 
         :param iata_code: IATA code of the airline whose logo needs to be fetched.
         :param height: Desired height of the logo in pixels.
@@ -355,8 +432,9 @@ class AirTicketsApi:
         :return: None
         """
 
-        logo_directory = "photos/airline_logos"
-        os.makedirs(logo_directory, exist_ok=True)  # Ensure the directory exists
+        logo_directory = self.data_directory_path() + self.air_logo_dir
+        os.makedirs(logo_directory,
+                    exist_ok=True)  # Ensure the directory exists
 
         # Construct the URL for the airline logo using the base URL, IATA code, and dimensions
         logo_url = f"{self.fetch_airline_logos_url_base}{width}/{height}/{iata_code}.png"
@@ -371,6 +449,8 @@ class AirTicketsApi:
                 with open(logo_path, 'wb') as file:
                     file.write(response.content)
             else:
-                raise Exception(f"Failed to fetch cheapest tickets. Status code: {response.status_code}")
+                raise Exception(
+                    f"Failed to fetch cheapest tickets. Status code: {response.status_code}"
+                )
         except requests.exceptions.RequestException as e:
             raise Exception(f"Failed to fetch logo for {iata_code}: {str(e)}")
