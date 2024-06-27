@@ -11,7 +11,12 @@ class RouteCollector:
         self.hotel_api = HotelApi()
         self.air_api = AirTicketsApi()
 
-    def get_ticket(self, origin, destination, departure_at=None, return_at=None, budget=None):
+    def get_ticket(self,
+                   origin,
+                   destination,
+                   departure_at=None,
+                   return_at=None,
+                   budget=None):
         """
         Fetch the cheapest air ticket based on the specified parameters.
 
@@ -46,12 +51,13 @@ class RouteCollector:
         # Loop through the first 9 pages to find tickets
         for page in range(1, 10):
             # Fetch the cheapest tickets for the given parameters
-            response = self.air_api.fetch_cheapest_tickets(origin=origin,
-                                                           destination=destination,
-                                                           departure_at=departure_at,
-                                                           return_at=return_at,
-                                                           one_way=True,
-                                                           page=page)
+            response = self.air_api.fetch_cheapest_tickets(
+                origin=origin,
+                destination=destination,
+                departure_at=departure_at,
+                return_at=return_at,
+                one_way=True,
+                page=page)
             # Check if the response was successful
             if not response['success']:
                 raise Exception('response was not successful')
@@ -130,7 +136,13 @@ class RouteCollector:
         else:
             return None
 
-    def find_top_routes(self, origin, destination, departure_at=None, return_at=None, budget=None, route_number=3):
+    def find_top_routes(self,
+                        origin,
+                        destination,
+                        departure_at=None,
+                        return_at=None,
+                        budget=None,
+                        route_number=3):
         """
         Find the top routes based on the cheapest tickets and hotels.
 
@@ -180,15 +192,16 @@ class RouteCollector:
             }]
         """
         # Get the cheapest ticket and hotel
-        cheapest_ticket = self.get_ticket(origin=origin, destination=destination, departure_at=departure_at,
+        cheapest_ticket = self.get_ticket(origin=origin,
+                                          destination=destination,
+                                          departure_at=departure_at,
                                           return_at=return_at)
-        cheapest_hotel = self.get_hotel(location=destination, check_in=departure_at, check_out=return_at)
+        cheapest_hotel = self.get_hotel(location=destination,
+                                        check_in=departure_at,
+                                        check_out=return_at)
 
         # Create a return array with the initial cheapest route
-        top_routes = [{
-            'ticket': cheapest_ticket,
-            'hotel': cheapest_hotel
-        }]
+        top_routes = [{'ticket': cheapest_ticket, 'hotel': cheapest_hotel}]
 
         # Define minimum prices
         min_ticket_price = cheapest_ticket['price']
@@ -209,35 +222,40 @@ class RouteCollector:
 
                 # Find some routes within the budget
                 for _ in range(route_number):
-                    ticket = self.get_ticket(origin=origin, destination=destination, departure_at=departure_at,
-                                             return_at=return_at, budget=ticket_price)
-                    hotel = self.get_hotel(location=origin, check_in=departure_at, check_out=return_at,
+                    ticket = self.get_ticket(origin=origin,
+                                             destination=destination,
+                                             departure_at=departure_at,
+                                             return_at=return_at,
+                                             budget=ticket_price)
+                    hotel = self.get_hotel(location=origin,
+                                           check_in=departure_at,
+                                           check_out=return_at,
                                            budget=hotel_price)
-                    top_routes.append({
-                        'ticket': ticket,
-                        'hotel': hotel
-                    })
+                    top_routes.append({'ticket': ticket, 'hotel': hotel})
                     ticket_price *= 1.1
                     hotel_price *= 1.1
         else:
             # Budget is not specified, finding arbitrary routes
             for _ in range(1, route_number):
                 min_ticket_price *= 2
-                ticket = self.get_ticket(origin=origin, destination=destination, departure_at=departure_at,
-                                         return_at=return_at, budget=min_ticket_price)
+                ticket = self.get_ticket(origin=origin,
+                                         destination=destination,
+                                         departure_at=departure_at,
+                                         return_at=return_at,
+                                         budget=min_ticket_price)
                 min_hotel_price *= 3
-                hotel = self.get_hotel(location=origin, check_in=departure_at, check_out=return_at,
+                hotel = self.get_hotel(location=origin,
+                                       check_in=departure_at,
+                                       check_out=return_at,
                                        budget=min_hotel_price)
-                top_routes.append({
-                    'ticket': ticket,
-                    'hotel': hotel
-                })
+                top_routes.append({'ticket': ticket, 'hotel': hotel})
 
         # Remove duplicates
         unique_routes = []
         for i in range(len(top_routes)):
-            if i == 0 or (top_routes[i]['ticket'] != top_routes[i - 1]['ticket'] and top_routes[i]['hotel'] !=
-                          top_routes[i - 1]['hotel']):
+            if i == 0 or (
+                    top_routes[i]['ticket'] != top_routes[i - 1]['ticket']
+                    and top_routes[i]['hotel'] != top_routes[i - 1]['hotel']):
                 unique_routes.append(top_routes[i])
 
         return unique_routes

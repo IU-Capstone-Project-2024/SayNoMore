@@ -1,4 +1,4 @@
-from vllm import LLM, SamplingParams
+from request_analyzer.llm import LLM
 from datetime import datetime
 from request_analyzer.retreivers.abstract_retriever import BaseRetriever
 
@@ -13,44 +13,44 @@ class ArrivalRetriever(BaseRetriever):
     def __init__(self, llm: LLM) -> None:
         self.llm = llm
         # Setting up sampling parameters for deterministic output
-        self.sampling_params = SamplingParams(temperature=0, stop='"')
+        self.json_input = {"temperature": 0, "stop": '"'}
         # Defining a prompt template to guide the model towards
         # extracting arrival cities
         self.prefix_prompt = \
-            '''Today is June 9, 2024. Sunday. Your task is to extract the arrival time to the destination city from the user's request. Examples:
-            Q: "Планирую сгонять в Хабаровск через три недели."
-            A: Arrival Time: "30/06/2024"
-    
-            Q: "Хочу уехать из Москвы куда-нибудь на три дня, есть двадцать тысяч"
-            A: Arrival Time: "None"
+'''Today is June 9, 2024. Sunday. Your task is to extract the arrival time to the destination city from the user's request. Examples:
+Q: "Планирую сгонять в Хабаровск через три недели."
+A: Arrival Time: "30/06/2024"
 
-            Q: "Поеду в Альметьевск в середине августа"
-            A: Arrival Time: "15/08/2024"
-    
-            Q: "Уеду в Питер из Казани в июле с 12 по 17 числа +- 300000 рублей"
-            A: Arrival Time: "12/07/2024"
-    
-            Q: "Уеду в Москву из Рязани в августе с 10 по 30. Бюджет 70 тысяч."
-            A: Arrival Time: "10/08/2024"
-    
-            Q: "Уеду из Рязани в августе с 10 по 30. Есть 70 тысяч."
-            A: Arrival Time: "10/08/2024"
-    
-            Q: "Я в Тольятти. Мне срочно надо достать билеты в Кисловодск"
-            A: Arrival Time: "None"
-    
-            Q: "Я в Москву в среду"
-            A: Arrival Time: "12/06/2024"
-    
-            Q: "Я в Москву в с 1ое по 5ое мая"
-            A: Arrival Time: "01/05/2025"
-    
-            Today is INSERT_DATE Your task is to extract the arrival time to the destination city from the user's request.
-    
-            Q: "USER_REQUEST"
-            A: Arrival Time: "'''
+Q: "Хочу уехать из Москвы куда-нибудь на три дня, есть двадцать тысяч"
+A: Arrival Time: "None"
 
-    def retrieve(self, request: str) -> str:
+Q: "Поеду в Альметьевск в середине августа"
+A: Arrival Time: "15/08/2024"
+
+Q: "Уеду в Питер из Казани в июле с 12 по 17 числа +- 300000 рублей"
+A: Arrival Time: "12/07/2024"
+
+Q: "Уеду в Москву из Рязани в августе с 10 по 30. Бюджет 70 тысяч."
+A: Arrival Time: "10/08/2024"
+
+Q: "Уеду из Рязани в августе с 10 по 30. Есть 70 тысяч."
+A: Arrival Time: "10/08/2024"
+
+Q: "Я в Тольятти. Мне срочно надо достать билеты в Кисловодск"
+A: Arrival Time: "None"
+
+Q: "Я в Москву в среду"
+A: Arrival Time: "12/06/2024"
+
+Q: "Я в Москву в с 1ое по 5ое мая"
+A: Arrival Time: "01/05/2025"
+
+Today is INSERT_DATE Your task is to extract the arrival time to the destination city from the user's request.
+
+Q: "USER_REQUEST"
+A: Arrival Time: "'''
+
+    async def retrieve(self, request: str) -> str:
         """
         Generates a response from the VLLM based
         on the user's travel request, aiming to
@@ -72,9 +72,9 @@ class ArrivalRetriever(BaseRetriever):
         # Replace the placeholder in the prompt
         # template with the actual user request
         prompt = prompt.replace("USER_REQUEST", request)
-        # Generate a response from the VLLM using
+        # Generate a response from the LLM using
         # the customized prompt and sampling parameters
-        vllm_output = self.llm.generate(prompt, self.sampling_params)
-        # Extract and return the generated text as
-        # the destination city
-        return vllm_output[0].outputs[0].text
+        self.json_input["prompt"] = prompt
+        result = await self.llm.get_response(self.json_input)
+        result = result.strip('"')
+        return result

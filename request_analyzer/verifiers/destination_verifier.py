@@ -51,5 +51,5 @@ class DestinationVerifier(BaseVerifier):
                     "The user has not entered this field")
 
         # If the retrieved value passes the initial check,
-        #  assume everything is good
+        # assume everything is good
         return (ValueStages.OK, "Everything is good")
