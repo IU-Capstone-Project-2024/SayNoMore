@@ -44,7 +44,7 @@ This test feeds the bot information about the trip step by step. The goal is to 
 |--------------|--------------------------|--------------------------------------------------------------|--------------------------------------------------------------|
 | 1            | Я хочу уехать из Казани  | *Ваш запрос не содержит некоторых необходимых данных. Пожалуйста, укажите даты вылета и возвращения, а также город назначения. Кроме того, если у вас есть бюджет, вы можете указать и его, хотя это не обязательно. Спасибо!* | *-*                                                          |
 | 2            | 1 июля                   | *Ваш запрос не содержит информацию о городе отправления и назначения. Пожалуйста, укажите эти данные. Кроме того, если у вас есть бюджет, вы можете указать и его, хотя это не обязательно. Спасибо!* | *-*                                                          |
-| 3            | в москву до 7 июля       |                                                              | <br>  File "/home/SayNoMore/telegram_bot/telegram_bot.py", line 57, in process_message<br>    routes_list = find_top_routes(<br>  File "/home/SayNoMore/api_collector/route/route.py", line 332, in find_top_routes<br>    if cheapest_hotel['priceFrom'] + cheapest_ticket['price'] > budget:<br>TypeError: '>' not supported between instances of 'float' and 'str' |
+| 3            | в москву до 7 июля       |                                                              | <br> File "/home/SayNoMore/api_collector/route/route.py", line 332, in find_top_routes<br>    if cheapest_hotel['priceFrom'] + cheapest_ticket['price'] > budget:<br>TypeError: '>' not supported between instances of 'float' and 'str' |
 
 ---
 
