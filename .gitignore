@@ -2,3 +2,8 @@ __pycache__/*
 __pycache__/
 
 .idea/
+
+telegram-bot/tmp.py
+venv
+.ipynb_checkpoints
+telegram_bot/telegram_bot-Copy1.py
