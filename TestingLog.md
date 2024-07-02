@@ -40,11 +40,11 @@ This test feeds the bot information about the trip step by step. The goal is to 
 
 #### **Test Log:**
 
-| **Step No.** | **Message Sent**         | **Bot Response**                                             | **Code Crash Message (if any)**                              |
-|--------------|--------------------------|--------------------------------------------------------------|--------------------------------------------------------------|
-| 1            | Я хочу уехать из Казани  | *Ваш запрос не содержит некоторых необходимых данных. Пожалуйста, укажите даты вылета и возвращения, а также город назначения. Кроме того, если у вас есть бюджет, вы можете указать и его, хотя это не обязательно. Спасибо!* | *-*                                                          |
-| 2            | 1 июля                   | *Ваш запрос не содержит информацию о городе отправления и назначения. Пожалуйста, укажите эти данные. Кроме того, если у вас есть бюджет, вы можете указать и его, хотя это не обязательно. Спасибо!* | *-*                                                          |
-| 3            | в москву до 7 июля       |                                                              | <br> File "/home/SayNoMore/api_collector/route/route.py", line 332, in find_top_routes<br>    if cheapest_hotel['priceFrom'] + cheapest_ticket['price'] > budget:<br>TypeError: '>' not supported between instances of 'float' and 'str' |
+| **Step No.** | **Message Sent**        | **Bot Response**                                             | **Code Crash Message (if any)**                              |
+|--------------|-------------------------|--------------------------------------------------------------|--------------------------------------------------------------|
+| 1            | Я хочу уехать из Казани | *Ваш запрос не содержит некоторых необходимых данных. Пожалуйста, укажите даты вылета и возвращения, а также город назначения. Кроме того, если у вас есть бюджет, вы можете указать и его, хотя это не обязательно. Спасибо!* | *-*                                                          |
+| 2            | 1 июля                  | *Ваш запрос не содержит информацию о городе отправления и назначения. Пожалуйста, укажите эти данные. Кроме того, если у вас есть бюджет, вы можете указать и его, хотя это не обязательно. Спасибо!* | *-*                                                          |
+| 3            | в москву до 7 июля      |                                                              |   File "/home/SayNoMore/api_collector/route/route.py", line 332, in find_top_routes<br>    if cheapest_hotel['priceFrom'] + cheapest_ticket['price'] > budget:<br>TypeError: '>' not supported between instances of 'float' and 'str' |
 
 ---
 
@@ -87,5 +87,126 @@ This test involves making a request with typos in crucial words like departure/d
 - We also ran the test with:
   > "бюджет: 100 т.р."
   - This works fine.
+
+---
+
+#### **Test Case ID**: TC004  
+**Date**: 2024-07-01
+**Tester**: Maxim Martyshov  
+**Scenario**: Request with error
+
+---
+
+#### **Test Case Description:**
+This test involves making a request with an error in it. Specifically, what if a user provides a departure or arrival date that is in the past?
+
+---
+
+#### **Test Log:**
+
+| **Step No.** | **Message Sent**                | **Bot Response**                                             | **Code Crash Message (if any)** |
+|--------------|---------------------------------|--------------------------------------------------------------|---------------------------------|
+| 1            | хочу уехать из Казани 1 июня    | *Ваш запрос не содержит некоторых необходимых данных. Пожалуйста, укажите даты вылета и возвращения, а также город назначения. Кроме того, если у вас есть бюджет, вы можете указать и его, хотя это не обязательно. Спасибо!* | *-*                             |
+| 2            | в москву до 7 июня              | Ваш запрос содержит некоторые ошибки. Пожалуйста, убедитесь, что дата возвращения введена позднее даты прибытия. Кроме того, если у вас есть бюджет, вы можете указать и его, хотя это не обязательно. Спасибо! | *-*                             |
+| 3            | в москву до 7 июля бюджет 100тр | *Route from KZN to MOW:<br>Flight: KZN to MOW, Departing at: 2024-07-07T07:55:00+03:00, Returning at: 2024-07-07T20:40:00+03:00, Airline: N4, Flight Number: 250, Price: 43946 rub, Transfers: 1, Return Transfers: 1, Duration: 955 minutes<br>Hotel: 1-комнатная квартира, Location: Moscow, None, Russia, Stars: 0, Price From: 8551.76 rub, Average Price: 8551.76 rub* | *-*                             |
+
+---
+
+#### **Additional Notes:**
+- Here is the `Request analyzer` return from this interaction:
+  ```json
+  {"Arrival": "2024-07-07", "Return": "2024-07-07", "Departure": "KZN", "Destination": "MOW", "Budget": 100000}
+  ```
+  We see some issues with arrival retrieval.
+
+---
+
+#### **Test Case ID**: TC005  
+**Date**: 2024-07-02
+**Tester**: Maxim Martyshov  
+**Scenario**: Request outside Russia 
+
+---
+
+#### **Test Case Description:**
+This test involves making a request that will be completely outside the Russian Federation. I will ask for a trip plan from London to Paris.
+
+---
+
+#### **Test Log:**
+
+| **Step No.** | **Message Sent**                                          | **Bot Response** | **Code Crash Message (if any)**                              |
+|--------------|-----------------------------------------------------------|------------------|--------------------------------------------------------------|
+| 1            | Хочу уехать из Лондона в Париж с 3 по 9 июля бюджет 300тр |                  | *File "/home/SayNoMore/api_collector/air_tickets/air_tickets_api.py", line 101, in fetch_cheapest_tickets<br>    raise Exception(<br>Exception: Failed to fetch cheapest tickets. Status code: 420* |
+
+---
+
+#### **Additional Notes:**
+- Here is the `Request analyzer` return from this interaction:
+  ```json
+  {"Arrival": "2024-07-09", "Return": "2024-07-09", "Departure": "LOZ", "Destination": "PRX", "Budget": 300000}
+  ```
+  * We notice some issues with the arrival retrieval.
+  * `LOZ` is the IATA code for London-Corbin Airport in the USA, and we need `LHR` for London Heathrow.
+  * `PRX` IATA code is also incorrect. Paris is `CDG`.
+
+---
+
+#### **Test Case ID**: TC006  
+**Date**: 2024-07-02
+**Tester**: Maxim Martyshov  
+**Scenario**: Request outside Russia 2
+
+---
+
+#### **Test Case Description:**
+This test involves making a request that will build a route from Russia to outside of Russia and will be a direct flight.
+
+---
+
+#### **Test Log:**
+
+| **Step No.** | **Message Sent**                                             | **Bot Response**                                             | **Code Crash Message (if any)** |
+|--------------|--------------------------------------------------------------|--------------------------------------------------------------|---------------------------------|
+| 1            | Хочу уехать из Москвы 4 июля в Белград до 9го июля бюджет 400 тр | *Route from MOW to BEG:<br>Flight: MOW to BEG, Departing at: 2024-07-04T00:55:00+03:00, Returning at: 2024-07-04T20:20:00+02:00, Airline: TK, Flight Number: 412, Price: 341374 rub, Transfers: 2, Return Transfers: 1, Duration: 1260 minutes<br>Hotel: HostGost at Molerova 9, Location: Belgrade, None, Serbia, Stars: 0, Price From: 8392.59 rub, Average Price: 8392.59 rub* | *-*                             |
+
+---
+
+#### **Additional Notes:**
+- Here is the `Request analyzer` return from this interaction:
+  ```json
+  {"Arrival": "2024-07-04", "Return": "2024-07-04", "Departure": "MOW", "Destination": "BEG", "Budget": 400000}
+  ```
+  * We notice some issues with the arrival retrieval.
+
+---
+
+#### **Test Case ID**: TC007  
+**Date**: 2024-07-02
+**Tester**: Maxim Martyshov  
+**Scenario**: Request outside Russia 3
+
+---
+
+#### **Test Case Description:**
+This test involves making a request that will build a route from Russia to outside of Russia and will be a flight with a connection.
+
+---
+
+#### **Test Log:**
+
+| **Step No.** | **Message Sent**                                             | **Bot Response**                                             | **Code Crash Message (if any)** |
+|--------------|--------------------------------------------------------------|--------------------------------------------------------------|---------------------------------|
+| 1            | Хочу уехать из Москвы 4 июля в Рим до 9го июля бюджет 400 тр | *Route from MOW to ROM:<br>Flight: MOW to ROM, Departing at: 2024-07-09T08:15:00+03:00, Returning at: 2024-07-09T22:30:00+02:00, Airline: EK, Flight Number: 0130, Price: 258026 rub, Transfers: 1, Return Transfers: 1, Duration: 2065 minutes<br>Hotel: SM Vatican Relais, Location: Rome, None, Italy, Stars: 2, Price From: 30224.8 rub, Average Price: 30224.8 rub<br>________________________<br>Route from MOW to ROM:<br>Flight: MOW to ROM, Departing at: 2024-07-09T04:40:00+03:00, Returning at: 2024-07-09T22:10:00+02:00, Airline: FZ, Flight Number: 968, Price: 363997 rub, Transfers: 1, Return Transfers: 1, Duration: 1890 minutes<br>Hotel: Hotel Lord Byron - Small Luxury Hotels of the World, Location: Rome, None, Italy, Stars: 5, Price From: 36135.16 rub, Average Price: 36135.16 rub<br>________________________* | *-*                             |
+
+---
+
+#### **Additional Notes:**
+- Here is the `Request analyzer` return from this interaction:
+  ```json
+  {"Arrival": "2024-07-09", "Return": "2024-07-09", "Departure": "MOW", "Destination": "ROM", "Budget": 400000}
+  ```
+  * We notice some issues with the arrival retrieval.
+  * Connections are not displayed.
 
 ---
