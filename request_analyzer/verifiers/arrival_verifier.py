@@ -35,7 +35,7 @@ class ArrivalVerifier(BaseVerifier):
     # Check is date follows expected format or not
     def _check_date(self, retrieved_value: str):
         # create regexp for expected format
-        right_data_format = '^\d\d/\d\d/\d\d\d\d'
+        right_data_format = r'^\d\d/\d\d/\d\d\d\d'
         # check if parsed date follows required format
         if re.match(right_data_format, retrieved_value):
             return DateInfo.OK

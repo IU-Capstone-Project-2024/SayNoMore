@@ -22,7 +22,11 @@ class HotelApi:
         self.fetch_city_photos_base_url = hotel_api_data.fetch_city_hotel_base_url
         self.photos_dir = "photos/hotelPhotos"
 
-    def search_hotel_or_location(self, query, lang=Language.EN, look_for=LookFor.BOTH, limit=10,
+    def search_hotel_or_location(self,
+                                 query,
+                                 lang=Language.EN,
+                                 look_for=LookFor.BOTH,
+                                 limit=10,
                                  convert_case=ConvertCase.ENABLED):
         """
         Searches for hotels or locations based on the provided query.
@@ -70,11 +74,14 @@ class HotelApi:
 
         try:
             # Making the GET request
-            response = requests.get(self.search_hotel_or_location_url, params=params)
+            response = requests.get(self.search_hotel_or_location_url,
+                                    params=params)
             # Check if the request was successful
             if response.status_code != 200:
                 # Raise an exception if the response status code indicates failure
-                raise Exception(f"Failed to search hotel or location. Status code: {response.status_code}")
+                raise Exception(
+                    f"Failed to search hotel or location. Status code: {response.status_code}"
+                )
             # Return the JSON content of the response
             return response.json()
 
@@ -82,8 +89,17 @@ class HotelApi:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
 
-    def fetch_hotel_prices(self, location, check_in, check_out, location_id=None, hotel_id=None, hotel=None,
-                           adults=2, limit=5, customer_ip=None, currency=Currency.RUB):
+    def fetch_hotel_prices(self,
+                           location,
+                           check_in,
+                           check_out,
+                           location_id=None,
+                           hotel_id=None,
+                           hotel=None,
+                           adults=2,
+                           limit=5,
+                           customer_ip=None,
+                           currency=Currency.RUB):
         """
         Fetches hotel prices based on the provided parameters.
 
@@ -136,7 +152,9 @@ class HotelApi:
             # Check if the request was successful
             if response.status_code != 200:
                 # Raise an exception if the response status code indicates failure
-                raise Exception(f"Failed to fetch hotel prices. Status code: {response.status_code}")
+                raise Exception(
+                    f"Failed to fetch hotel prices. Status code: {response.status_code}"
+                )
             # Return the JSON content of the response
             return response.json()
 
@@ -144,8 +162,14 @@ class HotelApi:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
 
-    def fetch_hotel_collections(self, check_in, check_out, city_id, currency=Currency.RUB, language=Language.EN,
-                                limit=10, collection_type=CollectionType.POPULARITY):
+    def fetch_hotel_collections(self,
+                                check_in,
+                                check_out,
+                                city_id,
+                                currency=Currency.RUB,
+                                language=Language.EN,
+                                limit=10,
+                                collection_type=CollectionType.POPULARITY):
         """
         Fetches collections of hotels based on the provided parameters.
 
@@ -196,18 +220,20 @@ class HotelApi:
 
         try:
             # Making the GET request
-            response = requests.get(self.fetch_hotel_collections_url, params=params)
+            response = requests.get(self.fetch_hotel_collections_url,
+                                    params=params)
             # Check if the request was successful
             if response.status_code != 200:
                 # Raise an exception if the response status code indicates failure
-                raise Exception(f"Failed to fetch hotel collections. Status code: {response.status_code}")
+                raise Exception(
+                    f"Failed to fetch hotel collections. Status code: {response.status_code}"
+                )
             # Return the JSON content of the response
             return response.json()
 
         except requests.exceptions.RequestException as e:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
-
 
     def fetch_hotel_collection_types(self, city_id):
         """
@@ -235,25 +261,24 @@ class HotelApi:
             - '2stars', '3stars', '4stars', '5stars': Manually formed collections with the corresponding number of stars.
         """
         # Constructing the query string
-        params = {
-            'id': city_id,
-            'token': self.api_token
-        }
+        params = {'id': city_id, 'token': self.api_token}
 
         try:
             # Making the GET request
-            response = requests.get(self.fetch_hotel_collection_types_url, params=params)
+            response = requests.get(self.fetch_hotel_collection_types_url,
+                                    params=params)
             # Check if the request was successful
             if response.status_code != 200:
                 # Raise an exception if the response status code indicates failure
-                raise Exception(f"Failed to fetch hotel collection types. Status code: {response.status_code}")
+                raise Exception(
+                    f"Failed to fetch hotel collection types. Status code: {response.status_code}"
+                )
             # Return the JSON content of the response
             return response.json()
 
         except requests.exceptions.RequestException as e:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
-
 
     def fetch_room_types(self, language=Language.EN):
         """
@@ -269,7 +294,8 @@ class HotelApi:
         # Constructing the query string
         params = {
             'language': language.value,
-            'token': self.api_token  # Assuming the token is stored as an instance variable
+            'token': self.
+            api_token  # Assuming the token is stored as an instance variable
         }
 
         try:
@@ -278,14 +304,15 @@ class HotelApi:
             # Check if the request was successful
             if response.status_code != 200:
                 # Raise an exception if the response status code indicates failure
-                raise Exception(f"Failed to fetch room types. Status code: {response.status_code}")
+                raise Exception(
+                    f"Failed to fetch room types. Status code: {response.status_code}"
+                )
             # Return the JSON content of the response
             return response.json()
 
         except requests.exceptions.RequestException as e:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
-
 
     def fetch_hotel_types(self, language=Language.EN):
         """
@@ -301,7 +328,8 @@ class HotelApi:
         # Constructing the query string
         params = {
             'language': language.value,
-            'token': self.api_token  # Assuming the token is stored as an instance variable
+            'token': self.
+            api_token  # Assuming the token is stored as an instance variable
         }
 
         try:
@@ -310,14 +338,15 @@ class HotelApi:
             # Check if the request was successful
             if response.status_code != 200:
                 # Raise an exception if the response status code indicates failure
-                raise Exception(f"Failed to fetch room types. Status code: {response.status_code}")
+                raise Exception(
+                    f"Failed to fetch room types. Status code: {response.status_code}"
+                )
             # Return the JSON content of the response
             return response.json()
 
         except requests.exceptions.RequestException as e:
             # Catch any request-related exceptions (e.g., timeouts, connection errors)
             raise Exception("There was an error making the request.") from e
-
 
     def fetch_and_save_photo(self, url, hotel_id, photo_index):
         """Fetches and saves a photo given its URL."""
@@ -330,8 +359,9 @@ class HotelApi:
             with open(file_path, 'wb') as file:
                 file.write(response.content)
         else:
-            raise Exception(f"Failed to fetch photo from {url} for hotel {hotel_id}. Status code: {response.status_code}")
-
+            raise Exception(
+                f"Failed to fetch photo from {url} for hotel {hotel_id}. Status code: {response.status_code}"
+            )
 
     def fetch_hotel_photos(self, hotel_ids, width=800, height=520):
         """
@@ -345,12 +375,10 @@ class HotelApi:
         """
         hotel_ids_str = ','.join(map(str, hotel_ids))
 
-        params = {
-            'id': hotel_ids_str,
-            'token': self.api_token
-        }
+        params = {'id': hotel_ids_str, 'token': self.api_token}
         # First, fetching photo IDs for each hotel
-        photo_ids_response = requests.get(self.fetch_hotel_photos_base_url, params=params)
+        photo_ids_response = requests.get(self.fetch_hotel_photos_base_url,
+                                          params=params)
         if photo_ids_response.status_code == 200:
             photo_ids_data = photo_ids_response.json()
             for hotel_id, photo_ids in photo_ids_data.items():
@@ -360,8 +388,9 @@ class HotelApi:
                     # Saving the photo
                     self.fetch_and_save_photo(photo_url, int(hotel_id), i)
         else:
-            raise Exception(f"Failed to fetch photo IDs. Status code: {photo_ids_response.status_code}")
-
+            raise Exception(
+                f"Failed to fetch photo IDs. Status code: {photo_ids_response.status_code}"
+            )
 
     def fetch_city_photo(self, iata_code, width=960, height=720):
         """
@@ -370,7 +399,8 @@ class HotelApi:
         :return: None
         """
         photo_directory = "photos/cityPhotos"
-        os.makedirs(photo_directory, exist_ok=True)  # Ensure the directory exists
+        os.makedirs(photo_directory,
+                    exist_ok=True)  # Ensure the directory exists
         photo_url = f'{self.fetch_city_photos_base_url}{width}x{height}/{iata_code}.jpg'
         photo_path = os.path.join(photo_directory, f"{iata_code}.png")
 
@@ -382,6 +412,8 @@ class HotelApi:
                 with open(photo_path, 'wb') as file:
                     file.write(response.content)
             else:
-                raise Exception(f"Failed to fetch cheapest tickets. Status code: {response.status_code}")
+                raise Exception(
+                    f"Failed to fetch cheapest tickets. Status code: {response.status_code}"
+                )
         except requests.exceptions.RequestException as e:
             raise Exception(f"Failed to fetch logo for {iata_code}: {str(e)}")
