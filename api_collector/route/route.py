@@ -142,27 +142,27 @@ class Route:
         """
         if self.ticket:
             flight_info = (f"Flight Information:\n"
-                f"From: {self.flight_origin} ({self.origin_airport})\n"
-                f"To: {self.flight_destination} ({self.destination_airport})\n"
-                f"Airline: {self.airline}\n"
-                f"Flight Number: {self.flight_number}\n"
-                f"Departure: {self.flight_departure_at}\n"
-                f"Return: {self.flight_return_at}\n"
-                f"Price: {self.ticket_price} rub\n"
-                f"Transfers (outbound): {self.transfers}\n"
-                f"Transfers (return): {self.return_transfers}\n"
-                f"Outbound Duration: {self.flight_duration_to // 60} hours {self.flight_duration_to % 60} minutes\n"
-                f"Return Duration: {self.flight_duration_back // 60} hours {self.flight_duration_back % 60} minutes\n"
-                f"Ticket Link: {self.flight_link}")
+                           f"From: {self.flight_origin} ({self.origin_airport})\n"
+                           f"To: {self.flight_destination} ({self.destination_airport})\n"
+                           f"Airline: {self.airline}\n"
+                           f"Flight Number: {self.flight_number}\n"
+                           f"Departure: {self.flight_departure_at}\n"
+                           f"Return: {self.flight_return_at}\n"
+                           f"Price: {self.ticket_price} rub\n"
+                           f"Transfers (outbound): {self.transfers}\n"
+                           f"Transfers (return): {self.return_transfers}\n"
+                           f"Outbound Duration: {self.flight_duration_to // 60} hours {self.flight_duration_to % 60} minutes\n"
+                           f"Return Duration: {self.flight_duration_back // 60} hours {self.flight_duration_back % 60} minutes\n"
+                           f"Ticket Link: {self.flight_link}")
         else:
             flight_info = 'No information about ticket'
 
         if self.hotel:
             hotel_info = (f"Hotel Information:\n"
-                f"Hotel Name: {self.hotel_name}\n"
-                f"Location: {self.hotel_city_name}, {self.hotel_state}, {self.hotel_country}\n"
-                f"Stars: {self.hotel_stars}\n"
-                f"Prices from: {self.hotel_price_from} rub\n")
+                          f"Hotel Name: {self.hotel_name}\n"
+                          f"Location: {self.hotel_city_name}, {self.hotel_state}, {self.hotel_country}\n"
+                          f"Stars: {self.hotel_stars}\n"
+                          f"Prices from: {self.hotel_price_from} rub\n")
         else:
             hotel_info = 'No information about hotel'
 
@@ -237,7 +237,7 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
     # Filter tickets by budget if a budget is specified
     if len(tickets) == 0:
         return None
-    if budget:
+    if budget and (not budget == "None"):
         # Initialize the last index of the ticket list to include
         last_index = 0
         # Iterate through the tickets to find those within budget
@@ -312,7 +312,7 @@ def get_hotel(location, check_in, check_out, budget=None, min_stars=0, number_of
     hotels = sorted(hotels, key=lambda x: x['priceFrom'])
 
     # If a budget is specified, filter hotels to include only those with 'priceFrom' less than the budget
-    if budget:
+    if budget and (not budget == "None"):
         # Initialize the last index of the ticket list to include
         last_index = 0
         # Iterate through the tickets to find those within budget
@@ -369,7 +369,7 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
     min_hotel_price = cheapest_hotel['priceFrom']
 
     # Check if budget is specified
-    if budget:
+    if budget and (not budget == "None"):
         # Check if the cheapest route exceeds the budget
         if cheapest_hotel['priceFrom'] + cheapest_ticket['price'] > budget:
             # cheapest route exceed the budget, return the cheapest route
