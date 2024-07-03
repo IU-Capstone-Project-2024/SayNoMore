@@ -7,7 +7,7 @@ class DepartureRetriever(BaseRetriever):
     """
     A class designed to retrieve departure
     cities from user travel requests using a 
-    VLLM.
+    LLM.
 
     Attributes:
         llm (LLM): An instance of a VLLM
@@ -15,7 +15,7 @@ class DepartureRetriever(BaseRetriever):
                    based on prompts.
         json_input (dict): Parameters 
                    for controlling the sampling behavior
-                   of the VLLM during text generation.
+                   of the LLM during text generation.
         prefix_prompt (str): A predefined prompt template
                    that guides the VLLM to focus on extracting
                    departure cities from user requests.
@@ -42,27 +42,27 @@ class DepartureRetriever(BaseRetriever):
         # Defining a prompt template to guide the model towards
         # extracting departure cities
         self.prefix_prompt = \
-        '''Your task is to extract departure city from user request. Examples:
-        Q: "Планирую сгонять в Хабаровск через три недели."
-        A: Departure: "None"
+'''Your task is to extract departure city from user request. Examples:
+Q: "Планирую сгонять в Хабаровск через три недели."
+A: Departure: "None"
 
-        Q: "Хочу уехать из Москвы куда-нибудь на три дня"
-        A: Departure: "Москва"
+Q: "Хочу уехать из Москвы куда-нибудь на три дня"
+A: Departure: "Москва"
 
-        Q: "Уеду в Питер из Казани в июле с 12 по 17 числа"
-        A: Departure: "Казань"
+Q: "Уеду в Питер из Казани в июле с 12 по 17 числа"
+A: Departure: "Казань"
 
-        Q: "Уеду в Москву из Рязани в августе с 10 по 30. Бюджет 70 тысяч."
-        A: Departure: "Рязань"
+Q: "Уеду в Москву из Рязани в августе с 10 по 30. Бюджет 70 тысяч."
+A: Departure: "Рязань"
 
-        Q: "Уеду из Рязани в августе с 10 по 30. Бюджет 70 тысяч."
-        A: Departure: "Рязань"
+Q: "Уеду из Рязани в августе с 10 по 30. Бюджет 70 тысяч."
+A: Departure: "Рязань"
 
-        Q: "Я в Тольятти. Мне срочно надо достать билеты в Кисловодск"
-        A: Departure: "Тольятти"
+Q: "Я в Тольятти. Мне срочно надо достать билеты в Кисловодск"
+A: Departure: "Тольятти"
 
-        Q: "USER_REQUEST"
-        A: Departure: "'''
+Q: "USER_REQUEST"
+A: Departure: "'''
 
         self.searcher = searcher
 

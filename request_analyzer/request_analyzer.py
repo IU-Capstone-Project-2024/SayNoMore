@@ -18,7 +18,8 @@ class RequestAnalyzer:
     This class orchestrates the process of retrieving information 
     from user requests and generating feedback message based on the 
     verification results of the retrieved information. If data extracted 
-    is correct, then it will return extracted data instead of feedback message.
+    is correct, then it will return extracted data in the json fromat string 
+    instead of feedback message.
     """
 
     def __init__(self, llm: LLM) -> None:
@@ -35,11 +36,10 @@ class RequestAnalyzer:
         self.information_retriever = InformationRetriever(self.llm)
         self.message_generator = MoreInfoRequiredMessageGenerator(self.llm)
         self.extracted_data = {}  # Stores extracted data from user requests
-        self.are_all_fields_retrieved = [
-        ]  # Tracks if all fields have been successfully retrieved
-        self.fields_to_update = [
-        ]  # Indicates which fields need to be updated with new data
-
+        # Tracks if all fields have been successfully retrieved
+        self.are_all_fields_retrieved = []
+        # Indicates which fields need to be updated with new data
+        self.fields_to_update = []
         # Load the CSV file and create a city name to code mapping
         project_root = self._get_project_root()
         csv_file_path = os.path.join(project_root, 'data/city_name_code.csv')
@@ -88,7 +88,24 @@ class RequestAnalyzer:
                 representing the feedback 
                 message or the retrieved 
                 fields if verification 
-                passed.
+                passed in json format.
+                    - Example of json output:
+                        "{
+                        "Arrival": "2024-12-01",
+                        "Return": "2024-12-22",
+                        "Departure": "KZN",
+                        "Destination": "MOW",
+                        "Budget": 35000
+                        }"
+                    - Example of generated message:
+                        "Похоже, что я не получил 
+                        все необходимые данные для вашего 
+                        запроса. Пожалуйста, 
+                        укажите город назначения. 
+                        Кроме того, если у вас есть 
+                        бюджет, вы можете указать и 
+                        его, хотя это не обязательно. 
+                        Спасибо!"
         """
         # Retrieve information and
         # verification results from

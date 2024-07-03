@@ -24,17 +24,17 @@ class InformationRetriever:
         retrievers (Dict[str, BaseRetriever]): A dictionary 
             mapping field names to their corresponding 
             retriever instances.
-        llm (LLM): An instance of a VLLM used by retrievers
+        llm (LLM): An instance of a LLM used by retrievers
             for generating text based on prompts.
     """
 
     def __init__(self, llm: LLM) -> None:
         """
         Initializes the InformationRetriever with a given 
-        VLLM instance and registers default retrievers.
+        LLM instance and registers default retrievers.
 
         Args:
-            llm (LLM): The VLLM instance to be used by 
+            llm (LLM): The LLM instance to be used by 
                 retrievers for text generation.
         """
         self.retrievers = {}

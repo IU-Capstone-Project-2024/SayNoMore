@@ -40,33 +40,33 @@ class DestinationRetriever(BaseRetriever):
         # Defining a prompt template to guide the model towards
         # extracting destination cities
         self.prefix_prompt = \
-        '''Your task is to extract destination city from user request. Examples:
-        Q: "Планирую сгонять в Хабаровск через три недели."
-        A: Destination: "Хабаровск"
+'''Your task is to extract destination city from user request. Examples:
+Q: "Планирую сгонять в Хабаровск через три недели."
+A: Destination: "Хабаровск"
 
-        Q: "Хочу уехать из Москвы куда-нибудь на три дня"
-        A: Destination: "None"
+Q: "Хочу уехать из Москвы куда-нибудь на три дня"
+A: Destination: "None"
 
-        Q: "Уеду в Питер из Казани в июле с 12 по 17 числа"
-        A: Destination: "Санкт-Петербург"
+Q: "Уеду в Питер из Казани в июле с 12 по 17 числа"
+A: Destination: "Санкт-Петербург"
 
-        Q: "Уеду в Москву из Рязани в августе с 10 по 30. Бюджет 70 тысяч."
-        A: Destination: "Москва"
+Q: "Уеду в Москву из Рязани в августе с 10 по 30. Бюджет 70 тысяч."
+A: Destination: "Москва"
 
-        Q: "Уеду из Рязани в августе с 10 по 30. Бюджет 70 тысяч."
-        A: Destination: "None"
+Q: "Уеду из Рязани в августе с 10 по 30. Бюджет 70 тысяч."
+A: Destination: "None"
 
-        Q: "Я в Тольятти. Мне срочно надо достать билеты в Кисловодск"
-        A: Destination: "Кисловодск"
+Q: "Я в Тольятти. Мне срочно надо достать билеты в Кисловодск"
+A: Destination: "Кисловодск"
 
-        Q: "USER_REQUEST"
-        A: Destination: "'''
+Q: "USER_REQUEST"
+A: Destination: "'''
 
         self.searcher = searcher
 
     async def retrieve(self, request: str) -> str:
         """
-        Generates a response from the VLLM based 
+        Generates a response from the LLM based 
         on the user's travel request, aiming to 
         extract the destination city.
 
@@ -82,7 +82,7 @@ class DestinationRetriever(BaseRetriever):
         # Replace the placeholder in the prompt
         # template with the actual user request
         prompt = self.prefix_prompt.replace("USER_REQUEST", request)
-        # Generate a response from the VLLM using
+        # Generate a response from the LLM using
         # the customized prompt and sampling parameters
         self.json_input["prompt"] = prompt
         result = await self.llm.get_response(self.json_input)
