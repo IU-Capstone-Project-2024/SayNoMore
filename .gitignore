@@ -7,3 +7,7 @@ telegram-bot/tmp.py
 venv
 .ipynb_checkpoints
 telegram_bot/telegram_bot-Copy1.py
+.ipynb_checkpoints
+__pycache__/
+__pycache__/*
+.ruff_cache
