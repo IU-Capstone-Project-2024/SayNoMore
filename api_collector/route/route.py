@@ -83,7 +83,6 @@ class Route:
                 duration_to (int): Duration of the outbound flight in minutes
                 duration_back (int): Duration of the return flight in minutes
                 link (str): Link to the ticket on Aviasales
-                currency (str): Currency of the ticket price
         """
         self.ticket = ticket
         self.flight_origin = ticket['origin']
@@ -100,7 +99,7 @@ class Route:
         self.flight_duration = ticket['duration']
         self.flight_duration_to = ticket['duration_to']
         self.flight_duration_back = ticket['duration_back']
-        self.flight_link = 'https://www.aviasales.com/' + ticket['link']
+        self.flight_link = 'https://www.aviasales.com' + ticket['link']
 
     def add_hotel(self, hotel):
         """
@@ -142,20 +141,28 @@ class Route:
         :return: str: A string describing the route, flight, and hotel details.
         """
         if self.ticket:
-            flight_info = (f"Flight: {self.flight_origin} to {self.flight_destination}, "
-                           f"Departing at: {self.flight_departure_at}, Returning at: {self.flight_return_at}, "
-                           f"Airline: {self.airline}, Flight Number: {self.flight_number}, "
-                           f"Price: {self.ticket_price} rub, "
-                           f"Transfers: {self.transfers}, Return Transfers: {self.return_transfers}, "
-                           f"Duration: {self.flight_duration} minutes")
+            flight_info = (f"Flight Information:\n"
+                f"From: {self.flight_origin} ({self.origin_airport})\n"
+                f"To: {self.flight_destination} ({self.destination_airport})\n"
+                f"Airline: {self.airline}\n"
+                f"Flight Number: {self.flight_number}\n"
+                f"Departure: {self.flight_departure_at}\n"
+                f"Return: {self.flight_return_at}\n"
+                f"Price: {self.ticket_price} rub\n"
+                f"Transfers (outbound): {self.transfers}\n"
+                f"Transfers (return): {self.return_transfers}\n"
+                f"Outbound Duration: {self.flight_duration_to // 60} hours {self.flight_duration_to % 60} minutes\n"
+                f"Return Duration: {self.flight_duration_back // 60} hours {self.flight_duration_back % 60} minutes\n"
+                f"Ticket Link: {self.flight_link}")
         else:
             flight_info = 'No information about ticket'
 
         if self.hotel:
-            hotel_info = (
-                f"Hotel: {self.hotel_name}, Location: {self.hotel_city_name}, {self.hotel_state}, {self.hotel_country}, "
-                f"Stars: {self.hotel_stars}, Price From: {self.hotel_price_from} rub, "
-                f"Average Price: {self.hotel_price_avg} rub")
+            hotel_info = (f"Hotel Information:\n"
+                f"Hotel Name: {self.hotel_name}\n"
+                f"Location: {self.hotel_city_name}, {self.hotel_state}, {self.hotel_country}\n"
+                f"Stars: {self.hotel_stars}\n"
+                f"Prices from: {self.hotel_price_from} rub\n")
         else:
             hotel_info = 'No information about hotel'
 
