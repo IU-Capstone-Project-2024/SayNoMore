@@ -183,7 +183,7 @@ class Route:
 
 
 def get_ticket(origin, destination, departure_at=None, return_at=None, budget=None, number_of_tickets=1,
-               max_transfers=0, airlines=None):
+               max_transfers=0, airlines=None, max_flight_duration=None):
     """
     Fetch the cheapest air ticket based on the specified parameters.
 
@@ -267,8 +267,11 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
         tickets[:] = [ticket for ticket in tickets if
                       ticket['airline'] in airlines]
 
-
-
+    # filter by flight duration
+    if max_flight_duration:
+        tickets[:] = [ticket for ticket in tickets if
+                      ticket['duration_to'] / 60 <= max_flight_duration and ticket[
+                          'duration_back'] / 60 <= max_flight_duration]
 
     # Filter tickets by budget if a budget is specified
     if len(tickets) == 0:
