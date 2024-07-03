@@ -183,7 +183,7 @@ class Route:
 
 
 def get_ticket(origin, destination, departure_at=None, return_at=None, budget=None, number_of_tickets=1,
-               max_transfers=0):
+               max_transfers=0, airlines=None):
     """
     Fetch the cheapest air ticket based on the specified parameters.
 
@@ -261,6 +261,14 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
     if max_transfers > 0:
         tickets[:] = [ticket for ticket in tickets if
                       ticket['transfers'] <= max_transfers and ticket['return_transfers'] <= max_transfers]
+
+    # filter by airline
+    if airlines:
+        tickets[:] = [ticket for ticket in tickets if
+                      ticket['airline'] in airlines]
+
+
+
 
     # Filter tickets by budget if a budget is specified
     if len(tickets) == 0:
