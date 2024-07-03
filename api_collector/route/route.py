@@ -182,7 +182,8 @@ class Route:
         return total_cost
 
 
-def get_ticket(origin, destination, departure_at=None, return_at=None, budget=None, number_of_tickets=1):
+def get_ticket(origin, destination, departure_at=None, return_at=None, budget=None, number_of_tickets=1,
+               max_transfers=0):
     """
     Fetch the cheapest air ticket based on the specified parameters.
 
@@ -217,23 +218,50 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
     tickets = []
     # Loop through the first 9 pages to find tickets
     air_api = AirTicketsApi()
-    for page in range(1, 10):
-        # Fetch the cheapest tickets for the given parameters
-        response = air_api.fetch_cheapest_tickets(origin=origin,
-                                                  destination=destination,
-                                                  departure_at=departure_at,
-                                                  return_at=return_at,
-                                                  one_way=True,
-                                                  page=page)
-        # Check if the response was successful
-        if not response['success']:
-            raise Exception('response was not successful')
-        # Break the loop if no new ticket data is received
-        if len(response['data']) == 0:
-            break
-        else:
-            # Append the received ticket data to the tickets list
-            tickets += response['data']
+    # find tickets
+    if max_transfers == 0:
+        for page in range(1, 10):
+            # Fetch the cheapest tickets for the given parameters
+            response = air_api.fetch_cheapest_tickets(origin=origin,
+                                                      destination=destination,
+                                                      departure_at=departure_at,
+                                                      return_at=return_at,
+                                                      one_way=True,
+                                                      direct=True,
+                                                      page=page)
+            # Check if the response was successful
+            if not response['success']:
+                raise Exception('response was not successful')
+            # Break the loop if no new ticket data is received
+            if len(response['data']) == 0:
+                break
+            else:
+                # Append the received ticket data to the tickets list
+                tickets += response['data']
+    if len(tickets) == 0 or max_transfers != 0:
+        for page in range(1, 10):
+            # Fetch the cheapest tickets for the given parameters
+            response = air_api.fetch_cheapest_tickets(origin=origin,
+                                                      destination=destination,
+                                                      departure_at=departure_at,
+                                                      return_at=return_at,
+                                                      one_way=True,
+                                                      page=page)
+            # Check if the response was successful
+            if not response['success']:
+                raise Exception('response was not successful')
+            # Break the loop if no new ticket data is received
+            if len(response['data']) == 0:
+                break
+            else:
+                # Append the received ticket data to the tickets list
+                tickets += response['data']
+
+    # filter tickets by number of transfers
+    if max_transfers > 0:
+        tickets[:] = [ticket for ticket in tickets if
+                      ticket['transfers'] <= max_transfers and ticket['return_transfers'] <= max_transfers]
+
     # Filter tickets by budget if a budget is specified
     if len(tickets) == 0:
         return None
