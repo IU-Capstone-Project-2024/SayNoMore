@@ -14,44 +14,17 @@ from request_analyzer.llm import LLM
 user_states = {}
 
 class SayNoMoreBot:
-    """
-    A Telegram bot to assist users in finding travel routes based on their requirements.
-
-    Attributes:
-        bot (TeleBot): Instance of the TeleBot.
-        second (bool): Flag to track the state of user interaction.
-    """
-
     def __init__(self):
-        """
-        Initializes the SayNoMoreBot instance and sets up the command handlers.
-        """
         self.bot = telebot.TeleBot('7333725090:AAFC6DwjlSs5VvvJ6ML863e5yx8h-NgAR60')
         self.setup_handlers()
 
     def setup_handlers(self):
-        """
-        Sets up the command handlers for the bot.
-        """
-
         @self.bot.message_handler(commands=['start'])
         def send_welcome(message):
-            """
-            Sends a welcome message to the user when the /start command is received.
-
-            Args:
-                message (Message): The message object containing user information.
-            """
             self.bot.send_message(message.chat.id, messages.WELCOME)
 
         @self.bot.message_handler(commands=['help'])
         def send_help(message):
-            """
-            Sends a help message to the user when the /help command is received.
-
-            Args:
-                message (Message): The message object containing user information.
-            """
             self.bot.send_message(message.chat.id, messages.HELP)
 
         @self.bot.message_handler(func=lambda message: True)
@@ -59,9 +32,6 @@ class SayNoMoreBot:
             asyncio.run(self.process_message(message))
 
     def run(self):
-        """
-        Starts the bot polling loop.
-        """
         self.bot.polling()
 
     async def process_message(self, message):
