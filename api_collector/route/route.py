@@ -154,11 +154,11 @@ class Route:
         self.return_at = return_at
         self.budget = budget
         if ticket:
-            self.ticket = Ticket(ticket=ticket)
+            self.ticket = ticket
         else:
             self.ticket = None
         if hotel:
-            self.hotel = Hotel(hotel=hotel)
+            self.hotel = hotel
         else:
             self.hotel = None
 
@@ -405,13 +405,13 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
     }]
 
     # Define minimum prices
-    min_ticket_price = cheapest_ticket['price']
-    min_hotel_price = cheapest_hotel['priceFrom']
+    min_ticket_price = cheapest_ticket.ticket_price
+    min_hotel_price = cheapest_hotel.hotel_price_from
 
     # Check if budget is specified
     if budget and (not budget == "None"):
         # Check if the cheapest route exceeds the budget
-        if cheapest_hotel['priceFrom'] + cheapest_ticket['price'] > budget:
+        if cheapest_hotel.hotel_price_from + cheapest_ticket.ticket_price > budget:
             # cheapest route exceed the budget, return the cheapest route
             return [Route(origin=origin, destination=destination, departure_at=departure_at, return_at=return_at,
                           budget=budget, ticket=top_routes[0]['ticket'], hotel=top_routes[0]['hotel'])]
@@ -428,7 +428,7 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
                                  max_flight_duration=max_flight_duration)
 
             # define budget for a hotel
-            hotel_price = budget - tickets[len(tickets) // 2]['price']
+            hotel_price = budget - tickets[len(tickets) // 2].ticket_price
             # get hotel list
             hotels = get_hotel(location=destination, check_in=departure_at, check_out=return_at,
                                budget=hotel_price, min_stars=min_stars, number_of_hotels=route_number)
@@ -467,8 +467,8 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
     # Remove duplicates and convert to Route class
     unique_routes = []
     for i in range(len(top_routes)):
-        if i == 0 or (top_routes[i]['ticket'] != top_routes[i - 1]['ticket'] or top_routes[i]['hotel'] !=
-                      top_routes[i - 1]['hotel']):
+        if i == 0 or (top_routes[i]['ticket'].ticket != top_routes[i - 1]['ticket'].ticket or top_routes[i]['hotel'].hotel !=
+                      top_routes[i - 1]['hotel'].hotel):
             unique_routes.append(
                 Route(origin=origin, destination=destination, departure_at=departure_at, return_at=return_at,
                       budget=budget, ticket=top_routes[i]['ticket'], hotel=top_routes[i]['hotel']))
