@@ -1,5 +1,6 @@
 import requests
 from api_collector.hotels import hotel_api_data
+from api_collector.utils.directories import data_directory_path
 import os
 from api_collector.hotels.hotel_enums import Language, LookFor, ConvertCase, Currency, CollectionType
 import json
@@ -26,27 +27,6 @@ class HotelApi:
         self.city_photos_dir = "/photos/cityPhotos"
         self.hotel_types_dir = "/hotels"
         self.hotels_list_dir = "/hotels"
-
-    def data_directory_path(self):
-        """
-        This function determine absolute path to data directory
-        :return: absolute path to data directory
-        """
-        # Get the absolute path of the current script
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-
-        # Find the project root directory (assuming this script is inside SayNoMore or its subdirectories)
-        project_root = current_dir
-        while os.path.basename(project_root) != 'SayNoMore':
-            project_root = os.path.dirname(project_root)
-
-        # Construct the path to the data directory
-        data_directory = os.path.join(project_root, 'data')
-
-        # Ensure the data directory exists
-        os.makedirs(data_directory, exist_ok=True)
-
-        return data_directory
 
     def search_hotel_or_location(self,
                                  query,
@@ -369,7 +349,7 @@ class HotelApi:
                 )
             data = response.json()
             # define file directory
-            file_directory = self.data_directory_path() + self.hotel_types_dir
+            file_directory = data_directory_path() + self.hotel_types_dir
             # make sure it exists
             os.makedirs(file_directory,
                         exist_ok=True)  # Ensure the directory exists
@@ -447,7 +427,7 @@ class HotelApi:
             # get data
             data = response.json()
             # define file directory
-            file_directory = self.data_directory_path() + self.hotels_list_dir
+            file_directory = data_directory_path() + self.hotels_list_dir
             # make sure it exists
             os.makedirs(file_directory,
                         exist_ok=True)  # Ensure the directory exists
@@ -469,7 +449,7 @@ class HotelApi:
         """Fetches and saves a photo given its URL."""
         response = requests.get(url)
         if response.status_code == 200:
-            dir_path = os.path.join(self.data_directory_path() + self.hotel_photos_dir, str(hotel_id))
+            dir_path = os.path.join(data_directory_path() + self.hotel_photos_dir, str(hotel_id))
             file_path = os.path.join(dir_path, f"photo{photo_index}.avif")
             if not os.path.exists(dir_path):
                 os.makedirs(dir_path, exist_ok=True)
@@ -480,12 +460,14 @@ class HotelApi:
                 f"Failed to fetch photo from {url} for hotel {hotel_id}. Status code: {response.status_code}"
             )
 
-    def fetch_hotel_photos(self, hotel_ids, width=800, height=520):
+    def fetch_hotel_photos(self, hotel_ids, width=800, height=520, max_photo_number=None, return_only_urls=False):
         """
         Fetches photos for specified hotels and saves them locally in /data/photos/hotelPhotos/<hotel_id> directory.
 
         Parameters:
         - hotel_ids: list of Hotel ids.
+        - max_photo_number: max number of photos to save
+        - return_only_urls: True if we want to return array of photos id instead of saving photos
 
         Returns:
         None
@@ -498,12 +480,17 @@ class HotelApi:
                                           params=params)
         if photo_ids_response.status_code == 200:
             photo_ids_data = photo_ids_response.json()
+            if return_only_urls:
+                return photo_ids_data
             for hotel_id, photo_ids in photo_ids_data.items():
                 for i, photo_id in enumerate(photo_ids, start=1):
                     # Constructing the photo URL
                     photo_url = f"https://photo.hotellook.com/image_v2/limit/{photo_id}/{width}/{height}.auto"
                     # Saving the photo
                     self.fetch_and_save_photo(photo_url, int(hotel_id), i)
+                    if max_photo_number:
+                        if i >= max_photo_number:
+                            break
         else:
             raise Exception(
                 f"Failed to fetch photo IDs. Status code: {photo_ids_response.status_code}"
@@ -516,7 +503,7 @@ class HotelApi:
         :param iata_code: iata code og the city
         :return: None
         """
-        photo_directory = self.data_directory_path() + self.city_photos_dir
+        photo_directory = data_directory_path() + self.city_photos_dir
         os.makedirs(photo_directory,
                     exist_ok=True)  # Ensure the directory exists
         photo_url = f'{self.fetch_city_photos_base_url}{width}x{height}/{iata_code}.jpg'

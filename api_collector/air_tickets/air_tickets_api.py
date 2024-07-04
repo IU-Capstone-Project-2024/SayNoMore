@@ -1,5 +1,6 @@
 import requests
 from api_collector.air_tickets import air_api_data
+from api_collector.utils.directories import data_directory_path
 import os
 from api_collector.air_tickets.flight_enums import Currency, Market, Sorting, GroupBy, PeriodType, TripClass
 
@@ -21,27 +22,6 @@ class AirTicketsApi:
         self.fetch_popular_routes_from_city_url = air_api_data.fetch_popular_routes_from_city_url
         self.fetch_airline_logos_url_base = air_api_data.fetch_airline_logos_url_base
         self.air_logo_dir = "/photos/airline_logos"
-
-    def data_directory_path(self):
-        """
-        This function determine absolute path to data directory
-        :return: absolute path to data directory
-        """
-        # Get the absolute path of the current script
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-
-        # Find the project root directory (assuming this script is inside SayNoMore or its subdirectories)
-        project_root = current_dir
-        while os.path.basename(project_root) != 'SayNoMore':
-            project_root = os.path.dirname(project_root)
-
-        # Construct the path to the data directory
-        data_directory = os.path.join(project_root, 'data')
-
-        # Ensure the data directory exists
-        os.makedirs(data_directory, exist_ok=True)
-
-        return data_directory
 
     def fetch_cheapest_tickets(self,
                                currency=Currency.RUB,
@@ -432,7 +412,7 @@ class AirTicketsApi:
         :return: None
         """
 
-        logo_directory = self.data_directory_path() + self.air_logo_dir
+        logo_directory = data_directory_path() + self.air_logo_dir
         os.makedirs(logo_directory,
                     exist_ok=True)  # Ensure the directory exists
 
