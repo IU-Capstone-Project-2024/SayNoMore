@@ -533,9 +533,9 @@ def save_hotel_photo_urls(routes: list[Route]):
     # collect photo ids
     hotel_ids = [route.hotel.hotel_id for route in routes]
 
-    # save photos
+    # get photos url
     hotel_api = HotelApi()
-    # tmptmptmp
+    # save photos urls
     urls_list = hotel_api.fetch_hotel_photos(hotel_ids=hotel_ids, return_only_urls=True)
     for route in routes:
         for photo_id in urls_list[str(route.hotel.hotel_id)]:
