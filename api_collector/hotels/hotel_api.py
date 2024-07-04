@@ -460,12 +460,13 @@ class HotelApi:
                 f"Failed to fetch photo from {url} for hotel {hotel_id}. Status code: {response.status_code}"
             )
 
-    def fetch_hotel_photos(self, hotel_ids, width=800, height=520):
+    def fetch_hotel_photos(self, hotel_ids, width=800, height=520, max_photo_number=None):
         """
         Fetches photos for specified hotels and saves them locally in /data/photos/hotelPhotos/<hotel_id> directory.
 
         Parameters:
         - hotel_ids: list of Hotel ids.
+        - max_photo_number: max number of photos to save
 
         Returns:
         None
@@ -484,6 +485,9 @@ class HotelApi:
                     photo_url = f"https://photo.hotellook.com/image_v2/limit/{photo_id}/{width}/{height}.auto"
                     # Saving the photo
                     self.fetch_and_save_photo(photo_url, int(hotel_id), i)
+                    if max_photo_number:
+                        if i >= max_photo_number:
+                            break
         else:
             raise Exception(
                 f"Failed to fetch photo IDs. Status code: {photo_ids_response.status_code}"
