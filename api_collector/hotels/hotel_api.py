@@ -460,22 +460,18 @@ class HotelApi:
                 f"Failed to fetch photo from {url} for hotel {hotel_id}. Status code: {response.status_code}"
             )
 
-    def fetch_hotel_photos(self, hotel_ids, width=800, height=520, max_photo_number=None):
+    def fetch_hotel_photos(self, hotel_ids, width=800, height=520, max_photo_number=None, return_only_urls=False):
         """
         Fetches photos for specified hotels and saves them locally in /data/photos/hotelPhotos/<hotel_id> directory.
 
         Parameters:
         - hotel_ids: list of Hotel ids.
         - max_photo_number: max number of photos to save
+        - return_only_urls: True if we want to return array of photos id instead of saving photos
 
         Returns:
         None
         """
-        # check if we have already downloaded hotels photos
-        data_path = data_directory_path()
-        hotel_ids[:] = [hotel for hotel in hotel_ids if not os.path.exists(
-            os.path.join(data_path, self.hotel_photos_dir, str(hotel), 'photo1.avif'))]
-
         hotel_ids_str = ','.join(map(str, hotel_ids))
 
         params = {'id': hotel_ids_str, 'token': self.api_token}
@@ -484,6 +480,8 @@ class HotelApi:
                                           params=params)
         if photo_ids_response.status_code == 200:
             photo_ids_data = photo_ids_response.json()
+            if return_only_urls:
+                return photo_ids_data
             for hotel_id, photo_ids in photo_ids_data.items():
                 for i, photo_id in enumerate(photo_ids, start=1):
                     # Constructing the photo URL

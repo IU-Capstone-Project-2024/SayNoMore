@@ -94,6 +94,7 @@ class Hotel:
         self.hotel_city_name = hotel['location']['name']
         self.hotel_state = hotel['location']['state']
         self.hotel_country = hotel['location']['country']
+        self.photo_urls = []
 
     def to_string(self):
         hotel_info = (f"Hotel Information:\n"
@@ -114,8 +115,8 @@ class Route:
         departure_at (str): Departure date and time.
         return_at (str): Return date and time.
         budget (float, optional): The budget for the route.
-        ticket (dict, optional): Information about the flight ticket.
-        hotel (dict, optional): Information about the hotel.
+        ticket (Ticket, optional): Information about the flight ticket.
+        hotel (Hotel, optional): Information about the hotel.
 
     Methods:
         __init__(origin, destination, departure_at, return_at, budget=None, ticket=None, hotel=None):
@@ -473,7 +474,7 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
                       budget=budget, ticket=top_routes[i]['ticket'], hotel=top_routes[i]['hotel']))
 
     # collect hotel_photos
-    save_hotel_photos(unique_routes)
+    save_hotel_photo_urls(unique_routes)
 
     return unique_routes
 
@@ -523,7 +524,7 @@ def conver_to_Hotel_class(hotels) -> list[Hotel]:
     """
     return [Hotel(hotel) for hotel in hotels]
 
-def save_hotel_photos(routes: list[Route]):
+def save_hotel_photo_urls(routes: list[Route]):
     """
     This function saves photos from hotels from route
     :param routes: list of routes
@@ -534,4 +535,7 @@ def save_hotel_photos(routes: list[Route]):
 
     # save photos
     hotel_api = HotelApi()
-    hotel_api.fetch_hotel_photos(hotel_ids=hotel_ids, max_photo_number=3)
+    urls_list = hotel_api.fetch_hotel_photos(hotel_ids=hotel_ids, return_only_urls=True)
+    for route in routes:
+        for photo_id in urls_list[str(route.hotel.hotel_id)]:
+            route.hotel.photo_urls.append(f'https://photo.hotellook.com/image_v2/limit/{photo_id}/800/520.auto')
