@@ -183,7 +183,7 @@ class Route:
 
 
 def get_ticket(origin, destination, departure_at=None, return_at=None, budget=None, number_of_tickets=1,
-               max_transfers=0, airlines=None, max_flight_duration=None):
+               max_transfers=0, airlines=(), max_flight_duration=None):
     """
     Fetch the cheapest air ticket based on the specified parameters.
 
@@ -193,6 +193,9 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
     :param return_at: str, optional, return date (format YYYY-MM or YYYY-MM-DD)
     :param budget: float, optional, maximum price of the ticket
     :param number_of_tickets: amount of different tickets to return
+    :param max_transfers: max number of transfers during a flight, 0 by default
+    :param airlines: list of airlines which are required for a flight, by default empty tuple - all airlines are allowed
+    :param max_flight_duration: max duration of a flight in hours, None by default
 
     :return: list of dict, the cheapest tickets that matches the criteria or None if no tickets were found:
         [{
@@ -263,7 +266,7 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
                       ticket['transfers'] <= max_transfers and ticket['return_transfers'] <= max_transfers]
 
     # filter by airline
-    if airlines:
+    if len(airlines) > 0:
         tickets[:] = [ticket for ticket in tickets if
                       ticket['airline'] in airlines]
 
@@ -376,7 +379,8 @@ def get_hotel(location, check_in, check_out, budget=None, min_stars=0, number_of
         return hotels[:number_of_hotels] if len(hotels) > number_of_hotels else hotels
 
 
-def find_top_routes(origin, destination, departure_at=None, return_at=None, budget=None, route_number=3, min_stars=0) -> \
+def find_top_routes(origin, destination, departure_at=None, return_at=None, budget=None, route_number=3, min_stars=0,
+                    max_transfers=0, airlines=(), max_flight_duration=None) -> \
         list[Route]:
     """
     Find the top routes based on the cheapest tickets and hotels.
@@ -389,12 +393,16 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
     :param budget: float, optional, maximum combined price for the ticket and hotel.
     :param route_number: int, optional, number of top routes to find (default is 3).
     :param min_stars: min number of stars for hotel required
+    :param max_transfers: max number of transfers during a flight, 0 by default
+    :param airlines: list of airlines which are required for a flight, by default empty tuple - all airlines are allowed
+    :param max_flight_duration: max duration of a flight in hours, None by default
 
     :return: list of 'Route' class
     """
     # Get the cheapest ticket and hotel
     cheapest_ticket = get_ticket(origin=origin, destination=destination, departure_at=departure_at,
-                                 return_at=return_at)[0]
+                                 return_at=return_at, max_transfers=max_transfers, airlines=airlines,
+                                 max_flight_duration=max_flight_duration)[0]
     cheapest_hotel = get_hotel(location=destination, check_in=departure_at, check_out=return_at, min_stars=min_stars)[0]
 
     # Create a return array with the initial cheapest route
@@ -422,7 +430,9 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
             ticket_price = max(coef * budget * 0.9, min_ticket_price)
             # get ticket list
             tickets = get_ticket(origin=origin, destination=destination, departure_at=departure_at,
-                                 return_at=return_at, budget=ticket_price, number_of_tickets=route_number)
+                                 return_at=return_at, budget=ticket_price, number_of_tickets=route_number,
+                                 max_transfers=max_transfers, airlines=airlines,
+                                 max_flight_duration=max_flight_duration)
 
             # define budget for a hotel
             hotel_price = budget - tickets[len(tickets) // 2]['price']
@@ -446,7 +456,9 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
         for _ in range(1, route_number):
             min_ticket_price *= 2
             ticket = get_ticket(origin=origin, destination=destination, departure_at=departure_at,
-                                return_at=return_at, budget=min_ticket_price)[0]
+                                return_at=return_at, budget=min_ticket_price, max_transfers=max_transfers,
+                                airlines=airlines,
+                                max_flight_duration=max_flight_duration)[0]
             min_hotel_price *= 3
             hotel = get_hotel(location=destination, check_in=departure_at, check_out=return_at,
                               budget=min_hotel_price, min_stars=min_stars)[0]
