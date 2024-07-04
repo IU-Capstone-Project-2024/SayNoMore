@@ -201,14 +201,14 @@ class Route:
         """
         total_cost = 0
         if self.ticket:
-            total_cost += self.ticket_price
+            total_cost += self.ticket.ticket_price
         if self.hotel:
-            total_cost += self.hotel_price_avg
+            total_cost += self.hotel.hotel_price_from
         return total_cost
 
 
 def get_ticket(origin, destination, departure_at=None, return_at=None, budget=None, number_of_tickets=1,
-               max_transfers=0, airlines=(), max_flight_duration=None):
+               max_transfers=0, airlines=(), max_flight_duration=None) -> list[Ticket]:
     """
     Fetch the cheapest air ticket based on the specified parameters.
 
@@ -222,25 +222,7 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
     :param airlines: list of airlines which are required for a flight, by default empty tuple - all airlines are allowed
     :param max_flight_duration: max duration of a flight in hours, None by default
 
-    :return: list of dict, the cheapest tickets that matches the criteria or None if no tickets were found:
-        [{
-                     "origin": str,  # Departure point
-                     "destination": str,  # Destination point
-                     "origin_airport": str,  # IATA code of the departure airport
-                     "destination_airport": str,  # IATA code of the destination airport
-                     "price": float,  # Ticket price
-                     "airline": str,  # IATA code of the airline
-                     "flight_number": str,  # Flight number
-                     "departure_at": str,  # Departure date
-                     "return_at": str,  # Return date
-                     "transfers": int,  # Number of transfers on the outbound trip
-                     "return_transfers": int,  # Number of transfers on the return trip
-                     "duration": int,  # Total duration of the round trip in minutes
-                     "duration_to": int,  # Duration of the outbound flight in minutes
-                     "duration_back": int,  # Duration of the return flight in minutes
-                     "link": str,  # Link to the ticket on Aviasales
-                     "currency": str  # Currency of the ticket price
-        }]
+    :return: list of tickets of class 'Ticket'
     """
     # Initialize an empty list to store tickets
     tickets = []
@@ -315,18 +297,18 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
                 break
         # Slice the tickets list to only include tickets within budget
         if len(tickets) <= number_of_tickets:
-            return tickets
+            return conver_to_Ticket_class(tickets)
         else:
             min_index = max(0, last_index - (number_of_tickets // 2))
             max_index = min(len(tickets), last_index + (number_of_tickets // 2) + (number_of_tickets % 2))
             if max_index - min_index < number_of_tickets:
                 if min_index == 0:
-                    return tickets[:number_of_tickets]
+                    return conver_to_Ticket_class(tickets[:number_of_tickets])
                 else:
-                    return tickets[max_index - number_of_tickets:max_index]
-            return tickets[min_index:max_index]
+                    return conver_to_Ticket_class(tickets[max_index - number_of_tickets:max_index])
+            return conver_to_Ticket_class(tickets[min_index:max_index])
     else:
-        return tickets[:number_of_tickets] if len(tickets) > number_of_tickets else tickets
+        return conver_to_Ticket_class(tickets[:number_of_tickets] if len(tickets) > number_of_tickets else tickets)
 
 
 def get_hotel(location, check_in, check_out, budget=None, min_stars=0, number_of_hotels=1):
@@ -535,3 +517,11 @@ def find_filtered_hotels(locationId, filter=(1, 2, 3, 12), min_stars=0):
 
     # return list of chosen hotels
     return filtered_hotels
+
+def conver_to_Ticket_class(tickets) -> list[Ticket]:
+    """
+    This function converts list of tickets json type to list of tickets of class 'Ticket'
+    :param tickets:
+    :return: list of tickets of class 'Ticket'
+    """
+    return [Ticket(ticket=ticket) for ticket in tickets]
