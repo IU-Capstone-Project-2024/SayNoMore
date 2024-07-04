@@ -57,8 +57,7 @@ class Ticket:
                        f"Transfers (outbound): {self.transfers}\n"
                        f"Transfers (return): {self.return_transfers}\n"
                        f"Outbound Duration: {self.flight_duration_to // 60} hours {self.flight_duration_to % 60} minutes\n"
-                       f"Return Duration: {self.flight_duration_back // 60} hours {self.flight_duration_back % 60} minutes\n"
-                       f"Ticket Link: {self.flight_link}")
+                       f"Return Duration: {self.flight_duration_back // 60} hours {self.flight_duration_back % 60} minutes\n")
 
         return flight_info
 
@@ -472,6 +471,10 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
             unique_routes.append(
                 Route(origin=origin, destination=destination, departure_at=departure_at, return_at=return_at,
                       budget=budget, ticket=top_routes[i]['ticket'], hotel=top_routes[i]['hotel']))
+
+    # collect hotel_photos
+    save_hotel_photos(unique_routes)
+
     return unique_routes
 
 
@@ -519,3 +522,16 @@ def conver_to_Hotel_class(hotels) -> list[Hotel]:
     :return: list of hotels of class 'Hotel'
     """
     return [Hotel(hotel) for hotel in hotels]
+
+def save_hotel_photos(routes: list[Route]):
+    """
+    This function saves photos from hotels from route
+    :param routes: list of routes
+    :return:
+    """
+    # collect photo ids
+    hotel_ids = [route.hotel.hotel_id for route in routes]
+
+    # save photos
+    hotel_api = HotelApi()
+    hotel_api.fetch_hotel_photos(hotel_ids=hotel_ids, max_photo_number=3)
