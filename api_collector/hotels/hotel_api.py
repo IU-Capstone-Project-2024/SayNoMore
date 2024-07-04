@@ -471,6 +471,11 @@ class HotelApi:
         Returns:
         None
         """
+        # check if we have already downloaded hotels photos
+        data_path = data_directory_path()
+        hotel_ids[:] = [hotel for hotel in hotel_ids if not os.path.exists(
+            os.path.join(data_path, self.hotel_photos_dir, str(hotel), 'photo1.avif'))]
+
         hotel_ids_str = ','.join(map(str, hotel_ids))
 
         params = {'id': hotel_ids_str, 'token': self.api_token}
