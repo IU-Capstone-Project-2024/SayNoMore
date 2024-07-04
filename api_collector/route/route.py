@@ -60,8 +60,50 @@ class Ticket:
                        f"Return Duration: {self.flight_duration_back // 60} hours {self.flight_duration_back % 60} minutes\n"
                        f"Ticket Link: {self.flight_link}")
 
+        return flight_info
 
+class Hotel:
+    def __init__(self, hotel):
+        """
+        Initialize hotel information
 
+        Parameters:
+            hotel (dict): A dictionary containing hotel details with the following keys:
+                locationId (int): ID of the location
+                hotelId (int): ID of the hotel
+                priceFrom (float): Minimum price for staying at the hotel room
+                priceAvg (float): Average price for staying at the hotel room
+                pricePercentile (dict): Price distribution by percentages
+                stars (int): Number of stars of the hotel
+                hotelName (str): Name of the hotel
+                location (dict): Information about the hotel location
+                geo (dict): Coordinates of the location (city)
+                name (str): Name of the location (city)
+                state (str): State where the city is located
+                country (str): Country of the hotel
+        """
+        self.hotel = hotel
+        self.hotel_location_id = hotel['locationId']
+        self.hotel_id = hotel['hotelId']
+        self.hotel_price_from = hotel['priceFrom']
+        self.hotel_price_avg = hotel['priceAvg']
+        self.hotel_price_percentile = hotel['pricePercentile']
+        self.hotel_stars = hotel['stars']
+        self.hotel_name = hotel['hotelName']
+        self.hotel_location = hotel['location']
+        self.hotel_geo = hotel['location']['geo']
+        self.hotel_city_name = hotel['location']['name']
+        self.hotel_state = hotel['location']['state']
+        self.hotel_country = hotel['location']['country']
+
+    def to_string(self):
+        hotel_info = (f"Hotel Information:\n"
+                      f"Hotel Name: {self.hotel_name}\n"
+                      f"Location: {self.hotel_city_name}, {self.hotel_state}, {self.hotel_country}\n"
+                      f"Stars: {self.hotel_stars}\n"
+                      f"Prices from: {self.hotel_price_from} rub\n")
+
+        return hotel_info
 
 class Route:
     """
