@@ -311,7 +311,7 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
         return conver_to_Ticket_class(tickets[:number_of_tickets] if len(tickets) > number_of_tickets else tickets)
 
 
-def get_hotel(location, check_in, check_out, budget=None, min_stars=0, number_of_hotels=1):
+def get_hotel(location, check_in, check_out, budget=None, min_stars=0, number_of_hotels=1) -> list[Hotel]:
     """
     Fetches the hotel based on the specified parameters.
 
@@ -323,21 +323,7 @@ def get_hotel(location, check_in, check_out, budget=None, min_stars=0, number_of
     :param min_stars: min number of stars for hotel required
     :param number_of_hotels: number of different hotels to return
 
-    :return: list of dict: The hotels that match the criteria or None if no hotels match:
-        {
-            'locationId': int,  # ID of the location
-            'hotelId': int,  # ID of the hotel
-            'priceFrom': float,  # Minimum price for staying at the hotel room
-            'priceAvg': float,  # Average price for staying at the hotel room
-            'pricePercentile': dict,  # Price distribution by percentages
-            'stars': int,  # Number of stars of the hotel
-            'hotelName': str,  # Name of the hotel
-            'location': dict,  # Information about the hotel location
-            'geo': dict,  # Coordinates of the location (city)
-            'name': str,  # Name of the location (city)
-            'state': str,  # State where the city is located
-            'country': str  # Country of the hotel
-        }
+    :return: list of 'Hotel' class
     """
     hotel_api = HotelApi()
     # Fetch hotel prices based on the provided location, check-in and check-out dates, and limit
@@ -372,18 +358,18 @@ def get_hotel(location, check_in, check_out, budget=None, min_stars=0, number_of
                 break
         # Slice the tickets list to only include tickets within budget
         if len(hotels) <= number_of_hotels:
-            return hotels
+            return conver_to_Hotel_class(hotels)
         else:
             min_index = max(0, last_index - (number_of_hotels // 2))
             max_index = min(len(hotels), last_index + (number_of_hotels // 2) + (number_of_hotels % 2))
             if max_index - min_index < number_of_hotels:
                 if min_index == 0:
-                    return hotels[:number_of_hotels]
+                    return conver_to_Hotel_class(hotels[:number_of_hotels])
                 else:
-                    return hotels[max_index - number_of_hotels:max_index]
-            return hotels[min_index:max_index]
+                    return conver_to_Hotel_class(hotels[max_index - number_of_hotels:max_index])
+            return conver_to_Hotel_class(hotels[min_index:max_index])
     else:
-        return hotels[:number_of_hotels] if len(hotels) > number_of_hotels else hotels
+        return conver_to_Hotel_class(hotels[:number_of_hotels] if len(hotels) > number_of_hotels else hotels)
 
 
 def find_top_routes(origin, destination, departure_at=None, return_at=None, budget=None, route_number=3, min_stars=0,
@@ -521,7 +507,15 @@ def find_filtered_hotels(locationId, filter=(1, 2, 3, 12), min_stars=0):
 def conver_to_Ticket_class(tickets) -> list[Ticket]:
     """
     This function converts list of tickets json type to list of tickets of class 'Ticket'
-    :param tickets:
+    :param tickets: list of tickets of json type
     :return: list of tickets of class 'Ticket'
     """
     return [Ticket(ticket=ticket) for ticket in tickets]
+
+def conver_to_Hotel_class(hotels) -> list[Hotel]:
+    """
+    This function converts list of tickets json type to list of tickets of class 'Hotel'
+    :param hotels: list of hotels of json type
+    :return: list of hotels of class 'Hotel'
+    """
+    return [Hotel(hotel) for hotel in hotels]
