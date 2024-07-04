@@ -28,6 +28,10 @@ class SayNoMoreBot:
         def send_help(message):
             self.bot.send_message(message.chat.id, messages.HELP)
 
+        @self.bot.message_handler(commands=['test'])
+        def test(message):
+            self.send_photo(message.chat.id, 'data/photos/cityPhotos/MOW.png', "hyi")
+
         @self.bot.message_handler(func=lambda message: True)
         def handle_user_request(message):
             asyncio.run(self.process_message(message))
@@ -35,6 +39,7 @@ class SayNoMoreBot:
         @self.bot.callback_query_handler(func=lambda call: True)
         def callback_query(call):
             self.handle_callback_query(call)
+
 
     def run(self):
         self.bot.polling()
@@ -90,8 +95,11 @@ class SayNoMoreBot:
 
         if user_state:
             selected_route = user_state['routes_list'][route_index]
-            # Handle the selected route, e.g., send a confirmation message or process further
             self.bot.send_message(call.message.chat.id, f"You selected route {route_index + 1}:\n{selected_route.to_string()}")
+
+    def send_photo(self, chat_id, photo_path, caption):
+        with open(photo_path, 'rb') as photo:
+            self.bot.send_photo(chat_id, photo, caption=caption)
 
 if __name__ == "__main__":
     bot = SayNoMoreBot()
