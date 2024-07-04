@@ -182,7 +182,8 @@ class Route:
         return total_cost
 
 
-def get_ticket(origin, destination, departure_at=None, return_at=None, budget=None, number_of_tickets=1):
+def get_ticket(origin, destination, departure_at=None, return_at=None, budget=None, number_of_tickets=1,
+               max_transfers=0, airlines=(), max_flight_duration=None):
     """
     Fetch the cheapest air ticket based on the specified parameters.
 
@@ -192,6 +193,9 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
     :param return_at: str, optional, return date (format YYYY-MM or YYYY-MM-DD)
     :param budget: float, optional, maximum price of the ticket
     :param number_of_tickets: amount of different tickets to return
+    :param max_transfers: max number of transfers during a flight, 0 by default
+    :param airlines: list of airlines which are required for a flight, by default empty tuple - all airlines are allowed
+    :param max_flight_duration: max duration of a flight in hours, None by default
 
     :return: list of dict, the cheapest tickets that matches the criteria or None if no tickets were found:
         [{
@@ -217,23 +221,61 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
     tickets = []
     # Loop through the first 9 pages to find tickets
     air_api = AirTicketsApi()
-    for page in range(1, 10):
-        # Fetch the cheapest tickets for the given parameters
-        response = air_api.fetch_cheapest_tickets(origin=origin,
-                                                  destination=destination,
-                                                  departure_at=departure_at,
-                                                  return_at=return_at,
-                                                  one_way=True,
-                                                  page=page)
-        # Check if the response was successful
-        if not response['success']:
-            raise Exception('response was not successful')
-        # Break the loop if no new ticket data is received
-        if len(response['data']) == 0:
-            break
-        else:
-            # Append the received ticket data to the tickets list
-            tickets += response['data']
+    # find tickets
+    if max_transfers == 0:
+        for page in range(1, 10):
+            # Fetch the cheapest tickets for the given parameters
+            response = air_api.fetch_cheapest_tickets(origin=origin,
+                                                      destination=destination,
+                                                      departure_at=departure_at,
+                                                      return_at=return_at,
+                                                      one_way=True,
+                                                      direct=True,
+                                                      page=page)
+            # Check if the response was successful
+            if not response['success']:
+                raise Exception('response was not successful')
+            # Break the loop if no new ticket data is received
+            if len(response['data']) == 0:
+                break
+            else:
+                # Append the received ticket data to the tickets list
+                tickets += response['data']
+    if len(tickets) == 0 or max_transfers != 0:
+        for page in range(1, 10):
+            # Fetch the cheapest tickets for the given parameters
+            response = air_api.fetch_cheapest_tickets(origin=origin,
+                                                      destination=destination,
+                                                      departure_at=departure_at,
+                                                      return_at=return_at,
+                                                      one_way=True,
+                                                      page=page)
+            # Check if the response was successful
+            if not response['success']:
+                raise Exception('response was not successful')
+            # Break the loop if no new ticket data is received
+            if len(response['data']) == 0:
+                break
+            else:
+                # Append the received ticket data to the tickets list
+                tickets += response['data']
+
+    # filter tickets by number of transfers
+    if max_transfers > 0:
+        tickets[:] = [ticket for ticket in tickets if
+                      ticket['transfers'] <= max_transfers and ticket['return_transfers'] <= max_transfers]
+
+    # filter by airline
+    if len(airlines) > 0:
+        tickets[:] = [ticket for ticket in tickets if
+                      ticket['airline'] in airlines]
+
+    # filter by flight duration
+    if max_flight_duration:
+        tickets[:] = [ticket for ticket in tickets if
+                      ticket['duration_to'] / 60 <= max_flight_duration and ticket[
+                          'duration_back'] / 60 <= max_flight_duration]
+
     # Filter tickets by budget if a budget is specified
     if len(tickets) == 0:
         return None
@@ -337,7 +379,8 @@ def get_hotel(location, check_in, check_out, budget=None, min_stars=0, number_of
         return hotels[:number_of_hotels] if len(hotels) > number_of_hotels else hotels
 
 
-def find_top_routes(origin, destination, departure_at=None, return_at=None, budget=None, route_number=3, min_stars=0) -> \
+def find_top_routes(origin, destination, departure_at=None, return_at=None, budget=None, route_number=3, min_stars=0,
+                    max_transfers=0, airlines=(), max_flight_duration=None) -> \
         list[Route]:
     """
     Find the top routes based on the cheapest tickets and hotels.
@@ -350,12 +393,16 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
     :param budget: float, optional, maximum combined price for the ticket and hotel.
     :param route_number: int, optional, number of top routes to find (default is 3).
     :param min_stars: min number of stars for hotel required
+    :param max_transfers: max number of transfers during a flight, 0 by default
+    :param airlines: list of airlines which are required for a flight, by default empty tuple - all airlines are allowed
+    :param max_flight_duration: max duration of a flight in hours, None by default
 
     :return: list of 'Route' class
     """
     # Get the cheapest ticket and hotel
     cheapest_ticket = get_ticket(origin=origin, destination=destination, departure_at=departure_at,
-                                 return_at=return_at)[0]
+                                 return_at=return_at, max_transfers=max_transfers, airlines=airlines,
+                                 max_flight_duration=max_flight_duration)[0]
     cheapest_hotel = get_hotel(location=destination, check_in=departure_at, check_out=return_at, min_stars=min_stars)[0]
 
     # Create a return array with the initial cheapest route
@@ -383,7 +430,9 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
             ticket_price = max(coef * budget * 0.9, min_ticket_price)
             # get ticket list
             tickets = get_ticket(origin=origin, destination=destination, departure_at=departure_at,
-                                 return_at=return_at, budget=ticket_price, number_of_tickets=route_number)
+                                 return_at=return_at, budget=ticket_price, number_of_tickets=route_number,
+                                 max_transfers=max_transfers, airlines=airlines,
+                                 max_flight_duration=max_flight_duration)
 
             # define budget for a hotel
             hotel_price = budget - tickets[len(tickets) // 2]['price']
@@ -392,9 +441,13 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
                                budget=hotel_price, min_stars=min_stars, number_of_hotels=route_number)
             # check sizing
             if len(hotels) != len(tickets):
-                return_size = min(len(hotels), len(tickets))
-                hotels = hotels[-return_size:]
-                tickets = tickets[-return_size:]
+                # make size of arrays equal
+                if len(hotels) < len(tickets):
+                    while len(hotels) < len(tickets):
+                        hotels.append(hotels[-1])
+                else:
+                    while len(tickets) < len(hotels):
+                        tickets.append(tickets[-1])
 
             # combine top routes
             for i in range(len(tickets)):
@@ -407,7 +460,9 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
         for _ in range(1, route_number):
             min_ticket_price *= 2
             ticket = get_ticket(origin=origin, destination=destination, departure_at=departure_at,
-                                return_at=return_at, budget=min_ticket_price)[0]
+                                return_at=return_at, budget=min_ticket_price, max_transfers=max_transfers,
+                                airlines=airlines,
+                                max_flight_duration=max_flight_duration)[0]
             min_hotel_price *= 3
             hotel = get_hotel(location=destination, check_in=departure_at, check_out=return_at,
                               budget=min_hotel_price, min_stars=min_stars)[0]
