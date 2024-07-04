@@ -441,9 +441,13 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
                                budget=hotel_price, min_stars=min_stars, number_of_hotels=route_number)
             # check sizing
             if len(hotels) != len(tickets):
-                return_size = min(len(hotels), len(tickets))
-                hotels = hotels[-return_size:]
-                tickets = tickets[-return_size:]
+                # make size of arrays equal
+                if len(hotels) < len(tickets):
+                    while len(hotels) < len(tickets):
+                        hotels.append(hotels[-1])
+                else:
+                    while len(tickets) < len(hotels):
+                        tickets.append(tickets[-1])
 
             # combine top routes
             for i in range(len(tickets)):
