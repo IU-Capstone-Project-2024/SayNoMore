@@ -1,5 +1,5 @@
 import json
-
+from api_collector.utils.directories import data_directory_path
 from api_collector.air_tickets.air_tickets_api import AirTicketsApi
 from api_collector.hotels.hotel_api import HotelApi
 import os
@@ -493,7 +493,7 @@ def find_filtered_hotels(locationId, filter=(1, 2, 3, 12), min_stars=0):
     """
     hotel_api = HotelApi()
     # check if we have already saved information about hotels in given location
-    file_path = hotel_api.data_directory_path() + hotel_api.hotels_list_dir + f'/{locationId}.json'
+    file_path = data_directory_path() + hotel_api.hotels_list_dir + f'/{locationId}.json'
     if not os.path.exists(file_path):
         data = hotel_api.fetch_hotel_list(locationId=locationId)
     else:

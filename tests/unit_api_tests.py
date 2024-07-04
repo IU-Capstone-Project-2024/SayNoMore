@@ -1,4 +1,5 @@
 from unittest import TestCase, main
+from api_collector.utils.directories import data_directory_path
 from api_collector.air_tickets.air_tickets_api import AirTicketsApi
 from api_collector.hotels.hotel_api import HotelApi
 from datetime import datetime, timedelta
@@ -95,7 +96,7 @@ class TestAirTicketsApi(TestCase):
 
     def test_fetch_airline_logo(self):
         iata_code = 'UN'
-        file_path = self.air_api.data_directory_path() + self.air_api.air_logo_dir + f'/{iata_code}.png'
+        file_path = data_directory_path() + self.air_api.air_logo_dir + f'/{iata_code}.png'
         # Check if the file exists
         if os.path.exists(file_path):
             # Delete the file
@@ -158,7 +159,7 @@ class TestAirTicketsApi(TestCase):
 
     def test_fetch_hotel_photos(self):
         id = [4]
-        file_path = self.hotel_api.data_directory_path() + self.hotel_api.hotel_photos_dir + f'/{id[0]}/photo1.avif'
+        file_path = data_directory_path() + self.hotel_api.hotel_photos_dir + f'/{id[0]}/photo1.avif'
         # Check if the file exists
         if os.path.exists(file_path):
             # Delete the file
@@ -171,7 +172,7 @@ class TestAirTicketsApi(TestCase):
 
     def test_fetch_city_photo(self):
         iata_code = 'MOW'
-        file_path = self.hotel_api.data_directory_path() + self.hotel_api.city_photos_dir + f'/{iata_code}.png'
+        file_path = data_directory_path() + self.hotel_api.city_photos_dir + f'/{iata_code}.png'
         # Check if the file exists
         if os.path.exists(file_path):
             # Delete the file
