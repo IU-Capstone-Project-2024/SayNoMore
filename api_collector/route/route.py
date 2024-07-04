@@ -5,6 +5,64 @@ from api_collector.hotels.hotel_api import HotelApi
 import os
 
 
+class Ticket:
+    def __init__(self, ticket):
+        """
+                Initialize ticket information
+
+                Parameters:
+                    ticket (dict): A dictionary containing flight details with the following keys:
+                        origin (str): Departure point
+                        destination (str): Destination point
+                        origin_airport (str): IATA code of the departure airport
+                        destination_airport (str): IATA code of the destination airport
+                        price (float): Ticket price
+                        airline (str): IATA code of the airline
+                        flight_number (str): Flight number
+                        departure_at (str): Departure date
+                        return_at (str): Return date
+                        transfers (int): Number of transfers on the outbound trip
+                        return_transfers (int): Number of transfers on the return trip
+                        duration (int): Total duration of the round trip in minutes
+                        duration_to (int): Duration of the outbound flight in minutes
+                        duration_back (int): Duration of the return flight in minutes
+                        link (str): Link to the ticket on Aviasales
+                """
+        self.ticket = ticket
+        self.flight_origin = ticket['origin']
+        self.flight_destination = ticket['destination']
+        self.origin_airport = ticket['origin_airport']
+        self.destination_airport = ticket['destination_airport']
+        self.ticket_price = ticket['price']
+        self.airline = ticket['airline']
+        self.flight_number = ticket['flight_number']
+        self.flight_departure_at = ticket['departure_at']
+        self.flight_return_at = ticket['return_at']
+        self.transfers = ticket['transfers']
+        self.return_transfers = ticket['return_transfers']
+        self.flight_duration = ticket['duration']
+        self.flight_duration_to = ticket['duration_to']
+        self.flight_duration_back = ticket['duration_back']
+        self.flight_link = 'https://www.aviasales.com' + ticket['link']
+
+    def to_string(self):
+        flight_info = (f"Flight Information:\n"
+                       f"From: {self.flight_origin} ({self.origin_airport})\n"
+                       f"To: {self.flight_destination} ({self.destination_airport})\n"
+                       f"Airline: {self.airline}\n"
+                       f"Flight Number: {self.flight_number}\n"
+                       f"Departure: {self.flight_departure_at}\n"
+                       f"Return: {self.flight_return_at}\n"
+                       f"Price: {self.ticket_price} rub\n"
+                       f"Transfers (outbound): {self.transfers}\n"
+                       f"Transfers (return): {self.return_transfers}\n"
+                       f"Outbound Duration: {self.flight_duration_to // 60} hours {self.flight_duration_to % 60} minutes\n"
+                       f"Return Duration: {self.flight_duration_back // 60} hours {self.flight_duration_back % 60} minutes\n"
+                       f"Ticket Link: {self.flight_link}")
+
+
+
+
 class Route:
     """
     This class creates a route consisting of air tickets and hotels.
