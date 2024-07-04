@@ -154,85 +154,26 @@ class Route:
         self.return_at = return_at
         self.budget = budget
         if ticket:
-            self.add_flight(ticket)
+            self.ticket = Ticket(ticket=ticket)
         else:
             self.ticket = None
         if hotel:
-            self.add_hotel(hotel)
+            self.hotel = Hotel(hotel=hotel)
         else:
             self.hotel = None
 
     def add_flight(self, ticket):
         """
         Adds flight details to the route.
-
-        Parameters:
-            ticket (dict): A dictionary containing flight details with the following keys:
-                origin (str): Departure point
-                destination (str): Destination point
-                origin_airport (str): IATA code of the departure airport
-                destination_airport (str): IATA code of the destination airport
-                price (float): Ticket price
-                airline (str): IATA code of the airline
-                flight_number (str): Flight number
-                departure_at (str): Departure date
-                return_at (str): Return date
-                transfers (int): Number of transfers on the outbound trip
-                return_transfers (int): Number of transfers on the return trip
-                duration (int): Total duration of the round trip in minutes
-                duration_to (int): Duration of the outbound flight in minutes
-                duration_back (int): Duration of the return flight in minutes
-                link (str): Link to the ticket on Aviasales
         """
-        self.ticket = ticket
-        self.flight_origin = ticket['origin']
-        self.flight_destination = ticket['destination']
-        self.origin_airport = ticket['origin_airport']
-        self.destination_airport = ticket['destination_airport']
-        self.ticket_price = ticket['price']
-        self.airline = ticket['airline']
-        self.flight_number = ticket['flight_number']
-        self.flight_departure_at = ticket['departure_at']
-        self.flight_return_at = ticket['return_at']
-        self.transfers = ticket['transfers']
-        self.return_transfers = ticket['return_transfers']
-        self.flight_duration = ticket['duration']
-        self.flight_duration_to = ticket['duration_to']
-        self.flight_duration_back = ticket['duration_back']
-        self.flight_link = 'https://www.aviasales.com' + ticket['link']
+        self.ticket = Ticket(ticket=ticket)
 
     def add_hotel(self, hotel):
         """
         Adds hotel details to the route.
 
-        Parameters:
-            hotel (dict): A dictionary containing hotel details with the following keys:
-                locationId (int): ID of the location
-                hotelId (int): ID of the hotel
-                priceFrom (float): Minimum price for staying at the hotel room
-                priceAvg (float): Average price for staying at the hotel room
-                pricePercentile (dict): Price distribution by percentages
-                stars (int): Number of stars of the hotel
-                hotelName (str): Name of the hotel
-                location (dict): Information about the hotel location
-                geo (dict): Coordinates of the location (city)
-                name (str): Name of the location (city)
-                state (str): State where the city is located
-                country (str): Country of the hotel
         """
-        self.hotel = hotel
-        self.hotel_location_id = hotel['locationId']
-        self.hotel_id = hotel['hotelId']
-        self.hotel_price_from = hotel['priceFrom']
-        self.hotel_price_avg = hotel['priceAvg']
-        self.hotel_price_percentile = hotel['pricePercentile']
-        self.hotel_stars = hotel['stars']
-        self.hotel_name = hotel['hotelName']
-        self.hotel_location = hotel['location']
-        self.hotel_geo = hotel['location']['geo']
-        self.hotel_city_name = hotel['location']['name']
-        self.hotel_state = hotel['location']['state']
-        self.hotel_country = hotel['location']['country']
+        self.hotel = Hotel(hotel=hotel)
 
     def to_string(self):
         """
@@ -241,28 +182,12 @@ class Route:
         :return: str: A string describing the route, flight, and hotel details.
         """
         if self.ticket:
-            flight_info = (f"Flight Information:\n"
-                           f"From: {self.flight_origin} ({self.origin_airport})\n"
-                           f"To: {self.flight_destination} ({self.destination_airport})\n"
-                           f"Airline: {self.airline}\n"
-                           f"Flight Number: {self.flight_number}\n"
-                           f"Departure: {self.flight_departure_at}\n"
-                           f"Return: {self.flight_return_at}\n"
-                           f"Price: {self.ticket_price} rub\n"
-                           f"Transfers (outbound): {self.transfers}\n"
-                           f"Transfers (return): {self.return_transfers}\n"
-                           f"Outbound Duration: {self.flight_duration_to // 60} hours {self.flight_duration_to % 60} minutes\n"
-                           f"Return Duration: {self.flight_duration_back // 60} hours {self.flight_duration_back % 60} minutes\n"
-                           f"Ticket Link: {self.flight_link}")
+            flight_info = self.ticket.to_string()
         else:
             flight_info = 'No information about ticket'
 
         if self.hotel:
-            hotel_info = (f"Hotel Information:\n"
-                          f"Hotel Name: {self.hotel_name}\n"
-                          f"Location: {self.hotel_city_name}, {self.hotel_state}, {self.hotel_country}\n"
-                          f"Stars: {self.hotel_stars}\n"
-                          f"Prices from: {self.hotel_price_from} rub\n")
+            hotel_info = self.hotel.to_string()
         else:
             hotel_info = 'No information about hotel'
 
