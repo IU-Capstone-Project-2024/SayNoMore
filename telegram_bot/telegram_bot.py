@@ -7,7 +7,7 @@ from telebot import types
 
 from api_collector.route.route import find_top_routes
 from telegram_bot.utils import messages
-from telegram_bot.utils.formatting import route_list_to_string
+from telegram_bot.utils.formatting import route_list_to_string, translate_to_russian
 from request_analyzer.request_analyzer import RequestAnalyzer
 from request_analyzer.llm import LLM
 
@@ -22,16 +22,39 @@ class SayNoMoreBot:
     def setup_handlers(self):
         @self.bot.message_handler(commands=['start'])
         def send_welcome(message):
-            self.bot.send_message(message.chat.id, messages.WELCOME)
+            user_id = message.chat.id
+            if user_id not in user_states:
+                user_states[user_id] = self.initialize_user_state()
+            language = user_states[user_id]["language"]
+            if language == "en":
+                self.bot.send_message(message.chat.id, messages.WELCOME_EN)
+            else:
+                self.bot.send_message(message.chat.id, messages.WELCOME_RU)
 
         @self.bot.message_handler(commands=['help'])
         def send_help(message):
-            self.bot.send_message(message.chat.id, messages.HELP)
+            user_id = message.chat.id
+            if user_id not in user_states:
+                user_states[user_id] = self.initialize_user_state()
+            language = user_states[user_id]["language"]
+            if language == "en":
+                self.bot.send_message(message.chat.id, messages.HELP_EN)
+            else:
+                self.bot.send_message(message.chat.id, messages.HELP_RU)
 
         @self.bot.message_handler(commands=['restart'])
         def restart_trip_planning(message):
             self.restart_trip_planning_sequence(message.chat.id)
-            self.bot.send_message(message.chat.id, "Trip planning sequence has been restarted. Please start again by providing your trip details.")
+            user_id = message.chat.id
+            language = user_states[user_id]["language"]
+            if language == "en":
+                self.bot.send_message(message.chat.id, "Trip planning sequence has been restarted. Please start again by providing your trip details.")
+            else:
+                self.bot.send_message(message.chat.id, "Последовательность планирования поездки была перезапущена. Пожалуйста, начните сначала, предоставив детали вашей поездки.")
+
+        @self.bot.message_handler(commands=['language'])
+        def choose_language(message):
+            self.send_language_options(message.chat.id)
 
         @self.bot.message_handler(func=lambda message: True)
         def handle_user_request(message):
@@ -47,19 +70,19 @@ class SayNoMoreBot:
     async def process_message(self, message):
         user_id = message.chat.id
         if user_id not in user_states:
-            user_states[user_id] = {
-                "analyzer": RequestAnalyzer(LLM()),
-                "step": 0,
-                "completed": False,
-                "messages": [],
-                "routes_list": []
-            }
+            user_states[user_id] = self.initialize_user_state()
 
         user_state = user_states[user_id]
         user_state["messages"].append(message.text)
 
         if not user_state["completed"]:
-            are_all_fields_retrieved, response_message = await user_state["analyzer"].analyzer_step(user_state["messages"][user_state["step"]])
+            language = user_state["language"]
+            if language == "en":
+                translated_message = translate_to_russian(user_state["messages"][user_state["step"]])
+            else:
+                translated_message = user_state["messages"][user_state["step"]]
+
+            are_all_fields_retrieved, response_message = await user_state["analyzer"].analyzer_step(translated_message)
             self.bot.send_message(message.chat.id, response_message)
             
             if are_all_fields_retrieved:
@@ -89,14 +112,18 @@ class SayNoMoreBot:
         self.bot.send_message(chat_id, routes_message, reply_markup=markup)
 
     def handle_callback_query(self, call):
-        route_index = int(call.data.split('_')[1])
-        user_id = call.message.chat.id
-        user_state = user_states.get(user_id)
+        if call.data.startswith("route_"):
+            route_index = int(call.data.split('_')[1])
+            user_id = call.message.chat.id
+            user_state = user_states.get(user_id)
 
-        if user_state:
-            selected_route = user_state['routes_list'][route_index]
-            self.bot.send_message(call.message.chat.id, f"You selected route {route_index + 1}:\n{selected_route.to_string()}")
-            self.send_photos(user_id, selected_route.hotel.photo_urls)
+            if user_state:
+                selected_route = user_state['routes_list'][route_index]
+                self.bot.send_message(call.message.chat.id, f"You selected route {route_index + 1}:\n{selected_route.to_string()}")
+                self.send_photos(user_id, selected_route.hotel.photo_urls)
+        elif call.data.startswith("lang_"):
+            self.set_user_language(call.message.chat.id, call.data.split('_')[1])
+            self.bot.send_message(call.message.chat.id, "Language preference updated.")
 
     def send_photos(self, chat_id, photos):
         if len(photos) > 5:
@@ -104,9 +131,30 @@ class SayNoMoreBot:
         media_group = [types.InputMediaPhoto(media=photo_url) for photo_url in photos]
         self.bot.send_media_group(chat_id, media_group)
 
+    def send_language_options(self, chat_id):
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton(text="Русский", callback_data="lang_ru"))
+        markup.add(types.InlineKeyboardButton(text="English", callback_data="lang_en"))
+        self.bot.send_message(chat_id, "Choose your language / Выберите язык:", reply_markup=markup)
+
+    def set_user_language(self, chat_id, language):
+        if chat_id not in user_states:
+            user_states[chat_id] = self.initialize_user_state()
+        user_states[chat_id]["language"] = language
+
     def restart_trip_planning_sequence(self, chat_id):
         if chat_id in user_states:
             del user_states[chat_id]
+
+    def initialize_user_state(self):
+        return {
+            "analyzer": RequestAnalyzer(LLM()),
+            "step": 0,
+            "completed": False,
+            "messages": [],
+            "routes_list": [],
+            "language": "ru"  # Default language is Russian
+        }
 
 if __name__ == "__main__":
     bot = SayNoMoreBot()
