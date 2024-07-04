@@ -28,6 +28,11 @@ class SayNoMoreBot:
         def send_help(message):
             self.bot.send_message(message.chat.id, messages.HELP)
 
+        @self.bot.message_handler(commands=['restart'])
+        def restart_trip_planning(message):
+            self.restart_trip_planning_sequence(message.chat.id)
+            self.bot.send_message(message.chat.id, "Trip planning sequence has been restarted. Please start again by providing your trip details.")
+
         @self.bot.message_handler(func=lambda message: True)
         def handle_user_request(message):
             asyncio.run(self.process_message(message))
@@ -35,7 +40,6 @@ class SayNoMoreBot:
         @self.bot.callback_query_handler(func=lambda call: True)
         def callback_query(call):
             self.handle_callback_query(call)
-
 
     def run(self):
         self.bot.polling()
@@ -99,6 +103,10 @@ class SayNoMoreBot:
             photos = photos[:5]
         media_group = [types.InputMediaPhoto(media=photo_url) for photo_url in photos]
         self.bot.send_media_group(chat_id, media_group)
+
+    def restart_trip_planning_sequence(self, chat_id):
+        if chat_id in user_states:
+            del user_states[chat_id]
 
 if __name__ == "__main__":
     bot = SayNoMoreBot()
