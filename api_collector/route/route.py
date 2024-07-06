@@ -219,7 +219,7 @@ class Route:
             total_cost += self.ticket.ticket_price
         if self.hotel:
             total_cost += self.hotel.hotel_price_from
-        return total_cost
+        return round(total_cost)
 
 
 def get_ticket(origin, destination, departure_at=None, return_at=None, budget=None, number_of_tickets=1,
