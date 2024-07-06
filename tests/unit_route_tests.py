@@ -136,7 +136,7 @@ class TestRouteCollector(unittest.TestCase):
         mock_find_filtered_hotels.return_value = [1, 2, 40972234]
 
         # get result
-        result = get_hotel(location='Ryazan', check_in='2024-07-01', check_out='2024-07-10', budget=20000)
+        hotels = get_hotel(location='Ryazan', check_in='2024-07-01', check_out='2024-07-10', budget=20000)
         expected_hotel = {
                 'locationId': 12186,
                 'hotelId': 40972234,
@@ -151,7 +151,8 @@ class TestRouteCollector(unittest.TestCase):
             }
 
         # asses result
-        self.assertEqual(result[0], expected_hotel)
+        self.assertEqual(hotels[0].hotel_id, 40972234)
+        self.assertEqual(hotels[0].hotel_location_id, 12186)
 
     @patch('api_collector.route.route.get_ticket')
     @patch('api_collector.route.route.get_hotel')
