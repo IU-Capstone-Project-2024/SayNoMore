@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from api_collector.route.route import Route, get_hotel, get_ticket, find_top_routes
+from api_collector.route.route import get_hotel, get_ticket, find_top_routes, Hotel, Ticket
 
 
 class TestRouteCollector(unittest.TestCase):
@@ -158,7 +158,7 @@ class TestRouteCollector(unittest.TestCase):
     @patch('api_collector.route.route.get_hotel')
     def test_find_top_routes_with_budget(self, mock_get_hotel, mock_get_ticket):
         # Set up the mock responses
-        mock_get_ticket.return_value = [{
+        return_ticket = {
             'origin': 'JFK',
             'destination': 'LAX',
             "origin_airport": "JFK",
@@ -175,9 +175,11 @@ class TestRouteCollector(unittest.TestCase):
             'duration_back': 300,
             'link': 'http://example.com/ticket1',
             'currency': 'USD'
-        }]
+        }
 
-        mock_get_hotel.return_value = [{
+        mock_get_ticket.return_value = [Ticket(ticket=return_ticket)]
+
+        return_hotel = {
             'locationId': 12186,
             'hotelId': 714884,
             'priceFrom': 100.0,
@@ -187,7 +189,9 @@ class TestRouteCollector(unittest.TestCase):
             'hotelName': 'Aragon Hotel',
             'location': {'name': 'Ryazan', 'country': 'Russia', 'state': None,
                          'geo': {'lat': 54.619779, 'lon': 39.744939}}
-        }]
+        }
+
+        mock_get_hotel.return_value = [Hotel(hotel=return_hotel)]
 
         # Call the method with a budget
         routes = find_top_routes(origin='JFK', destination='LAX', departure_at='2024-07-01',
@@ -195,8 +199,8 @@ class TestRouteCollector(unittest.TestCase):
 
         # Check the returned routes
         self.assertEqual(len(routes), 1)
-        self.assertEqual(routes[0].ticket_price, 150.0)
-        self.assertEqual(routes[0].hotel_price_from, 100.0)
+        self.assertEqual(routes[0].ticket.ticket_price, 150.0)
+        self.assertEqual(routes[0].hotel.hotel_price_from, 100.0)
 
 
 if __name__ == '__main__':
