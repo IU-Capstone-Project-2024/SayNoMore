@@ -1,9 +1,109 @@
 import json
-
+from api_collector.utils.directories import data_directory_path
 from api_collector.air_tickets.air_tickets_api import AirTicketsApi
 from api_collector.hotels.hotel_api import HotelApi
 import os
 
+
+class Ticket:
+    def __init__(self, ticket):
+        """
+                Initialize ticket information
+
+                Parameters:
+                    ticket (dict): A dictionary containing flight details with the following keys:
+                        origin (str): Departure point
+                        destination (str): Destination point
+                        origin_airport (str): IATA code of the departure airport
+                        destination_airport (str): IATA code of the destination airport
+                        price (float): Ticket price
+                        airline (str): IATA code of the airline
+                        flight_number (str): Flight number
+                        departure_at (str): Departure date
+                        return_at (str): Return date
+                        transfers (int): Number of transfers on the outbound trip
+                        return_transfers (int): Number of transfers on the return trip
+                        duration (int): Total duration of the round trip in minutes
+                        duration_to (int): Duration of the outbound flight in minutes
+                        duration_back (int): Duration of the return flight in minutes
+                        link (str): Link to the ticket on Aviasales
+                """
+        self.ticket = ticket
+        self.flight_origin = ticket['origin']
+        self.flight_destination = ticket['destination']
+        self.origin_airport = ticket['origin_airport']
+        self.destination_airport = ticket['destination_airport']
+        self.ticket_price = ticket['price']
+        self.airline = ticket['airline']
+        self.flight_number = ticket['flight_number']
+        self.flight_departure_at = ticket['departure_at']
+        self.flight_return_at = ticket['return_at']
+        self.transfers = ticket['transfers']
+        self.return_transfers = ticket['return_transfers']
+        self.flight_duration = ticket['duration']
+        self.flight_duration_to = ticket['duration_to']
+        self.flight_duration_back = ticket['duration_back']
+        self.flight_link = 'https://www.aviasales.com' + ticket['link']
+
+    def to_string(self):
+        flight_info = (f"Flight Information:\n"
+                       f"From: {self.flight_origin} ({self.origin_airport})\n"
+                       f"To: {self.flight_destination} ({self.destination_airport})\n"
+                       f"Airline: {self.airline}\n"
+                       f"Flight Number: {self.flight_number}\n"
+                       f"Departure: {self.flight_departure_at}\n"
+                       f"Return: {self.flight_return_at}\n"
+                       f"Price: {self.ticket_price} rub\n"
+                       f"Transfers (outbound): {self.transfers}\n"
+                       f"Transfers (return): {self.return_transfers}\n"
+                       f"Outbound Duration: {self.flight_duration_to // 60} hours {self.flight_duration_to % 60} minutes\n"
+                       f"Return Duration: {self.flight_duration_back // 60} hours {self.flight_duration_back % 60} minutes\n")
+
+        return flight_info
+
+class Hotel:
+    def __init__(self, hotel):
+        """
+        Initialize hotel information
+
+        Parameters:
+            hotel (dict): A dictionary containing hotel details with the following keys:
+                locationId (int): ID of the location
+                hotelId (int): ID of the hotel
+                priceFrom (float): Minimum price for staying at the hotel room
+                priceAvg (float): Average price for staying at the hotel room
+                pricePercentile (dict): Price distribution by percentages
+                stars (int): Number of stars of the hotel
+                hotelName (str): Name of the hotel
+                location (dict): Information about the hotel location
+                geo (dict): Coordinates of the location (city)
+                name (str): Name of the location (city)
+                state (str): State where the city is located
+                country (str): Country of the hotel
+        """
+        self.hotel = hotel
+        self.hotel_location_id = hotel['locationId']
+        self.hotel_id = hotel['hotelId']
+        self.hotel_price_from = hotel['priceFrom']
+        self.hotel_price_avg = hotel['priceAvg']
+        self.hotel_price_percentile = hotel['pricePercentile']
+        self.hotel_stars = hotel['stars']
+        self.hotel_name = hotel['hotelName']
+        self.hotel_location = hotel['location']
+        self.hotel_geo = hotel['location']['geo']
+        self.hotel_city_name = hotel['location']['name']
+        self.hotel_state = hotel['location']['state']
+        self.hotel_country = hotel['location']['country']
+        self.photo_urls = []
+
+    def to_string(self):
+        hotel_info = (f"Hotel Information:\n"
+                      f"Hotel Name: {self.hotel_name}\n"
+                      f"Location: {self.hotel_city_name}, {self.hotel_state}, {self.hotel_country}\n"
+                      f"Stars: {self.hotel_stars}\n"
+                      f"Prices from: {self.hotel_price_from} rub\n")
+
+        return hotel_info
 
 class Route:
     """
@@ -15,8 +115,8 @@ class Route:
         departure_at (str): Departure date and time.
         return_at (str): Return date and time.
         budget (float, optional): The budget for the route.
-        ticket (dict, optional): Information about the flight ticket.
-        hotel (dict, optional): Information about the hotel.
+        ticket (Ticket, optional): Information about the flight ticket.
+        hotel (Hotel, optional): Information about the hotel.
 
     Methods:
         __init__(origin, destination, departure_at, return_at, budget=None, ticket=None, hotel=None):
@@ -54,85 +154,26 @@ class Route:
         self.return_at = return_at
         self.budget = budget
         if ticket:
-            self.add_flight(ticket)
+            self.ticket = ticket
         else:
             self.ticket = None
         if hotel:
-            self.add_hotel(hotel)
+            self.hotel = hotel
         else:
             self.hotel = None
 
     def add_flight(self, ticket):
         """
         Adds flight details to the route.
-
-        Parameters:
-            ticket (dict): A dictionary containing flight details with the following keys:
-                origin (str): Departure point
-                destination (str): Destination point
-                origin_airport (str): IATA code of the departure airport
-                destination_airport (str): IATA code of the destination airport
-                price (float): Ticket price
-                airline (str): IATA code of the airline
-                flight_number (str): Flight number
-                departure_at (str): Departure date
-                return_at (str): Return date
-                transfers (int): Number of transfers on the outbound trip
-                return_transfers (int): Number of transfers on the return trip
-                duration (int): Total duration of the round trip in minutes
-                duration_to (int): Duration of the outbound flight in minutes
-                duration_back (int): Duration of the return flight in minutes
-                link (str): Link to the ticket on Aviasales
         """
-        self.ticket = ticket
-        self.flight_origin = ticket['origin']
-        self.flight_destination = ticket['destination']
-        self.origin_airport = ticket['origin_airport']
-        self.destination_airport = ticket['destination_airport']
-        self.ticket_price = ticket['price']
-        self.airline = ticket['airline']
-        self.flight_number = ticket['flight_number']
-        self.flight_departure_at = ticket['departure_at']
-        self.flight_return_at = ticket['return_at']
-        self.transfers = ticket['transfers']
-        self.return_transfers = ticket['return_transfers']
-        self.flight_duration = ticket['duration']
-        self.flight_duration_to = ticket['duration_to']
-        self.flight_duration_back = ticket['duration_back']
-        self.flight_link = 'https://www.aviasales.com' + ticket['link']
+        self.ticket = Ticket(ticket=ticket)
 
     def add_hotel(self, hotel):
         """
         Adds hotel details to the route.
 
-        Parameters:
-            hotel (dict): A dictionary containing hotel details with the following keys:
-                locationId (int): ID of the location
-                hotelId (int): ID of the hotel
-                priceFrom (float): Minimum price for staying at the hotel room
-                priceAvg (float): Average price for staying at the hotel room
-                pricePercentile (dict): Price distribution by percentages
-                stars (int): Number of stars of the hotel
-                hotelName (str): Name of the hotel
-                location (dict): Information about the hotel location
-                geo (dict): Coordinates of the location (city)
-                name (str): Name of the location (city)
-                state (str): State where the city is located
-                country (str): Country of the hotel
         """
-        self.hotel = hotel
-        self.hotel_location_id = hotel['locationId']
-        self.hotel_id = hotel['hotelId']
-        self.hotel_price_from = hotel['priceFrom']
-        self.hotel_price_avg = hotel['priceAvg']
-        self.hotel_price_percentile = hotel['pricePercentile']
-        self.hotel_stars = hotel['stars']
-        self.hotel_name = hotel['hotelName']
-        self.hotel_location = hotel['location']
-        self.hotel_geo = hotel['location']['geo']
-        self.hotel_city_name = hotel['location']['name']
-        self.hotel_state = hotel['location']['state']
-        self.hotel_country = hotel['location']['country']
+        self.hotel = Hotel(hotel=hotel)
 
     def to_string(self):
         """
@@ -141,28 +182,12 @@ class Route:
         :return: str: A string describing the route, flight, and hotel details.
         """
         if self.ticket:
-            flight_info = (f"Flight Information:\n"
-                           f"From: {self.flight_origin} ({self.origin_airport})\n"
-                           f"To: {self.flight_destination} ({self.destination_airport})\n"
-                           f"Airline: {self.airline}\n"
-                           f"Flight Number: {self.flight_number}\n"
-                           f"Departure: {self.flight_departure_at}\n"
-                           f"Return: {self.flight_return_at}\n"
-                           f"Price: {self.ticket_price} rub\n"
-                           f"Transfers (outbound): {self.transfers}\n"
-                           f"Transfers (return): {self.return_transfers}\n"
-                           f"Outbound Duration: {self.flight_duration_to // 60} hours {self.flight_duration_to % 60} minutes\n"
-                           f"Return Duration: {self.flight_duration_back // 60} hours {self.flight_duration_back % 60} minutes\n"
-                           f"Ticket Link: {self.flight_link}")
+            flight_info = self.ticket.to_string()
         else:
             flight_info = 'No information about ticket'
 
         if self.hotel:
-            hotel_info = (f"Hotel Information:\n"
-                          f"Hotel Name: {self.hotel_name}\n"
-                          f"Location: {self.hotel_city_name}, {self.hotel_state}, {self.hotel_country}\n"
-                          f"Stars: {self.hotel_stars}\n"
-                          f"Prices from: {self.hotel_price_from} rub\n")
+            hotel_info = self.hotel.to_string()
         else:
             hotel_info = 'No information about hotel'
 
@@ -176,14 +201,14 @@ class Route:
         """
         total_cost = 0
         if self.ticket:
-            total_cost += self.ticket_price
+            total_cost += self.ticket.ticket_price
         if self.hotel:
-            total_cost += self.hotel_price_avg
+            total_cost += self.hotel.hotel_price_from
         return total_cost
 
 
 def get_ticket(origin, destination, departure_at=None, return_at=None, budget=None, number_of_tickets=1,
-               max_transfers=0, airlines=(), max_flight_duration=None):
+               max_transfers=0, airlines=(), max_flight_duration=None) -> list[Ticket]:
     """
     Fetch the cheapest air ticket based on the specified parameters.
 
@@ -197,25 +222,7 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
     :param airlines: list of airlines which are required for a flight, by default empty tuple - all airlines are allowed
     :param max_flight_duration: max duration of a flight in hours, None by default
 
-    :return: list of dict, the cheapest tickets that matches the criteria or None if no tickets were found:
-        [{
-                     "origin": str,  # Departure point
-                     "destination": str,  # Destination point
-                     "origin_airport": str,  # IATA code of the departure airport
-                     "destination_airport": str,  # IATA code of the destination airport
-                     "price": float,  # Ticket price
-                     "airline": str,  # IATA code of the airline
-                     "flight_number": str,  # Flight number
-                     "departure_at": str,  # Departure date
-                     "return_at": str,  # Return date
-                     "transfers": int,  # Number of transfers on the outbound trip
-                     "return_transfers": int,  # Number of transfers on the return trip
-                     "duration": int,  # Total duration of the round trip in minutes
-                     "duration_to": int,  # Duration of the outbound flight in minutes
-                     "duration_back": int,  # Duration of the return flight in minutes
-                     "link": str,  # Link to the ticket on Aviasales
-                     "currency": str  # Currency of the ticket price
-        }]
+    :return: list of tickets of class 'Ticket'
     """
     # Initialize an empty list to store tickets
     tickets = []
@@ -290,21 +297,21 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
                 break
         # Slice the tickets list to only include tickets within budget
         if len(tickets) <= number_of_tickets:
-            return tickets
+            return conver_to_Ticket_class(tickets)
         else:
             min_index = max(0, last_index - (number_of_tickets // 2))
             max_index = min(len(tickets), last_index + (number_of_tickets // 2) + (number_of_tickets % 2))
             if max_index - min_index < number_of_tickets:
                 if min_index == 0:
-                    return tickets[:number_of_tickets]
+                    return conver_to_Ticket_class(tickets[:number_of_tickets])
                 else:
-                    return tickets[max_index - number_of_tickets:max_index]
-            return tickets[min_index:max_index]
+                    return conver_to_Ticket_class(tickets[max_index - number_of_tickets:max_index])
+            return conver_to_Ticket_class(tickets[min_index:max_index])
     else:
-        return tickets[:number_of_tickets] if len(tickets) > number_of_tickets else tickets
+        return conver_to_Ticket_class(tickets[:number_of_tickets] if len(tickets) > number_of_tickets else tickets)
 
 
-def get_hotel(location, check_in, check_out, budget=None, min_stars=0, number_of_hotels=1):
+def get_hotel(location, check_in, check_out, budget=None, min_stars=0, number_of_hotels=1) -> list[Hotel]:
     """
     Fetches the hotel based on the specified parameters.
 
@@ -316,21 +323,7 @@ def get_hotel(location, check_in, check_out, budget=None, min_stars=0, number_of
     :param min_stars: min number of stars for hotel required
     :param number_of_hotels: number of different hotels to return
 
-    :return: list of dict: The hotels that match the criteria or None if no hotels match:
-        {
-            'locationId': int,  # ID of the location
-            'hotelId': int,  # ID of the hotel
-            'priceFrom': float,  # Minimum price for staying at the hotel room
-            'priceAvg': float,  # Average price for staying at the hotel room
-            'pricePercentile': dict,  # Price distribution by percentages
-            'stars': int,  # Number of stars of the hotel
-            'hotelName': str,  # Name of the hotel
-            'location': dict,  # Information about the hotel location
-            'geo': dict,  # Coordinates of the location (city)
-            'name': str,  # Name of the location (city)
-            'state': str,  # State where the city is located
-            'country': str  # Country of the hotel
-        }
+    :return: list of 'Hotel' class
     """
     hotel_api = HotelApi()
     # Fetch hotel prices based on the provided location, check-in and check-out dates, and limit
@@ -365,18 +358,18 @@ def get_hotel(location, check_in, check_out, budget=None, min_stars=0, number_of
                 break
         # Slice the tickets list to only include tickets within budget
         if len(hotels) <= number_of_hotels:
-            return hotels
+            return conver_to_Hotel_class(hotels)
         else:
             min_index = max(0, last_index - (number_of_hotels // 2))
             max_index = min(len(hotels), last_index + (number_of_hotels // 2) + (number_of_hotels % 2))
             if max_index - min_index < number_of_hotels:
                 if min_index == 0:
-                    return hotels[:number_of_hotels]
+                    return conver_to_Hotel_class(hotels[:number_of_hotels])
                 else:
-                    return hotels[max_index - number_of_hotels:max_index]
-            return hotels[min_index:max_index]
+                    return conver_to_Hotel_class(hotels[max_index - number_of_hotels:max_index])
+            return conver_to_Hotel_class(hotels[min_index:max_index])
     else:
-        return hotels[:number_of_hotels] if len(hotels) > number_of_hotels else hotels
+        return conver_to_Hotel_class(hotels[:number_of_hotels] if len(hotels) > number_of_hotels else hotels)
 
 
 def find_top_routes(origin, destination, departure_at=None, return_at=None, budget=None, route_number=3, min_stars=0,
@@ -412,13 +405,13 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
     }]
 
     # Define minimum prices
-    min_ticket_price = cheapest_ticket['price']
-    min_hotel_price = cheapest_hotel['priceFrom']
+    min_ticket_price = cheapest_ticket.ticket_price
+    min_hotel_price = cheapest_hotel.hotel_price_from
 
     # Check if budget is specified
     if budget and (not budget == "None"):
         # Check if the cheapest route exceeds the budget
-        if cheapest_hotel['priceFrom'] + cheapest_ticket['price'] > budget:
+        if cheapest_hotel.hotel_price_from + cheapest_ticket.ticket_price > budget:
             # cheapest route exceed the budget, return the cheapest route
             return [Route(origin=origin, destination=destination, departure_at=departure_at, return_at=return_at,
                           budget=budget, ticket=top_routes[0]['ticket'], hotel=top_routes[0]['hotel'])]
@@ -435,7 +428,7 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
                                  max_flight_duration=max_flight_duration)
 
             # define budget for a hotel
-            hotel_price = budget - tickets[len(tickets) // 2]['price']
+            hotel_price = budget - tickets[len(tickets) // 2].ticket_price
             # get hotel list
             hotels = get_hotel(location=destination, check_in=departure_at, check_out=return_at,
                                budget=hotel_price, min_stars=min_stars, number_of_hotels=route_number)
@@ -474,11 +467,15 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
     # Remove duplicates and convert to Route class
     unique_routes = []
     for i in range(len(top_routes)):
-        if i == 0 or (top_routes[i]['ticket'] != top_routes[i - 1]['ticket'] or top_routes[i]['hotel'] !=
-                      top_routes[i - 1]['hotel']):
+        if i == 0 or (top_routes[i]['ticket'].ticket != top_routes[i - 1]['ticket'].ticket or top_routes[i]['hotel'].hotel !=
+                      top_routes[i - 1]['hotel'].hotel):
             unique_routes.append(
                 Route(origin=origin, destination=destination, departure_at=departure_at, return_at=return_at,
                       budget=budget, ticket=top_routes[i]['ticket'], hotel=top_routes[i]['hotel']))
+
+    # collect hotel_photos
+    save_hotel_photo_urls(unique_routes)
+
     return unique_routes
 
 
@@ -493,7 +490,7 @@ def find_filtered_hotels(locationId, filter=(1, 2, 3, 12), min_stars=0):
     """
     hotel_api = HotelApi()
     # check if we have already saved information about hotels in given location
-    file_path = hotel_api.data_directory_path() + hotel_api.hotels_list_dir + f'/{locationId}.json'
+    file_path = data_directory_path() + hotel_api.hotels_list_dir + f'/{locationId}.json'
     if not os.path.exists(file_path):
         data = hotel_api.fetch_hotel_list(locationId=locationId)
     else:
@@ -510,3 +507,36 @@ def find_filtered_hotels(locationId, filter=(1, 2, 3, 12), min_stars=0):
 
     # return list of chosen hotels
     return filtered_hotels
+
+def conver_to_Ticket_class(tickets) -> list[Ticket]:
+    """
+    This function converts list of tickets json type to list of tickets of class 'Ticket'
+    :param tickets: list of tickets of json type
+    :return: list of tickets of class 'Ticket'
+    """
+    return [Ticket(ticket=ticket) for ticket in tickets]
+
+def conver_to_Hotel_class(hotels) -> list[Hotel]:
+    """
+    This function converts list of tickets json type to list of tickets of class 'Hotel'
+    :param hotels: list of hotels of json type
+    :return: list of hotels of class 'Hotel'
+    """
+    return [Hotel(hotel) for hotel in hotels]
+
+def save_hotel_photo_urls(routes: list[Route]):
+    """
+    This function saves photos from hotels from route
+    :param routes: list of routes
+    :return:
+    """
+    # collect photo ids
+    hotel_ids = [route.hotel.hotel_id for route in routes]
+
+    # get photos url
+    hotel_api = HotelApi()
+    # save photos urls
+    urls_list = hotel_api.fetch_hotel_photos(hotel_ids=hotel_ids, return_only_urls=True)
+    for route in routes:
+        for photo_id in urls_list[str(route.hotel.hotel_id)]:
+            route.hotel.photo_urls.append(f'https://photo.hotellook.com/image_v2/limit/{photo_id}/800/520.auto')

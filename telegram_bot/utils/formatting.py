@@ -1,4 +1,5 @@
 from api_collector.route.route import Route
+from googletrans import Translator
 
 
 def request_to_json(request: str) -> dict:
@@ -32,3 +33,9 @@ def route_list_to_string(route_list: list[Route]) -> str:
         result += route.to_string()
         result += '\n________________________\n'
     return result
+
+
+def translate_to_russian(text):
+    translator = Translator()
+    translated = translator.translate(text, src='en', dest='ru')
+    return translated.text
