@@ -55,15 +55,15 @@ class TestRouteCollector(unittest.TestCase):
         ]
 
         # Call the method with a budget
-        ticket = get_ticket(origin='JFK', destination='LAX', departure_at='2024-07-01',
+        tickets = get_ticket(origin='JFK', destination='LAX', departure_at='2024-07-01',
                                       return_at='2024-07-15',
                                       budget=200.0)
 
         # Check the returned ticket
-        self.assertEqual(ticket[0]['origin'], 'JFK')
-        self.assertEqual(ticket[0]['destination'], 'LAX')
-        self.assertEqual(ticket[0]['price'], 150.0)
-        self.assertEqual(ticket[0]['airline'], 'AA')
+        self.assertEqual(tickets[0].flight_origin, 'JFK')
+        self.assertEqual(tickets[0].flight_destination, 'LAX')
+        self.assertEqual(tickets[0].ticket_price, 150.0)
+        self.assertEqual(tickets[0].airline, 'AA')
 
 
     @patch('api_collector.route.route.HotelApi')
