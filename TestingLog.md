@@ -210,3 +210,110 @@ This test involves making a request that will build a route from Russia to outsi
   * Connections are not displayed.
 
 ---
+#### **Test Case ID**: TC008  
+**Date**: 2024-07-08  
+**Tester**: Maxim Martyshov  
+**Scenario**: Request Reset Command
+
+---
+
+#### **Test Case Description:**
+This test involves making a request and then hitting the reset button.
+
+---
+
+#### **Test Log:**
+
+| **Step No.** | **Message Sent**        | **Bot Response**                                                                                   | **Code Crash Message (if any)**                              |
+|--------------|-------------------------|----------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
+| 1            | Я хочу уехать из Казани | *Ваш запрос содержит некоторые пропущенные поля. Пожалуйста, укажите даты прибытия и возвращения, а также город назначения. Если у вас есть бюджет, вы можете указать его, хотя это не обязательно. Спасибо!* | *-*                                                          |
+| 2            | /restart                | *-*                                                                                                | File "/home/SayNoMore/telegram_bot/telegram_bot.py", line 49, in restart_trip_planning<br>    language = user_states[user_id]["language"]<br>KeyError: 925371113 |
+
+---
+
+#### **Additional Notes:**
+- The result of the test is that the restart command is completely non-functional.
+
+___
+
+#### **Test Case ID**: TC009  
+**Date**: 2024-07-08  
+**Tester**: Maxim Martyshov  
+**Scenario**: Change Language
+
+---
+
+#### **Test Case Description:**
+This test involves changing the language from the start of the conversation (not involving changing the language in the middle of the request).
+
+---
+
+#### **Test Log:**
+
+| **Step No.** | **Message Sent**                                             | **Bot Response**                                             | **Code Crash Message (if any)** |
+|--------------|--------------------------------------------------------------|--------------------------------------------------------------|---------------------------------|
+| 1            | /start                                                       | Привет, добро пожаловать в бота SayNoMore. Расскажите нам больше о вашем планируемом путешествии. | *-*                             |
+| 2            | /language                                                    | Choose your language / Выберите язык: <br><Русский><br><English><br><br>Language preference updated. | -                               |
+| 3            | I wanna go to Moscow from Saint Petersburg from 12th July to 14th July | [Recommendation]                                              | -                               |
+
+---
+
+#### **Additional Notes:**
+- In this scenario, everything works fine.
+
+___
+
+#### **Test Case ID**: TC010  
+**Date**: 2024-07-08  
+**Tester**: Maxim Martyshov  
+**Scenario**: Change Language in the Middle of the Request
+
+---
+
+#### **Test Case Description:**
+This test involves changing the language in the middle of the request.
+
+---
+
+#### **Test Log:**
+
+| **Step No.** | **Message Sent**                   | **Bot Response**                                             | **Code Crash Message (if any)** |
+|--------------|------------------------------------|--------------------------------------------------------------|---------------------------------|
+| 1            | Я хочу уехать из Казани            | Ваш запрос содержит некоторые пропущенные поля. Пожалуйста, укажите даты прибытия и возвращения, а также город назначения. Если у вас есть бюджет, вы можете указать его, хотя это не обязательно. Спасибо! | *-*                             |
+| 2            | /language                          | Choose your language / Выберите язык: <br><Русский><br><English><br><br>Language preference updated. | -                               |
+| 3            | 12th July till 14th July to Moscow | [Recommendation]                                              | -                               |
+
+---
+
+#### **Additional Notes:**
+- In this scenario, everything works fine.
+
+___
+
+#### **Test Case ID**: TC011  
+**Date**: 2024-07-08  
+**Tester**: Maxim Martyshov  
+**Scenario**: Strange Behavior
+
+---
+
+#### **Test Case Description:**
+This test involves typing some random text in the middle of the request.
+
+---
+
+#### **Test Log:**
+
+| **Step No.** | **Message Sent**                         | **Bot Response**                                                                                   | **Code Crash Message (if any)** |
+|--------------|------------------------------------------|----------------------------------------------------------------------------------------------------|---------------------------------|
+| 1            | Я хочу уехать из Казани                  | Ваш запрос содержит некоторые пропущенные поля. Пожалуйста, укажите даты прибытия и возвращения, а также город назначения. Если у вас есть бюджет, вы можете указать его, хотя это не обязательно. Спасибо! | *-*                             |
+| 2            | eijfbviebrib3urb                         | Ваш запрос не содержит необходимых данных. Пожалуйста, укажите даты прибытия и возвращения, а также город отправления и назначения. Если у вас есть бюджет, вы можете указать его, хотя это не обязательно. Спасибо! | -                               |
+| 3            | вушпоимушмик                             | Ваш запрос не содержит необходимой информации. Пожалуйста, укажите даты поездки, город отправления, город назначения и бюджет, если он у вас есть. Спасибо! | -                               |
+| 4            | 12го июля в Санкт-Петербург до 14го июля | [Recommendation]                                                                                   | -                               |
+
+---
+
+#### **Additional Notes:**
+- In this scenario, everything works fine for both languages, Russian and English.
+
+___
