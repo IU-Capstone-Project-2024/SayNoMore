@@ -121,15 +121,24 @@ class SayNoMoreBot:
                 selected_route = user_state['routes_list'][route_index]
                 self.bot.send_message(call.message.chat.id, f"You selected route {route_index + 1}:\n{selected_route.to_string()}")
                 self.send_photos(user_id, selected_route.hotel.photo_urls)
+                self.send_payment_button(call.message.chat.id)
         elif call.data.startswith("lang_"):
             self.set_user_language(call.message.chat.id, call.data.split('_')[1])
             self.bot.send_message(call.message.chat.id, "Language preference updated.")
+        
+        elif call.data.startswith("pay_"):
+            self.bot.send_message(call.message.chat.id, "Payment...")
 
     def send_photos(self, chat_id, photos):
         if len(photos) > 5:
             photos = photos[:5]
         media_group = [types.InputMediaPhoto(media=photo_url) for photo_url in photos]
         self.bot.send_media_group(chat_id, media_group)
+
+    def send_payment_button(self, chat_id):
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton(text="Pay Now", callback_data="pay_"))
+        self.bot.send_message(chat_id, "Click to proceed with payment", reply_markup=markup)
 
     def send_language_options(self, chat_id):
         markup = types.InlineKeyboardMarkup()
