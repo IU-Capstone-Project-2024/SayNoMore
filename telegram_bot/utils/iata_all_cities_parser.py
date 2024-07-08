@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import csv
 import pandas as pd
 import threading
+import os
 
 progress = 0
 step = 0
@@ -22,15 +23,15 @@ def write_to_csv(table, lock):
             city_data.append((city_name, city_code))
 
     # Save the results to a CSV file
-    csv_file = '../../data/all_cities_codes.csv'
+    csv_file = 'data/all_cities_codes.csv'
 
+    file_exists = os.path.exists(csv_file)
     with lock:
         with open(csv_file, mode='a', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
-            writer.writerow(['city', 'Code'])  # Write the header
-            writer.writerows(city_data)  # Write the data rows
-
-    # print(f'Data has been written to {csv_file}')
+            if not file_exists:
+                writer.writerow(['City', 'Code'])
+            writer.writerows(city_data)
 
 
 def request_country(country, lock):
@@ -56,7 +57,7 @@ def request_country(country, lock):
 
 
 if __name__ == "__main__":
-    df = pd.read_csv('../../data/country_codes.csv')
+    df = pd.read_csv('data/country_codes.csv')
     countries = df['Code']
     lock = threading.Lock()
     step = 1/len(countries)*100
