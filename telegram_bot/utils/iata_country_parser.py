@@ -17,10 +17,10 @@ def write_to_csv(table):
             city_data.append((city_name, city_code))
 
     # Save the results to a CSV file
-    csv_file = 'data/country_codes.csv'
+    csv_file = '../../data/country_codes.csv'
     with open(csv_file, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
-        writer.writerow(['City', 'Code'])  # Write the header
+        writer.writerow(['Country', 'Code'])  # Write the header
         writer.writerows(city_data)  # Write the data rows
 
     print(f'Data has been written to {csv_file}')
@@ -39,13 +39,6 @@ if response.status_code == 200:
     # Find all tables in the HTML
     tables = soup.find_all('table')
 
-    # Loop through all tables and print them
-    counter = 1
-    for table in tables:
-        if counter != 7:
-            counter += 1
-            continue
-        write_to_csv(table)
-        break
+    write_to_csv(tables[6])
 else:
     print("Failed to retrieve data. Status code:", response.status_code)
