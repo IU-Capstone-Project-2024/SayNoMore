@@ -42,7 +42,7 @@ class RequestAnalyzer:
         self.fields_to_update = []
         # Load the CSV file and create a city name to code mapping
         project_root = self._get_project_root()
-        csv_file_path = os.path.join(project_root, 'data/city_name_code.csv')
+        csv_file_path = os.path.join(project_root, 'data/all_cities_codes.csv')
         df = pd.read_csv(csv_file_path)
         self.city_name_to_code = dict(zip(df['city_name'], df['city_code']))
 
