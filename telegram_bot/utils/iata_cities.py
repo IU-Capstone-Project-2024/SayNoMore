@@ -1,9 +1,14 @@
+import concurrent.futures
 import requests
 from bs4 import BeautifulSoup
 import csv
 import pandas as pd
+import threading
 
-def write_to_csv(table):
+progress = 0
+step = 0
+
+def write_to_csv(table, lock):
     # Find all city links
     city_links = table.find_all('a', href=True)
 
@@ -18,20 +23,18 @@ def write_to_csv(table):
 
     # Save the results to a CSV file
     csv_file = '../../data/all_cities_codes.csv'
-    with open(csv_file, mode='a', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        writer.writerow(['Country', 'Code'])  # Write the header
-        writer.writerows(city_data)  # Write the data rows
+
+    with lock:
+        with open(csv_file, mode='a', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            writer.writerow(['city', 'Code'])  # Write the header
+            writer.writerows(city_data)  # Write the data rows
 
     # print(f'Data has been written to {csv_file}')
 
-df = pd.read_csv('../../data/country_codes.csv')
 
-countries = df['Code']
-
-for i, country in enumerate(countries):
-    progress = i / len(countries) * 100
-    print(f'Progress: {progress:.2f} %')
+def request_country(country, lock):
+    global progress
     for letter in range(192, 224):
         url = f"http://www.betravel.ru/iata-city-alphabet.php?country={country}&alphabet=%{format(letter, 'x')}"
         # Send a GET request to the URL
@@ -45,6 +48,17 @@ for i, country in enumerate(countries):
             # Find all tables in the HTML
             tables = soup.find_all('table')
 
-            write_to_csv(tables[6])
+            write_to_csv(tables[6], lock)
         else:
             print("Failed to retrieve data. Status code:", response.status_code)
+    progress += step
+    print(f'Progress = {progress:.2f}%')
+
+
+if __name__ == "__main__":
+    df = pd.read_csv('../../data/country_codes.csv')
+    countries = df['Code']
+    lock = threading.Lock()
+    step = 1/len(countries)*100
+    with concurrent.futures.ThreadPoolExecutor(10) as executor:
+        executor.map(lambda country: request_country(country, lock), countries)
