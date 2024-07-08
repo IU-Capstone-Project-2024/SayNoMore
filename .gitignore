@@ -10,3 +10,6 @@ telegram_bot/telegram_bot-Copy1.py
 __pycache__/
 __pycache__/*
 .ruff_cache
+
+data/hotels
+data/photos
