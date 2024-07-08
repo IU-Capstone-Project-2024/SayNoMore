@@ -29,37 +29,44 @@ class Ticket:
                         link (str): Link to the ticket on Aviasales
                 """
         self.ticket = ticket
-        self.flight_origin = ticket['origin']
-        self.flight_destination = ticket['destination']
-        self.origin_airport = ticket['origin_airport']
-        self.destination_airport = ticket['destination_airport']
-        self.ticket_price = ticket['price']
-        self.airline = ticket['airline']
-        self.flight_number = ticket['flight_number']
-        self.flight_departure_at = ticket['departure_at']
-        self.flight_return_at = ticket['return_at']
-        self.transfers = ticket['transfers']
-        self.return_transfers = ticket['return_transfers']
-        self.flight_duration = ticket['duration']
-        self.flight_duration_to = ticket['duration_to']
-        self.flight_duration_back = ticket['duration_back']
-        self.flight_link = 'https://www.aviasales.com' + ticket['link']
+        if ticket:
+            self.flight_origin = ticket['origin']
+            self.flight_destination = ticket['destination']
+            self.origin_airport = ticket['origin_airport']
+            self.destination_airport = ticket['destination_airport']
+            self.ticket_price = ticket['price']
+            self.airline = ticket['airline']
+            self.flight_number = ticket['flight_number']
+            self.flight_departure_at = ticket['departure_at']
+            self.flight_return_at = ticket['return_at']
+            self.transfers = ticket['transfers']
+            self.return_transfers = ticket['return_transfers']
+            self.flight_duration = ticket['duration']
+            self.flight_duration_to = ticket['duration_to']
+            self.flight_duration_back = ticket['duration_back']
+            self.flight_link = 'https://www.aviasales.com' + ticket['link']
+        else:
+            self.ticket_price = 0
 
     def to_string(self):
-        flight_info = (f"Flight Information:\n"
-                       f"From: {self.flight_origin} ({self.origin_airport})\n"
-                       f"To: {self.flight_destination} ({self.destination_airport})\n"
-                       f"Airline: {self.airline}\n"
-                       f"Flight Number: {self.flight_number}\n"
-                       f"Departure: {self.flight_departure_at}\n"
-                       f"Return: {self.flight_return_at}\n"
-                       f"Price: {self.ticket_price} rub\n"
-                       f"Transfers (outbound): {self.transfers}\n"
-                       f"Transfers (return): {self.return_transfers}\n"
-                       f"Outbound Duration: {self.flight_duration_to // 60} hours {self.flight_duration_to % 60} minutes\n"
-                       f"Return Duration: {self.flight_duration_back // 60} hours {self.flight_duration_back % 60} minutes\n")
+        if self.ticket:
+            flight_info = (f"Flight Information:\n"
+                           f"From: {self.flight_origin} ({self.origin_airport})\n"
+                           f"To: {self.flight_destination} ({self.destination_airport})\n"
+                           f"Airline: {self.airline}\n"
+                           f"Flight Number: {self.flight_number}\n"
+                           f"Departure: {self.flight_departure_at}\n"
+                           f"Return: {self.flight_return_at}\n"
+                           f"Price: {self.ticket_price} rub\n"
+                           f"Transfers (outbound): {self.transfers}\n"
+                           f"Transfers (return): {self.return_transfers}\n"
+                           f"Outbound Duration: {self.flight_duration_to // 60} hours {self.flight_duration_to % 60} minutes\n"
+                           f"Return Duration: {self.flight_duration_back // 60} hours {self.flight_duration_back % 60} minutes\n")
+        else:
+            flight_info = "The flight ticket has not been found"
 
         return flight_info
+
 
 class Hotel:
     def __init__(self, hotel):
@@ -82,28 +89,36 @@ class Hotel:
                 country (str): Country of the hotel
         """
         self.hotel = hotel
-        self.hotel_location_id = hotel['locationId']
-        self.hotel_id = hotel['hotelId']
-        self.hotel_price_from = hotel['priceFrom']
-        self.hotel_price_avg = hotel['priceAvg']
-        self.hotel_price_percentile = hotel['pricePercentile']
-        self.hotel_stars = hotel['stars']
-        self.hotel_name = hotel['hotelName']
-        self.hotel_location = hotel['location']
-        self.hotel_geo = hotel['location']['geo']
-        self.hotel_city_name = hotel['location']['name']
-        self.hotel_state = hotel['location']['state']
-        self.hotel_country = hotel['location']['country']
         self.photo_urls = []
+        if hotel:
+            self.hotel_location_id = hotel['locationId']
+            self.hotel_id = hotel['hotelId']
+            self.hotel_price_from = hotel['priceFrom']
+            self.hotel_price_avg = hotel['priceAvg']
+            self.hotel_price_percentile = hotel['pricePercentile']
+            self.hotel_stars = hotel['stars']
+            self.hotel_name = hotel['hotelName']
+            self.hotel_location = hotel['location']
+            self.hotel_geo = hotel['location']['geo']
+            self.hotel_city_name = hotel['location']['name']
+            self.hotel_state = hotel['location']['state']
+            self.hotel_country = hotel['location']['country']
+        else:
+            self.hotel_price_from = 0
+            self.hotel_price_avg = 0
 
     def to_string(self):
-        hotel_info = (f"Hotel Information:\n"
-                      f"Hotel Name: {self.hotel_name}\n"
-                      f"Location: {self.hotel_city_name}, {self.hotel_state}, {self.hotel_country}\n"
-                      f"Stars: {self.hotel_stars}\n"
-                      f"Prices from: {self.hotel_price_from} rub\n")
+        if self.hotel:
+            hotel_info = (f"Hotel Information:\n"
+                          f"Hotel Name: {self.hotel_name}\n"
+                          f"Location: {self.hotel_city_name}, {self.hotel_state}, {self.hotel_country}\n"
+                          f"Stars: {self.hotel_stars}\n"
+                          f"Prices from: {self.hotel_price_from} rub\n")
+        else:
+            hotel_info = "The hotel has not been found"
 
         return hotel_info
+
 
 class Route:
     """
@@ -204,7 +219,7 @@ class Route:
             total_cost += self.ticket.ticket_price
         if self.hotel:
             total_cost += self.hotel.hotel_price_from
-        return total_cost
+        return round(total_cost)
 
 
 def get_ticket(origin, destination, departure_at=None, return_at=None, budget=None, number_of_tickets=1,
@@ -285,7 +300,7 @@ def get_ticket(origin, destination, departure_at=None, return_at=None, budget=No
 
     # Filter tickets by budget if a budget is specified
     if len(tickets) == 0:
-        return None
+        return [Ticket(ticket=None)]
     if budget and (not budget == "None"):
         # Initialize the last index of the ticket list to include
         last_index = 0
@@ -333,7 +348,7 @@ def get_hotel(location, check_in, check_out, budget=None, min_stars=0, number_of
                                           limit=10000)
     # check if we fetched at least one hotel
     if len(hotels) == 0:
-        return None
+        return [Hotel(hotel=None)]
 
     # get all hotel ids satisfied our filter
     filtered_hotels = find_filtered_hotels(locationId=hotels[0]['locationId'], min_stars=min_stars)
@@ -341,7 +356,7 @@ def get_hotel(location, check_in, check_out, budget=None, min_stars=0, number_of
     hotels[:] = [hotel for hotel in hotels if hotel['hotelId'] in filtered_hotels]
     # check if we filtered at least one hotel
     if len(hotels) == 0:
-        return None
+        return [Hotel(hotel=None)]
 
     # Sort the fetched hotels by the 'priceFrom' field in ascending order
     hotels = sorted(hotels, key=lambda x: x['priceFrom'])
@@ -403,6 +418,10 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
         'ticket': cheapest_ticket,
         'hotel': cheapest_hotel
     }]
+
+    if cheapest_hotel.hotel_price_from == 0 and cheapest_ticket.ticket_price == 0:
+        return [Route(origin=origin, destination=destination, departure_at=departure_at, return_at=return_at,
+                      budget=budget, ticket=top_routes[0]['ticket'], hotel=top_routes[0]['hotel'])]
 
     # Define minimum prices
     min_ticket_price = cheapest_ticket.ticket_price
@@ -467,8 +486,9 @@ def find_top_routes(origin, destination, departure_at=None, return_at=None, budg
     # Remove duplicates and convert to Route class
     unique_routes = []
     for i in range(len(top_routes)):
-        if i == 0 or (top_routes[i]['ticket'].ticket != top_routes[i - 1]['ticket'].ticket or top_routes[i]['hotel'].hotel !=
-                      top_routes[i - 1]['hotel'].hotel):
+        if i == 0 or (
+                top_routes[i]['ticket'].ticket != top_routes[i - 1]['ticket'].ticket or top_routes[i]['hotel'].hotel !=
+                top_routes[i - 1]['hotel'].hotel):
             unique_routes.append(
                 Route(origin=origin, destination=destination, departure_at=departure_at, return_at=return_at,
                       budget=budget, ticket=top_routes[i]['ticket'], hotel=top_routes[i]['hotel']))
@@ -508,6 +528,7 @@ def find_filtered_hotels(locationId, filter=(1, 2, 3, 12), min_stars=0):
     # return list of chosen hotels
     return filtered_hotels
 
+
 def conver_to_Ticket_class(tickets) -> list[Ticket]:
     """
     This function converts list of tickets json type to list of tickets of class 'Ticket'
@@ -516,6 +537,7 @@ def conver_to_Ticket_class(tickets) -> list[Ticket]:
     """
     return [Ticket(ticket=ticket) for ticket in tickets]
 
+
 def conver_to_Hotel_class(hotels) -> list[Hotel]:
     """
     This function converts list of tickets json type to list of tickets of class 'Hotel'
@@ -523,6 +545,7 @@ def conver_to_Hotel_class(hotels) -> list[Hotel]:
     :return: list of hotels of class 'Hotel'
     """
     return [Hotel(hotel) for hotel in hotels]
+
 
 def save_hotel_photo_urls(routes: list[Route]):
     """

@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from api_collector.route.route import Route, get_hotel, get_ticket, find_top_routes
+from api_collector.route.route import get_hotel, get_ticket, find_top_routes, Hotel, Ticket
 
 
 class TestRouteCollector(unittest.TestCase):
@@ -55,15 +55,15 @@ class TestRouteCollector(unittest.TestCase):
         ]
 
         # Call the method with a budget
-        ticket = get_ticket(origin='JFK', destination='LAX', departure_at='2024-07-01',
+        tickets = get_ticket(origin='JFK', destination='LAX', departure_at='2024-07-01',
                                       return_at='2024-07-15',
                                       budget=200.0)
 
         # Check the returned ticket
-        self.assertEqual(ticket[0]['origin'], 'JFK')
-        self.assertEqual(ticket[0]['destination'], 'LAX')
-        self.assertEqual(ticket[0]['price'], 150.0)
-        self.assertEqual(ticket[0]['airline'], 'AA')
+        self.assertEqual(tickets[0].flight_origin, 'JFK')
+        self.assertEqual(tickets[0].flight_destination, 'LAX')
+        self.assertEqual(tickets[0].ticket_price, 150.0)
+        self.assertEqual(tickets[0].airline, 'AA')
 
 
     @patch('api_collector.route.route.HotelApi')
@@ -136,7 +136,7 @@ class TestRouteCollector(unittest.TestCase):
         mock_find_filtered_hotels.return_value = [1, 2, 40972234]
 
         # get result
-        result = get_hotel(location='Ryazan', check_in='2024-07-01', check_out='2024-07-10', budget=20000)
+        hotels = get_hotel(location='Ryazan', check_in='2024-07-01', check_out='2024-07-10', budget=20000)
         expected_hotel = {
                 'locationId': 12186,
                 'hotelId': 40972234,
@@ -151,13 +151,14 @@ class TestRouteCollector(unittest.TestCase):
             }
 
         # asses result
-        self.assertEqual(result[0], expected_hotel)
+        self.assertEqual(hotels[0].hotel_id, 40972234)
+        self.assertEqual(hotels[0].hotel_location_id, 12186)
 
     @patch('api_collector.route.route.get_ticket')
     @patch('api_collector.route.route.get_hotel')
     def test_find_top_routes_with_budget(self, mock_get_hotel, mock_get_ticket):
         # Set up the mock responses
-        mock_get_ticket.return_value = [{
+        return_ticket = {
             'origin': 'JFK',
             'destination': 'LAX',
             "origin_airport": "JFK",
@@ -174,9 +175,11 @@ class TestRouteCollector(unittest.TestCase):
             'duration_back': 300,
             'link': 'http://example.com/ticket1',
             'currency': 'USD'
-        }]
+        }
 
-        mock_get_hotel.return_value = [{
+        mock_get_ticket.return_value = [Ticket(ticket=return_ticket)]
+
+        return_hotel = {
             'locationId': 12186,
             'hotelId': 714884,
             'priceFrom': 100.0,
@@ -186,7 +189,9 @@ class TestRouteCollector(unittest.TestCase):
             'hotelName': 'Aragon Hotel',
             'location': {'name': 'Ryazan', 'country': 'Russia', 'state': None,
                          'geo': {'lat': 54.619779, 'lon': 39.744939}}
-        }]
+        }
+
+        mock_get_hotel.return_value = [Hotel(hotel=return_hotel)]
 
         # Call the method with a budget
         routes = find_top_routes(origin='JFK', destination='LAX', departure_at='2024-07-01',
@@ -194,8 +199,8 @@ class TestRouteCollector(unittest.TestCase):
 
         # Check the returned routes
         self.assertEqual(len(routes), 1)
-        self.assertEqual(routes[0].ticket_price, 150.0)
-        self.assertEqual(routes[0].hotel_price_from, 100.0)
+        self.assertEqual(routes[0].ticket.ticket_price, 150.0)
+        self.assertEqual(routes[0].hotel.hotel_price_from, 100.0)
 
 
 if __name__ == '__main__':
