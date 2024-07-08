@@ -30,7 +30,7 @@ def write_to_csv(table, lock):
         with open(csv_file, mode='a', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
             if not file_exists:
-                writer.writerow(['City', 'Code'])
+                writer.writerow(['city_name', 'city_code'])
             writer.writerows(city_data)
 
 
