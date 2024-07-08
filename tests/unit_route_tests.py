@@ -137,18 +137,18 @@ class TestRouteCollector(unittest.TestCase):
 
         # get result
         hotels = get_hotel(location='Ryazan', check_in='2024-07-01', check_out='2024-07-10', budget=20000)
-        expected_hotel = {
-                'locationId': 12186,
-                'hotelId': 40972234,
-                'priceFrom': 18014.44,
-                'priceAvg': 18014.44,
-                'pricePercentile': {'3': 18014.44, '10': 18014.44, '35': 18014.44, '50': 18014.44, '75': 18014.44,
-                                    '99': 18014.44},
-                'stars': 3,
-                'hotelName': 'Ryazan Hotel',
-                'location': {'name': 'Ryazan', 'country': 'Russia', 'state': None,
-                             'geo': {'lat': 54.619779, 'lon': 39.744939}}
-            }
+        # expected_hotel = {
+        #         'locationId': 12186,
+        #         'hotelId': 40972234,
+        #         'priceFrom': 18014.44,
+        #         'priceAvg': 18014.44,
+        #         'pricePercentile': {'3': 18014.44, '10': 18014.44, '35': 18014.44, '50': 18014.44, '75': 18014.44,
+        #                             '99': 18014.44},
+        #         'stars': 3,
+        #         'hotelName': 'Ryazan Hotel',
+        #         'location': {'name': 'Ryazan', 'country': 'Russia', 'state': None,
+        #                      'geo': {'lat': 54.619779, 'lon': 39.744939}}
+        #     }
 
         # asses result
         self.assertEqual(hotels[0].hotel_id, 40972234)

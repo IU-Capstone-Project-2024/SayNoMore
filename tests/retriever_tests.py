@@ -8,7 +8,6 @@ from request_analyzer.retreivers.budget_retriever import BudgetRetriever
 from request_analyzer.information_retriever import InformationRetriever
 from request_analyzer.utils.embedding_city_search import EmbeddingCitySearch
 from request_analyzer.request_fields_enum import RequestField
-from request_analyzer.verifiers.abstract_verifier import ValueStages
 
 
 class TestRetrievers(unittest.IsolatedAsyncioTestCase):
