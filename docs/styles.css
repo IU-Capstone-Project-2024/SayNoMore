@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+    background-color: #417d66;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -20,7 +20,7 @@ body {
 
 h1 {
     margin-bottom: 20px;
-    color: #333;
+    color: #417d66;
 }
 
 .form-group {
@@ -44,8 +44,8 @@ h1 {
 }
 
 button {
-    background-color: #007bff;
-    color: #fff;
+    background-color: #417d66;
+    color: #ffffff;
     border: none;
     padding: 10px 20px;
     font-size: 16px;
@@ -54,5 +54,5 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #417d66;
 }
