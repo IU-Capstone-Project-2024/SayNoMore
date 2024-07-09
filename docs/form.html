@@ -44,6 +44,10 @@
             </label>
             <span>Русский</span>
         </div>
+        <div id="confirmation" style="display: none;">
+            <h2>Form Submitted</h2>
+            <p id="confirmationText"></p>
+        </div>
     </div>
     <script>
         const translations = {
@@ -110,7 +114,11 @@
                     budget: formData.get('budget')
                 };
 
-                Telegram.WebApp.sendData(JSON.stringify(tripDetails)); 
+                document.getElementById('tripForm').style.display = 'none';
+                document.getElementById('confirmation').style.display = 'block';
+                document.getElementById('confirmationText').textContent = JSON.stringify(tripDetails, null, 2);
+
+                Telegram.WebApp.sendData(JSON.stringify(tripDetails));
             }
         }
     </script>

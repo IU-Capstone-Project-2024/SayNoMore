@@ -125,3 +125,18 @@ button {
 button:hover {
     background-color: #357a4e;
 }
+
+#confirmation {
+    text-align: left;
+    margin-top: 20px;
+}
+
+#confirmation h2 {
+    font-family: 'Cunia', sans-serif;
+    color: #417d66;
+}
+
+#confirmation p {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
