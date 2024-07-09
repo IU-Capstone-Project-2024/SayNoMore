@@ -64,6 +64,14 @@ class SayNoMoreBot:
         def callback_query(call):
             self.handle_callback_query(call)
 
+        @self.bot.pre_checkout_query_handler(func=lambda query: True)
+        def checkout(pre_checkout_query):
+            self.bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True, error_message="Payment failed, please try again later.")
+
+        @self.bot.message_handler(content_types=['successful_payment'])
+        def got_payment(message):
+            self.bot.send_message(message.chat.id, "Thank you for your payment!")
+
     def run(self):
         self.bot.polling()
 
@@ -112,13 +120,15 @@ class SayNoMoreBot:
         self.bot.send_message(chat_id, routes_message, reply_markup=markup)
 
     def handle_callback_query(self, call):
+        user_id = call.message.chat.id
+        user_state = user_states.get(user_id)
         if call.data.startswith("route_"):
             route_index = int(call.data.split('_')[1])
             user_id = call.message.chat.id
             user_state = user_states.get(user_id)
-
             if user_state:
                 selected_route = user_state['routes_list'][route_index]
+                user_state['selected_route'] = selected_route
                 self.bot.send_message(call.message.chat.id, f"You selected route {route_index + 1}:\n{selected_route.to_string()}")
                 self.send_photos(user_id, selected_route.hotel.photo_urls)
                 self.send_payment_button(call.message.chat.id)
@@ -127,7 +137,18 @@ class SayNoMoreBot:
             self.bot.send_message(call.message.chat.id, "Language preference updated.")
         
         elif call.data.startswith("pay_"):
-            self.bot.send_message(call.message.chat.id, "Payment...")
+            print(user_state)
+            prices = [types.LabeledPrice(label='Trip Payment', amount=user_state['selected_route'].calculate_total_cost() * 100)] 
+            self.bot.send_invoice(
+                call.message.chat.id, 
+                title='Trip Payment',
+                description='Payment for selected trip route',
+                provider_token='1744374395:TEST:045d3bca5efb8ecdb8e0',
+                currency='rub',
+                prices=prices,
+                start_parameter='trip-payment',
+                invoice_payload='trip-payment-payload'
+            )
 
     def send_photos(self, chat_id, photos):
         if len(photos) > 5:
@@ -137,7 +158,7 @@ class SayNoMoreBot:
 
     def send_payment_button(self, chat_id):
         markup = types.InlineKeyboardMarkup()
-        markup.add(types.InlineKeyboardButton(text="Pay Now", callback_data="pay_"))
+        markup.add(types.InlineKeyboardButton(text="Pay", callback_data="pay_"))
         self.bot.send_message(chat_id, "Click to proceed with payment", reply_markup=markup)
 
     def send_language_options(self, chat_id):
