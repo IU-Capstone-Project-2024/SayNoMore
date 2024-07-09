@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trip Planner Form</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cunia&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Trip Planner Form</h1>
+        <h1 class="title">Trip Planner Form</h1>
         <form id="tripForm">
             <input type="hidden" id="chatId" name="chatId">
             <div class="form-group">
@@ -29,13 +30,55 @@
                 <input type="date" id="return" name="return" required>
             </div>
             <div class="form-group">
-                <label for="budget">Budget:</label>
-                <input type="number" id="budget" name="budget" required>
+                <label for="budget">Budget (optional):</label>
+                <input type="number" id="budget" name="budget">
             </div>
             <button type="button" onclick="submitForm()">Submit</button>
         </form>
+        <div class="intent"></div>
+        <div class="language-switcher">
+            <span>English</span>
+            <label class="switch">
+                <input type="checkbox" id="language" onchange="changeLanguage()">
+                <span class="slider round"></span>
+            </label>
+            <span>Русский</span>
+        </div>
     </div>
     <script>
+        const translations = {
+            en: {
+                title: "Trip Planner Form",
+                departure: "Departure:",
+                destination: "Destination:",
+                arrival: "Arrival Date:",
+                return: "Return Date:",
+                budget: "Budget (optional):",
+                submit: "Submit"
+            },
+            ru: {
+                title: "Форма Планирования Путешествия",
+                departure: "Место Отправления:",
+                destination: "Место Назначения:",
+                arrival: "Дата Прибытия:",
+                return: "Дата Возвращения:",
+                budget: "Бюджет (необязательно):",
+                submit: "Отправить"
+            }
+        };
+
+        function changeLanguage() {
+            const language = document.getElementById('language').checked ? 'ru' : 'en';
+            const translation = translations[language];
+            document.querySelector('.title').textContent = translation.title;
+            document.querySelector('label[for="departure"]').textContent = translation.departure;
+            document.querySelector('label[for="destination"]').textContent = translation.destination;
+            document.querySelector('label[for="arrival"]').textContent = translation.arrival;
+            document.querySelector('label[for="return"]').textContent = translation.return;
+            document.querySelector('label[for="budget"]').textContent = translation.budget;
+            document.querySelector('button').textContent = translation.submit;
+        }
+
         Telegram.WebApp.ready();
         const user = Telegram.WebApp.initDataUnsafe.user;
         document.getElementById('chatId').value = user.id;
@@ -43,17 +86,32 @@
         function submitForm() {
             const form = document.getElementById('tripForm');
             const formData = new FormData(form);
+            const requiredFields = ['departure', 'destination', 'arrival', 'return'];
 
-            const tripDetails = {
-                chatId: formData.get('chatId'),
-                departure: formData.get('departure'),
-                destination: formData.get('destination'),
-                arrival: formData.get('arrival'),
-                return: formData.get('return'),
-                budget: formData.get('budget')
-            };
+            let allFieldsFilled = true;
 
-            Telegram.WebApp.sendData(JSON.stringify(tripDetails)); // Send data to Telegram Web App
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field);
+                if (!input.value) {
+                    input.classList.add('error');
+                    allFieldsFilled = false;
+                } else {
+                    input.classList.remove('error');
+                }
+            });
+
+            if (allFieldsFilled) {
+                const tripDetails = {
+                    chatId: formData.get('chatId'),
+                    departure: formData.get('departure'),
+                    destination: formData.get('destination'),
+                    arrival: formData.get('arrival'),
+                    return: formData.get('return'),
+                    budget: formData.get('budget')
+                };
+
+                Telegram.WebApp.sendData(JSON.stringify(tripDetails)); 
+            }
         }
     </script>
 </body>
