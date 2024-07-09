@@ -10,6 +10,7 @@
     <div class="container">
         <h1>Trip Planner Form</h1>
         <form id="tripForm">
+            <input type="hidden" id="chatId" name="chatId">
             <div class="form-group">
                 <label for="departure">Departure:</label>
                 <input type="text" id="departure" name="departure" required>
@@ -34,11 +35,18 @@
         </form>
     </div>
     <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const chatId = urlParams.get('chatId');
+            document.getElementById('chatId').value = chatId;
+        });
+
         function submitForm() {
             const form = document.getElementById('tripForm');
             const formData = new FormData(form);
 
             const tripDetails = {
+                chatId: formData.get('chatId'),
                 departure: formData.get('departure'),
                 destination: formData.get('destination'),
                 arrival: formData.get('arrival'),
@@ -47,13 +55,13 @@
             };
 
             // Send data to Telegram bot
-            fetch(`https://api.telegram.org/botYOUR_TELEGRAM_BOT_API_KEY/sendMessage`, {
+            fetch(`https://api.telegram.org/7333725090:AAFC6DwjlSs5VvvJ6ML863e5yx8h-NgAR60/sendMessage`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    chat_id: 'CHAT_ID_PLACEHOLDER', // Replace with dynamic chat ID if needed
+                    chat_id: tripDetails.chatId,
                     text: JSON.stringify(tripDetails)
                 })
             }).then(response => {
