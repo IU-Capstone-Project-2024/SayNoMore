@@ -139,6 +139,10 @@ class SayNoMoreBot:
         elif call.data.startswith("pay_"):
             print(user_state)
             prices = [types.LabeledPrice(label='Trip Payment', amount=user_state['selected_route'].calculate_total_cost() * 100)] 
+
+            # test card details: 4000000000003055
+                                # 12/25
+                                # 000
             self.bot.send_invoice(
                 call.message.chat.id, 
                 title='Trip Payment',
