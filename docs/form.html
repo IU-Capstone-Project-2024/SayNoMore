@@ -36,11 +36,9 @@
         </form>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const chatId = urlParams.get('chatId');
-            document.getElementById('chatId').value = chatId;
-        });
+        Telegram.WebApp.ready();
+        const user = Telegram.WebApp.initDataUnsafe.user;
+        document.getElementById('chatId').value = user.id;
 
         function submitForm() {
             const form = document.getElementById('tripForm');
@@ -55,23 +53,7 @@
                 budget: formData.get('budget')
             };
 
-            // Send data to Telegram bot
-            fetch(`https://api.telegram.org/7333725090:AAFC6DwjlSs5VvvJ6ML863e5yx8h-NgAR60/sendMessage`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    chat_id: tripDetails.chatId,
-                    text: JSON.stringify(tripDetails)
-                })
-            }).then(response => {
-                if (response.ok) {
-                    alert('Trip details submitted successfully!');
-                } else {
-                    alert('Failed to submit trip details.');
-                }
-            });
+            Telegram.WebApp.sendData(JSON.stringify(tripDetails)); // Send data to Telegram Web App
         }
     </script>
 </body>
