@@ -56,6 +56,20 @@ class SayNoMoreBot:
         def choose_language(message):
             self.send_language_options(message.chat.id)
 
+        @self.bot.message_handler(commands=['trip_form'])
+        def send_trip_form(message):
+                self.launch_mini_app(message.chat.id)
+
+        @self.bot.message_handler(content_types=['web_app_data'])
+        def handle_web_app_data(message):
+            try:
+                data = json.loads(message.web_app_data.data)
+                chat_id = data['chatId']
+                response_message = json.dumps(data, indent=4)
+                self.bot.send_message(chat_id, f"Received trip details:\n{response_message}")
+            except Exception as e:
+                self.bot.send_message(message.chat.id, f"Error processing data: {e}")
+
         @self.bot.message_handler(func=lambda message: True)
         def handle_user_request(message):
             asyncio.run(self.process_message(message))
@@ -74,6 +88,12 @@ class SayNoMoreBot:
 
     def run(self):
         self.bot.polling()
+
+    def launch_mini_app(self, chat_id):
+        mini_app_url = f"https://iu-capstone-project-2024.github.io/SayNoMore/form?chatId={chat_id}"
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton(text="Open Trip Form", web_app=types.WebAppInfo(mini_app_url)))
+        self.bot.send_message(chat_id, "Please fill out your trip details using the form below:", reply_markup=markup)
 
     async def process_message(self, message):
         user_id = message.chat.id
