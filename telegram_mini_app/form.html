@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Planner Form</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Trip Planner Form</h1>
+        <form id="tripForm">
+            <div class="form-group">
+                <label for="departure">Departure:</label>
+                <input type="text" id="departure" name="departure" required>
+            </div>
+            <div class="form-group">
+                <label for="destination">Destination:</label>
+                <input type="text" id="destination" name="destination" required>
+            </div>
+            <div class="form-group">
+                <label for="arrival">Arrival Date:</label>
+                <input type="date" id="arrival" name="arrival" required>
+            </div>
+            <div class="form-group">
+                <label for="return">Return Date:</label>
+                <input type="date" id="return" name="return" required>
+            </div>
+            <div class="form-group">
+                <label for="budget">Budget:</label>
+                <input type="number" id="budget" name="budget" required>
+            </div>
+            <button type="button" onclick="submitForm()">Submit</button>
+        </form>
+    </div>
+    <script>
+        function submitForm() {
+            const form = document.getElementById('tripForm');
+            const formData = new FormData(form);
+
+            const tripDetails = {
+                departure: formData.get('departure'),
+                destination: formData.get('destination'),
+                arrival: formData.get('arrival'),
+                return: formData.get('return'),
+                budget: formData.get('budget')
+            };
+
+            // Send data to Telegram bot
+            fetch(`https://api.telegram.org/botYOUR_TELEGRAM_BOT_API_KEY/sendMessage`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    chat_id: 'CHAT_ID_PLACEHOLDER', // Replace with dynamic chat ID if needed
+                    text: JSON.stringify(tripDetails)
+                })
+            }).then(response => {
+                if (response.ok) {
+                    alert('Trip details submitted successfully!');
+                } else {
+                    alert('Failed to submit trip details.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
