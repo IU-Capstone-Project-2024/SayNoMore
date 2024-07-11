@@ -53,7 +53,7 @@ class TestRequestAnalyzer(unittest.IsolatedAsyncioTestCase):
         )
 
         requests = [
-            "Хочу съездить в Санкт-Петербург с 1го по 8ое июля. Из Улан-Удэ.",
+            "Хочу съездить в Санкт-Петербург с 1го по 8ое августа. Из Улан-Удэ.",
         ]
         request_idx = 0
         message = ""
@@ -68,7 +68,7 @@ class TestRequestAnalyzer(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(
             message,
-            '{"Arrival": "2024-07-01", "Return": "2024-07-08", "Departure": "UUD", "Destination": "LED", "Budget": "None"}'
+            '{"Arrival": "2024-08-01", "Return": "2024-08-08", "Departure": "UUD", "Destination": "LED", "Budget": "None"}'
         )
 
 

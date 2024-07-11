@@ -1,6 +1,7 @@
 from request_analyzer.llm import LLM
 from request_analyzer.retreivers.abstract_retriever import BaseRetriever
 from request_analyzer.utils.embedding_city_search import EmbeddingCitySearch
+from request_analyzer.utils.extract_data import extract_data
 
 
 class DepartureRetriever(BaseRetriever):
@@ -38,7 +39,7 @@ class DepartureRetriever(BaseRetriever):
         self.llm = llm
         # Setting up sampling parameters for deterministic
         # output
-        self.json_input = {"temperature": 0, "stop": '"'}
+        self.json_input = {"temperature": 0, "stop": '\n\n'}
         # Defining a prompt template to guide the model towards
         # extracting departure cities
         self.prefix_prompt = \
@@ -88,7 +89,7 @@ A: Departure: "'''
         # customized prompt and sampling parameters
         self.json_input["prompt"] = prompt
         result = await self.llm.get_response(self.json_input)
-        result = result.strip('"')
+        result = extract_data(result)
         if not result == 'None':
             found_russian_city = self.searcher.search_city(result)
             return found_russian_city[0][0]

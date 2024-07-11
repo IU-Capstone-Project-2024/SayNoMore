@@ -4,7 +4,7 @@ import aiohttp
 class LLM:
 
     def __init__(self,
-                 url: str = 'http://10.100.30.240:1222/generate') -> None:
+                 url: str = 'http://10.100.30.240:1224/generate') -> None:
         self.url = url
 
     async def get_response(self, json_data):
