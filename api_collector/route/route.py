@@ -554,7 +554,9 @@ def save_hotel_photo_urls(routes: list[Route]):
     :return:
     """
     # collect photo ids
-    hotel_ids = [route.hotel.hotel_id for route in routes]
+    hotel_ids = [route.hotel.hotel_id for route in routes if not route.hotel.hotel is None]
+    if len(hotel_ids) == 0:
+        return
 
     # get photos url
     hotel_api = HotelApi()
