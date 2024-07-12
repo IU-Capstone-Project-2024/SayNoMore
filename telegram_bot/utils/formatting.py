@@ -1,5 +1,6 @@
 from api_collector.route.route import Route
-from googletrans import Translator
+from google.cloud import translate_v2 as translate
+import os
 
 
 def request_to_json(request: str) -> dict:
@@ -36,6 +37,7 @@ def route_list_to_string(route_list: list[Route]) -> str:
 
 
 def translate_to_russian(text):
-    translator = Translator()
-    translated = translator.translate(text, src='en', dest='ru')
-    return translated.text
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'telegram_bot/secrets/translationkey.json'
+    translate_client = translate.Client()
+    result = translate_client.translate(text, target_language='ru')
+    return result['translatedText']
