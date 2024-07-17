@@ -1,4 +1,3 @@
-from api_collector.route.route import Route
 from google.cloud import translate_v2 as translate
 from deep_translator import GoogleTranslator
 import os
@@ -22,7 +21,7 @@ def request_to_json(request: str) -> dict:
     return json_dict
 
 
-def route_list_to_string(route_list: list[Route]) -> str:
+def route_list_to_string(route_list, language) -> str:
     """
     Converts a list of Route objects into a formatted string.
 
@@ -34,7 +33,10 @@ def route_list_to_string(route_list: list[Route]) -> str:
     """
     result = ''
     for route in route_list:
-        result += route.to_string()
+        if language == "en":
+            result += route.to_string_en()
+        else:
+            result += route.to_string_ru()
         result += '\n________________________\n'
     return result
 

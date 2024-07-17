@@ -48,22 +48,41 @@ class Ticket:
         else:
             self.ticket_price = 0
 
-    def to_string(self):
+    def to_string_en(self):
         if self.ticket:
-            flight_info = (f"Flight Information:\n"
+            flight_info = (f"✈️ Flight Information ✈️\n"
+                           f"Airline: {self.airline}\n"
                            f"From: {self.flight_origin} ({self.origin_airport})\n"
                            f"To: {self.flight_destination} ({self.destination_airport})\n"
-                           f"Airline: {self.airline}\n"
                            f"Flight Number: {self.flight_number}\n"
                            f"Departure: {self.flight_departure_at}\n"
                            f"Return: {self.flight_return_at}\n"
                            f"Price: {self.ticket_price} rub\n"
-                           f"Transfers (outbound): {self.transfers}\n"
-                           f"Transfers (return): {self.return_transfers}\n"
-                           f"Outbound Duration: {self.flight_duration_to // 60} hours {self.flight_duration_to % 60} minutes\n"
-                           f"Return Duration: {self.flight_duration_back // 60} hours {self.flight_duration_back % 60} minutes\n")
+                           f"Departure connections: {self.transfers}\n"
+                           f"Return connections: {self.return_transfers}\n"
+                           f"Departure Duration: {self.flight_duration_to // 60}h {self.flight_duration_to % 60}m\n"
+                           f"Return Duration: {self.flight_duration_back // 60}h {self.flight_duration_back % 60}m\n")
         else:
-            flight_info = "The flight ticket has not been found"
+            flight_info = "❌ The flight ticket has not been found"
+
+        return flight_info
+
+    def to_string_ru(self):
+        if self.ticket:
+            flight_info = (f"✈️ Информация о рейсе ✈️\n"
+                           f"Авиакомпания: {self.airline}\n"
+                           f"Откуда: {self.flight_origin} ({self.origin_airport})\n"
+                           f"Куда: {self.flight_destination} ({self.destination_airport})\n"
+                           f"Номер рейса: {self.flight_number}\n"
+                           f"Вылет: {self.flight_departure_at}\n"
+                           f"Возвращение: {self.flight_return_at}\n"
+                           f"Цена: {self.ticket_price} руб\n"
+                           f"Пересадки при вылете: {self.transfers}\n"
+                           f"Пересадки при возвращении: {self.return_transfers}\n"
+                           f"Продолжительность полета туда: {self.flight_duration_to // 60}ч {self.flight_duration_to % 60}м\n"
+                           f"Продолжительность полета обратно: {self.flight_duration_back // 60}ч {self.flight_duration_back % 60}м\n")
+        else:
+            flight_info = "❌ Билет на рейс не найден"
 
         return flight_info
 
@@ -107,15 +126,29 @@ class Hotel:
             self.hotel_price_from = 0
             self.hotel_price_avg = 0
 
-    def to_string(self):
+    def to_string_en(self):
         if self.hotel:
-            hotel_info = (f"Hotel Information:\n"
+            stars = '⭐' * int(self.hotel_stars)
+            hotel_info = (f"🏨 Hotel Information 🏨\n"
                           f"Hotel Name: {self.hotel_name}\n"
-                          f"Location: {self.hotel_city_name}, {self.hotel_state}, {self.hotel_country}\n"
-                          f"Stars: {self.hotel_stars}\n"
+                          f"Location: {self.hotel_city_name}, {self.hotel_country}\n"
+                          f"{stars}\n"
                           f"Prices from: {self.hotel_price_from} rub\n")
         else:
-            hotel_info = "The hotel has not been found"
+            hotel_info = "❌ The hotel has not been found"
+
+        return hotel_info
+
+    def to_string_ru(self):
+        if self.hotel:
+            stars = '⭐' * self.hotel_stars
+            hotel_info = (f"🏨 Информация об отеле 🏨\n"
+                          f"Название отеля: {self.hotel_name}\n"
+                          f"Местоположение: {self.hotel_city_name}, {self.hotel_country}\n"
+                          f"{stars}\n"
+                          f"Цены от: {self.hotel_price_from} руб\n")
+        else:
+            hotel_info = "❌ Отель не найден"
 
         return hotel_info
 
@@ -190,23 +223,41 @@ class Route:
         """
         self.hotel = Hotel(hotel=hotel)
 
-    def to_string(self):
+    def to_string_en(self):
         """
-        Returns a string representation of the route including flight and hotel details.
+        Returns a string representation of the route including flight and hotel details in English.
 
-        :return: str: A string describing the route, flight, and hotel details.
+        :return: str: A string describing the route, flight, and hotel details in English.
         """
         if self.ticket:
-            flight_info = self.ticket.to_string()
+            flight_info = self.ticket.to_string_en()
         else:
             flight_info = 'No information about ticket'
 
         if self.hotel:
-            hotel_info = self.hotel.to_string()
+            hotel_info = self.hotel.to_string_en()
         else:
             hotel_info = 'No information about hotel'
 
         return f"Route from {self.origin} to {self.destination}:\n{flight_info}\n{hotel_info}"
+
+    def to_string_ru(self):
+        """
+        Returns a string representation of the route including flight and hotel details in Russian.
+
+        :return: str: A string describing the route, flight, and hotel details in Russian.
+        """
+        if self.ticket:
+            flight_info = self.ticket.to_string_ru()
+        else:
+            flight_info = 'Информация о билете отсутствует'
+
+        if self.hotel:
+            hotel_info = self.hotel.to_string_ru()
+        else:
+            hotel_info = 'Информация об отеле отсутствует'
+
+        return f"Маршрут из {self.origin} в {self.destination}:\n{flight_info}\n{hotel_info}"
 
     def calculate_total_cost(self):
         """
