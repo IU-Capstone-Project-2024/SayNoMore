@@ -1,6 +1,7 @@
 from request_analyzer.llm import LLM
 from datetime import datetime
 from request_analyzer.retreivers.abstract_retriever import BaseRetriever
+from request_analyzer.utils.extract_data import extract_data
 
 
 # retreive the date of the return from the destination city
@@ -9,7 +10,7 @@ class ReturnRetriever(BaseRetriever):
     def __init__(self, llm: LLM) -> None:
         self.llm = llm
         # Setting up sampling parameters for deterministic output
-        self.json_input = {"temperature": 0, "stop": '"'}
+        self.json_input = {"temperature": 0, "stop": '\n\n'}
         # Defining a prompt template to guide the model extract return date
         self.cur_day = datetime.now()
         self.prefix_prompt = \
@@ -78,5 +79,5 @@ A: Return date: "'''
         # the customized prompt and sampling parameters
         self.json_input["prompt"] = prompt
         result = await self.llm.get_response(self.json_input)
-        result = result.strip('"')
+        result = extract_data(result)
         return result
