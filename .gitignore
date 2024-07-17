@@ -5,11 +5,11 @@ __pycache__/
 
 venv
 .ipynb_checkpoints
-telegram_bot/telegram_bot-Copy1.py
-.ipynb_checkpoints
 __pycache__/
 __pycache__/*
 .ruff_cache
 
 data/hotels
 data/photos
+
+telegram_bot/secrets/translationkey.json
