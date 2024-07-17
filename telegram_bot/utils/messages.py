@@ -25,3 +25,34 @@ HELP_EN = (
     "Ready to plan your next adventure? Start chatting with SayNoMore now! 🎉"
 )
 
+LANGUAGE_EN = "Language preference updated."
+
+LANGUAGE_RU = "Смена языка прошла успешно"
+
+RESTART_EN = "Trip planning sequence has been restarted. Please start again by providing your trip details."
+
+RESTART_RU = "Последовательность планирования поездки была перезапущена. Пожалуйста, начните сначала, предоставив детали вашей поездки."
+
+TRIP_FORM_EN = "Please fill out your trip details using the form below:"
+
+TRIP_FORM_RU = "Пожалуйста заполните форму ниже:"
+
+OPEN_TRIP_FORM_EN = "Open Trip Form."
+
+OPEN_TRIP_FORM_RU = "Открыть форму путешествий."
+
+PAY_EN = "Click to proceed with payment"
+
+PAY_RU = "Нажмите на кнопку, чтобы перейти к оплате"
+
+PAYMENT_SUCC_EN = "Thank you for your payment!"
+
+PAYMENT_SUCC_RU = "Оплата прошла успешно."
+
+PAYMENT_FAIL_EN = "Your payment has failed. Please, try againю"
+
+PAYMENT_FAIL_RU = "Ваша оплата не прошла. Пожалуйста, повторите позже."
+
+SELECTED_ROUTE_EN = "You have selected route #"
+
+SELECTED_ROUTE_RU = "Вы выбрали мартшрут #"
