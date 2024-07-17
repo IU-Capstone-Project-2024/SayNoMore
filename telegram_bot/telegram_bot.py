@@ -83,9 +83,9 @@ class SayNoMoreBot:
                 selected_route = user_state['routes_list'][route_index]
                 user_state['selected_route'] = selected_route
                 if user_states.get(update.callback_query.message.chat.id)['language'] == "en":
-                    await call.message.reply_text(f"{messages.SELECTED_ROUTE_EN} {route_index + 1}:\n{selected_route.to_string()}")
+                    await call.message.reply_text(f"{messages.SELECTED_ROUTE_EN} {route_index + 1}:\n{selected_route.to_string_en()}")
                 else:
-                    await call.message.reply_text(f"{messages.SELECTED_ROUTE_RU} {route_index + 1}:\n{translate_to_russian(selected_route.to_string())}")
+                    await call.message.reply_text(f"{messages.SELECTED_ROUTE_RU} {route_index + 1}:\n{translate_to_russian(selected_route.to_string_ru())}")
                 await self.send_photos(user_id, selected_route.hotel.photo_urls, context)
                 await self.send_payment_button(call.message.chat.id, context)
         elif call.data.startswith("lang_"):
@@ -111,6 +111,8 @@ class SayNoMoreBot:
             await update.message.reply_text(messages.PAYMENT_SUCC_RU)
 
     async def launch_mini_app(self, chat_id):
+        if chat_id not in user_states:
+            user_states[chat_id] = self.initialize_user_state()
         mini_app_url = f"https://say-no-more-mini-app.vercel.app?chatId={chat_id}"
         if user_states.get(chat_id)['language'] == "en":
             button = KeyboardButton(text=messages.OPEN_TRIP_FORM_EN, web_app=WebAppInfo(url=mini_app_url))
@@ -185,7 +187,7 @@ class SayNoMoreBot:
             markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=f"Route {index + 1}", callback_data=f"route_{index}") for index, route in enumerate(routes_list)]])
         else:
             markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=f"Маршрут {index + 1}", callback_data=f"route_{index}") for index, route in enumerate(routes_list)]])
-        routes_message = route_list_to_string(routes_list)
+        routes_message = route_list_to_string(routes_list, user_states.get(chat_id)['language'])
         await self.application.bot.send_message(chat_id, routes_message, reply_markup=markup)
 
     async def send_photos(self, chat_id, photos, context):
